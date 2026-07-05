@@ -4,12 +4,18 @@ import "../styles/global.css";
 interface Props {
   title?: string;
   description?: string;
+  canonicalPath?: string;
 }
 
 const {
-  title = "KAI OS | The Self-Evolving AI Operating System",
-  description = "KAI OS is a modular AI operating system designed to automate work, build intelligent agents, create digital businesses, and evolve through continuous learning."
+  title = "Project KAI | KAI OS Modular AI Operating System",
+  description = "Project KAI is the public home of KAI OS, a modular AI operating system for automation, research, content creation, digital business, and intelligent workflows.",
+  canonicalPath = "/"
 } = Astro.props;
+
+const canonicalUrl = canonicalPath === "/"
+  ? "https://projectkai.dev/"
+  : `https://projectkai.dev${canonicalPath}`;
 ---
 
 <!DOCTYPE html>
@@ -39,6 +45,31 @@ const {
   <meta
     name="robots"
     content="index, follow"
+  />
+
+  <link
+    rel="canonical"
+    href={canonicalUrl}
+  />
+
+  <meta
+    property="og:title"
+    content={title}
+  />
+
+  <meta
+    property="og:description"
+    content={description}
+  />
+
+  <meta
+    property="og:url"
+    content={canonicalUrl}
+  />
+
+  <meta
+    property="og:type"
+    content="website"
   />
 
   <link

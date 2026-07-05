@@ -1,8 +1,11 @@
 <header class="site-header">
   <div class="container header-inner">
-    <a href="/" class="brand" aria-label="KAI OS Home">
+    <a href="/" class="brand" aria-label="Project KAI Home">
       <span class="brand-mark">◉</span>
-      <span>KAI OS</span>
+      <span class="brand-stack">
+        <strong>Project KAI</strong>
+        <small>KAI OS</small>
+      </span>
     </a>
 
     <nav class="nav-links" aria-label="Main navigation">
@@ -47,6 +50,23 @@
   font-weight: 900;
   letter-spacing: 0;
   font-size: 20px;
+}
+
+.brand-stack {
+  display: grid;
+  gap: 2px;
+}
+
+.brand-stack strong,
+.brand-stack small {
+  line-height: 1;
+}
+
+.brand-stack small {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 .brand-mark {
