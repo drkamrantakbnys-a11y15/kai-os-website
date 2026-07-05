@@ -1,0 +1,282 @@
+<section class="hero" id="home">
+  <div class="hero-glow hero-glow-one"></div>
+  <div class="hero-glow hero-glow-two"></div>
+
+  <div class="container hero-container">
+    <div class="hero-content">
+      <div class="section-badge">
+        Launch-ready AI systems
+      </div>
+
+      <h1>
+        The Self-Evolving<br />
+        <span class="gradient-text">AI Operating System</span>
+      </h1>
+
+      <p>
+        KAI OS is a modular AI ecosystem designed to automate work,
+        coordinate intelligent agents, create digital businesses,
+        and continuously improve through research, memory, and execution.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#agents" class="primary-button">
+          Explore Agents
+        </a>
+
+        <a href="#research" class="secondary-button">
+          View Research
+        </a>
+      </div>
+
+      <div class="hero-proof">
+        <span>11+ AI Agents</span>
+        <span>100+ Workflows</span>
+        <span>Research-Driven</span>
+      </div>
+    </div>
+
+    <div class="hero-system" aria-label="KAI OS system overview">
+      <div class="system-topline">
+        <span>KAI OS Runtime Map</span>
+        <span>V1.0 Static Launch</span>
+      </div>
+
+      <div class="system-grid">
+        <div>
+          <span>Agents</span>
+          <strong>Research / Content / Business</strong>
+        </div>
+        <div>
+          <span>Workflows</span>
+          <strong>Manual-first automation paths</strong>
+        </div>
+        <div>
+          <span>Safety</span>
+          <strong>Review, approval, rollback</strong>
+        </div>
+        <div>
+          <span>Memory</span>
+          <strong>Reports, plans, validation</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.hero h1 span {
+  display: inline-block;
+}
+.hero {
+  min-height: 94vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.16), transparent 32%),
+    radial-gradient(circle at 80% 30%, rgba(129, 140, 248, 0.14), transparent 30%),
+    linear-gradient(180deg, #050b18 0%, #08111f 52%, #050b18 100%);
+}
+
+.hero-container {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 48px;
+}
+
+.hero-content {
+  max-width: 920px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hero h1 {
+  margin: 26px 0 24px;
+  font-size: 6.25rem;
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.hero p {
+  max-width: 760px;
+  margin: 0 auto;
+  color: var(--text-soft);
+  font-size: clamp(17px, 2vw, 22px);
+  line-height: 1.8;
+}
+
+.hero-system {
+  max-width: 920px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 22px;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.78), rgba(8, 17, 31, 0.9));
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  box-shadow: 0 26px 90px rgba(0, 0, 0, 0.28);
+}
+
+.system-topline,
+.system-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.system-topline {
+  margin-bottom: 14px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.system-topline span:last-child {
+  text-align: right;
+  color: var(--primary);
+}
+
+.system-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.system-grid div {
+  min-height: 118px;
+  padding: 18px;
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.system-grid span {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.system-grid strong {
+  color: var(--text-main);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.hero-actions {
+  margin-top: 44px;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.primary-button,
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  padding: 0 28px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: 0.25s ease;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: #ffffff;
+  box-shadow: 0 18px 50px rgba(37, 99, 235, 0.35);
+}
+
+.primary-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 24px 70px rgba(56, 189, 248, 0.35);
+}
+
+.secondary-button {
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  color: var(--primary);
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.secondary-button:hover {
+  transform: translateY(-3px);
+  background: rgba(56, 189, 248, 0.12);
+}
+
+.hero-proof {
+  margin-top: 36px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.hero-proof span {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 13px;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.hero-glow {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 999px;
+  filter: blur(70px);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.hero-glow-one {
+  top: 18%;
+  left: 12%;
+  background: rgba(56, 189, 248, 0.32);
+}
+
+.hero-glow-two {
+  right: 14%;
+  bottom: 18%;
+  background: rgba(129, 140, 248, 0.26);
+}
+
+@media (max-width: 768px) {
+  .hero {
+    min-height: auto;
+    padding-top: 140px;
+    padding-bottom: 90px;
+  }
+
+  .hero h1 {
+    font-size: 4.25rem;
+    letter-spacing: 0;
+  }
+
+  .system-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .hero h1 {
+    font-size: 3.05rem;
+  }
+
+  .system-topline,
+  .system-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .system-topline span:last-child {
+    text-align: left;
+  }
+}
+</style>

@@ -1,0 +1,111 @@
+<section class="stats" id="stats">
+  <div class="container">
+    <div class="stats-panel">
+      <div class="stat-card">
+        <span class="stat-number">11+</span>
+        <h3>AI Agents</h3>
+        <p>Specialized agents for automation, research, content, business, and execution.</p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-number">100+</span>
+        <h3>Workflows</h3>
+        <p>Automation ideas across productivity, operations, AI systems, and digital business.</p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-number">25+</span>
+        <h3>Research Areas</h3>
+        <p>Focused areas including AI agents, memory, monetization, ethics, and learning systems.</p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-number">V1</span>
+        <h3>Launch Website</h3>
+        <p>A clear static presence for the platform, roadmap, research, and publication pipeline.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.stats {
+  padding: 0 24px 120px;
+  margin-top: -120px;
+  background: transparent;
+  z-index: 3;
+}
+
+.stats-panel {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  width: 100%;
+}
+
+.stat-card {
+  min-height: 230px;
+  padding: 34px 28px;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(8, 17, 31, 0.94));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.32);
+  transition: 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(56, 189, 248, 0.55);
+  box-shadow: 0 28px 90px rgba(56, 189, 248, 0.14);
+}
+
+.stat-number {
+  display: block;
+  margin-bottom: 18px;
+  color: var(--primary);
+  font-size: clamp(38px, 4vw, 56px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.stat-card h3 {
+  margin: 0 0 14px;
+  color: var(--text-main);
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.stat-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+@media (max-width: 1100px) {
+  .stats {
+    margin-top: -60px;
+  }
+
+  .stats-panel {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .stats {
+    margin-top: 0;
+    padding-bottom: 80px;
+  }
+
+  .stats-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    min-height: auto;
+  }
+}
+</style>

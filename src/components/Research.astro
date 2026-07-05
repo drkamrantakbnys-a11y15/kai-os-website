@@ -1,0 +1,124 @@
+<section class="research" id="research">
+  <div class="container">
+
+    <div class="section-center">
+      <div class="section-badge">
+        AI Research Lab
+      </div>
+
+      <h2 class="section-title">
+        Continuous Research.<br>
+        <span class="gradient-text">Continuous Evolution.</span>
+      </h2>
+
+      <p class="section-subtitle">
+        KAI OS continuously explores artificial intelligence, automation,
+        software engineering, digital business, memory systems, learning,
+        and autonomous execution to improve itself over time.
+      </p>
+    </div>
+
+    <div class="research-grid">
+
+      <div class="research-card">
+        <div class="icon">AI</div>
+        <h3>Artificial Intelligence</h3>
+        <p>LLMs, AI agents, reasoning systems, memory, planning and orchestration.</p>
+      </div>
+
+      <div class="research-card">
+        <div class="icon">AUTO</div>
+        <h3>Automation</h3>
+        <p>Workflow automation, business operations, productivity pipelines and AI execution.</p>
+      </div>
+
+      <div class="research-card">
+        <div class="icon">BUS</div>
+        <h3>Digital Business</h3>
+        <p>Products, monetization, affiliate systems, SaaS ideas and creator businesses.</p>
+      </div>
+
+      <div class="research-card">
+        <div class="icon">DATA</div>
+        <h3>Trading Research</h3>
+        <p>Market analysis, quantitative models, risk management and autonomous strategies.</p>
+      </div>
+
+      <div class="research-card">
+        <div class="icon">MEM</div>
+        <h3>Learning Engine</h3>
+        <p>Knowledge capture, documentation, feedback loops and continuous improvement.</p>
+      </div>
+
+      <div class="research-card">
+        <div class="icon">SAFE</div>
+        <h3>Ethics & Safety</h3>
+        <p>Human oversight, transparency, validation and responsible AI development.</p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<style>
+.research{
+background:linear-gradient(180deg,#08111f,#050b18);
+}
+
+.research-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:26px;
+margin-top:60px;
+}
+
+.research-card{
+padding:34px;
+border-radius:8px;
+background:rgba(15,23,42,.9);
+border:1px solid rgba(255,255,255,.08);
+transition:.3s;
+}
+
+.research-card:hover{
+transform:translateY(-8px);
+border-color:#38bdf8;
+}
+
+.icon{
+width:58px;
+height:58px;
+display:grid;
+place-items:center;
+border-radius:8px;
+background:rgba(56,189,248,.12);
+border:1px solid rgba(56,189,248,.22);
+color:#38bdf8;
+font-size:13px;
+font-weight:900;
+letter-spacing:0;
+margin-bottom:18px;
+}
+
+.research-card h3{
+margin-bottom:12px;
+}
+
+.research-card p{
+color:#cbd5e1;
+line-height:1.7;
+}
+
+@media(max-width:1000px){
+.research-grid{
+grid-template-columns:repeat(2,1fr);
+}
+}
+
+@media(max-width:700px){
+.research-grid{
+grid-template-columns:1fr;
+}
+}
+</style>

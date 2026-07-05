@@ -1,0 +1,130 @@
+<section class="agents" id="agents">
+  <div class="container">
+    <div class="section-center">
+      <div class="section-badge">AI Agent Ecosystem</div>
+
+      <h2 class="section-title">
+        Specialized agents working as one intelligent system.
+      </h2>
+
+      <p class="section-subtitle">
+        KAI OS is designed around focused agents that can research, create, automate,
+        build, analyze, and improve workflows over time.
+      </p>
+    </div>
+
+    <div class="agents-grid">
+      <article class="agent-card">
+        <div class="agent-icon">DEV</div>
+        <h3>Developer Agent</h3>
+        <p>Builds software, fixes bugs, improves code, creates documentation, and supports the KAI OS technical foundation.</p>
+      </article>
+
+      <article class="agent-card">
+        <div class="agent-icon">CNT</div>
+        <h3>Content Agent</h3>
+        <p>Creates articles, scripts, social content, educational material, and publishing workflows for digital growth.</p>
+      </article>
+
+      <article class="agent-card">
+        <div class="agent-icon">RES</div>
+        <h3>Research Agent</h3>
+        <p>Studies AI, automation, markets, software systems, business models, and emerging technology trends.</p>
+      </article>
+
+      <article class="agent-card">
+        <div class="agent-icon">BUS</div>
+        <h3>Business Agent</h3>
+        <p>Finds opportunities, plans offers, supports monetization, and helps build practical income-generating systems.</p>
+      </article>
+
+      <article class="agent-card">
+        <div class="agent-icon">OPS</div>
+        <h3>Automation Agent</h3>
+        <p>Designs repeatable workflows for productivity, operations, publishing, reporting, and execution.</p>
+      </article>
+
+      <article class="agent-card">
+        <div class="agent-icon">META</div>
+        <h3>Meta Agent</h3>
+        <p>Coordinates agents, tracks progress, supports memory, improves workflows, and keeps the ecosystem aligned.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+.agents {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(56, 189, 248, 0.08), transparent 32%),
+    linear-gradient(180deg, #050b18 0%, #08111f 100%);
+}
+
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+}
+
+.agent-card {
+  min-height: 300px;
+  padding: 34px;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(8, 17, 31, 0.92));
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  transition: 0.25s ease;
+}
+
+.agent-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--border-bright);
+  box-shadow: var(--shadow-glow);
+}
+
+.agent-icon {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.agent-card h3 {
+  margin: 0 0 14px;
+  font-size: 25px;
+  letter-spacing: 0;
+}
+
+.agent-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+@media (max-width: 1050px) {
+  .agents-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 680px) {
+  .agents-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .agent-card {
+    min-height: auto;
+    padding: 28px;
+  }
+}
+</style>

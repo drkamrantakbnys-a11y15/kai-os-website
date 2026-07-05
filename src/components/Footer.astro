@@ -1,0 +1,120 @@
+<footer class="footer">
+  <div class="container footer-grid">
+
+    <div class="footer-brand">
+      <a href="/" class="brand">
+        <span class="brand-mark">◉</span>
+        <span>KAI OS</span>
+      </a>
+
+      <p>
+        A modular AI operating system for automation, research,
+        content creation, business systems, and long-term intelligent workflows.
+      </p>
+    </div>
+
+    <div class="footer-column">
+      <h4>Platform</h4>
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+      <a href="/agents">Agents</a>
+      <a href="/#features">Features</a>
+      <a href="/#roadmap">Roadmap</a>
+    </div>
+
+    <div class="footer-column">
+      <h4>Resources</h4>
+      <a href="/blog">Blog</a>
+      <a href="/research">Research</a>
+      <a href="/contact">Contact</a>
+    </div>
+
+    <div class="footer-column">
+      <h4>Legal</h4>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms</a>
+    </div>
+
+  </div>
+
+  <div class="container footer-bottom">
+    <p>© 2026 KAI OS. Built by Kamran Tak.</p>
+  </div>
+</footer>
+
+<style>
+.footer {
+  padding: 80px 24px 30px;
+  background: #020617;
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 48px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-weight: 900;
+  font-size: 22px;
+}
+
+.brand-mark {
+  color: var(--primary);
+}
+
+.footer-brand p {
+  max-width: 420px;
+  margin-top: 20px;
+  color: var(--text-soft);
+  line-height: 1.8;
+}
+
+.footer-column {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.footer-column h4 {
+  margin: 0 0 8px;
+  color: white;
+}
+
+.footer-column a {
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+.footer-column a:hover {
+  color: var(--primary);
+}
+
+.footer-bottom {
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.footer-bottom p {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+@media(max-width: 900px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media(max-width: 600px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

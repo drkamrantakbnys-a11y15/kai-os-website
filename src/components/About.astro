@@ -1,0 +1,105 @@
+<section class="about" id="about">
+  <div class="container about-grid">
+    <div class="about-content">
+      <div class="section-badge">
+        What is KAI OS?
+      </div>
+
+      <h2 class="section-title">
+        A modular AI operating system for builders, creators, and autonomous workflows.
+      </h2>
+
+      <p>
+        KAI OS is designed to become a long-term AI ecosystem where specialized agents work together to research, plan, automate, create, and improve over time.
+      </p>
+
+      <p>
+        The goal is not to build one chatbot. The goal is to build a practical system that can support content creation, research, digital products, automation, and future AI-powered businesses.
+      </p>
+    </div>
+
+    <div class="about-cards">
+      <div class="about-card">
+        <span>01</span>
+        <h3>Modular</h3>
+        <p>Each agent and workflow can be built, tested, improved, and expanded independently.</p>
+      </div>
+
+      <div class="about-card">
+        <span>02</span>
+        <h3>Practical</h3>
+        <p>KAI OS focuses on real execution: publishing, automation, research, products, and revenue systems.</p>
+      </div>
+
+      <div class="about-card">
+        <span>03</span>
+        <h3>Long-Term</h3>
+        <p>The system is designed to grow through documentation, memory, validation, and continuous improvement.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.about {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.08), transparent 34%),
+    linear-gradient(180deg, #08111f 0%, #050b18 100%);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 72px;
+  align-items: center;
+}
+
+.about-content p {
+  max-width: 760px;
+  margin: 0 0 22px;
+  color: var(--text-soft);
+  font-size: 18px;
+  line-height: 1.85;
+}
+
+.about-cards {
+  display: grid;
+  gap: 22px;
+}
+
+.about-card {
+  padding: 30px;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(8, 17, 31, 0.9));
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.about-card span {
+  display: inline-flex;
+  margin-bottom: 18px;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.about-card h3 {
+  margin: 0 0 12px;
+  font-size: 24px;
+}
+
+.about-card p {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.75;
+}
+
+@media (max-width: 950px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 42px;
+  }
+}
+</style>

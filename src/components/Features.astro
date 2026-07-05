@@ -1,0 +1,117 @@
+<section class="features" id="features">
+  <div class="container">
+
+    <div class="section-center">
+      <div class="section-badge">Why KAI OS</div>
+
+      <h2 class="section-title">
+        More than an AI assistant.
+      </h2>
+
+      <p class="section-subtitle">
+        KAI OS is designed as a modular operating system for automation,
+        research, creation, memory, execution, and long-term growth.
+      </p>
+    </div>
+
+    <div class="features-grid">
+
+      <div class="feature-card">
+        <span>01</span>
+        <h3>Multi-Agent Architecture</h3>
+        <p>Specialized agents work together instead of relying on one generic chatbot.</p>
+      </div>
+
+      <div class="feature-card">
+        <span>02</span>
+        <h3>Long-Term Memory</h3>
+        <p>Decisions, reports, workflows, and lessons can be stored for future improvement.</p>
+      </div>
+
+      <div class="feature-card">
+        <span>03</span>
+        <h3>Automation First</h3>
+        <p>Designed to reduce repetitive work and support real execution across projects.</p>
+      </div>
+
+      <div class="feature-card">
+        <span>04</span>
+        <h3>Content & Business Engine</h3>
+        <p>Supports publishing, storytelling, digital products, affiliate systems, and revenue workflows.</p>
+      </div>
+
+      <div class="feature-card">
+        <span>05</span>
+        <h3>Research Driven</h3>
+        <p>Built around continuous learning, documentation, experimentation, and validation.</p>
+      </div>
+
+      <div class="feature-card">
+        <span>06</span>
+        <h3>Human Oversight</h3>
+        <p>Designed for responsible automation with review, approval, rollback, and safety checks.</p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<style>
+.features {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.08), transparent 34%),
+    linear-gradient(180deg, #050b18, #08111f);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+  margin-top: 60px;
+}
+
+.feature-card {
+  padding: 34px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: 0.3s;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  border-color: #38bdf8;
+}
+
+.feature-card span {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: #38bdf8;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.feature-card h3 {
+  margin: 0 0 12px;
+  font-size: 24px;
+}
+
+.feature-card p {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.7;
+}
+
+@media (max-width: 1000px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

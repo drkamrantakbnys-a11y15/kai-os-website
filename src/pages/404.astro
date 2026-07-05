@@ -1,0 +1,31 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout
+  title="Page Not Found | KAI OS"
+  description="The requested KAI OS page could not be found. Return home or read the KAI OS blog."
+>
+  <Header />
+
+  <main class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">404</p>
+        <h1 class="page-title">This workflow path does not exist yet.</h1>
+        <p class="page-lede">
+          The page you requested is not available. KAI OS is still expanding, but the main site and blog are ready to explore.
+        </p>
+
+        <div class="hero-actions page-actions">
+          <a href="/" class="primary-button">Back Home</a>
+          <a href="/blog" class="secondary-button">Read the Blog</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
