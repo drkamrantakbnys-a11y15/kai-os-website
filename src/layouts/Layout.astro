@@ -5,17 +5,21 @@ interface Props {
   title?: string;
   description?: string;
   canonicalPath?: string;
+  ogImagePath?: string;
 }
 
 const {
   title = "Project KAI | KAI OS Modular AI Operating System",
   description = "Project KAI is the public home of KAI OS, a modular AI operating system for automation, research, content creation, digital business, and intelligent workflows.",
-  canonicalPath = "/"
+  canonicalPath = "/",
+  ogImagePath = "/og-image.svg"
 } = Astro.props;
 
 const canonicalUrl = canonicalPath === "/"
   ? "https://projectkai.dev/"
   : `https://projectkai.dev${canonicalPath}`;
+
+const ogImageUrl = `https://projectkai.dev${ogImagePath}`;
 ---
 
 <!DOCTYPE html>
@@ -70,6 +74,51 @@ const canonicalUrl = canonicalPath === "/"
   <meta
     property="og:type"
     content="website"
+  />
+
+  <meta
+    property="og:site_name"
+    content="Project KAI"
+  />
+
+  <meta
+    property="og:image"
+    content={ogImageUrl}
+  />
+
+  <meta
+    property="og:image:width"
+    content="1200"
+  />
+
+  <meta
+    property="og:image:height"
+    content="630"
+  />
+
+  <meta
+    property="og:image:alt"
+    content="Project KAI — KAI OS, a modular AI operating system."
+  />
+
+  <meta
+    name="twitter:card"
+    content="summary_large_image"
+  />
+
+  <meta
+    name="twitter:title"
+    content={title}
+  />
+
+  <meta
+    name="twitter:description"
+    content={description}
+  />
+
+  <meta
+    name="twitter:image"
+    content={ogImageUrl}
   />
 
   <link
