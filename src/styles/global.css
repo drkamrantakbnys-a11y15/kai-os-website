@@ -56,6 +56,38 @@ a {
   text-decoration: none;
 }
 
+/* Keyboard-focus visibility: default outline is suppressed by several
+   components' own transitions/backgrounds in practice, so a single,
+   consistent, visible focus ring is defined here for every interactive
+   element, but only for keyboard/programmatic focus (:focus-visible) --
+   mouse/touch clicks never show it. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 1000;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #050b18;
+  font-weight: 800;
+  font-size: 14px;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
 img,
 svg {
   max-width: 100%;
