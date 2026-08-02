@@ -146,11 +146,15 @@ const ogImageUrl = `https://projectkai.dev${ogImagePath}`;
     }
   })} />
 
+  <script is:inline>document.documentElement.classList.add("js");</script>
+
 </head>
 
 <body>
 
   <slot />
+
+  <script src="../scripts/interactions.js"></script>
 
 </body>
 
