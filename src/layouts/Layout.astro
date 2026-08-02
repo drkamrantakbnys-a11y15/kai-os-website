@@ -132,6 +132,20 @@ const ogImageUrl = `https://projectkai.dev${ogImagePath}`;
     href="/favicon.ico"
   />
 
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Project KAI",
+    "alternateName": "KAI OS",
+    "url": "https://projectkai.dev/",
+    "description": "Project KAI is the public home of KAI OS, a modular AI operating system for automation, research, content creation, digital business, and intelligent workflows.",
+    "founder": {
+      "@type": "Person",
+      "name": "Kamran Tak",
+      "jobTitle": "Founder and Architect"
+    }
+  })} />
+
 </head>
 
 <body>
