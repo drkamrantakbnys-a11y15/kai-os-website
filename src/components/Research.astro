@@ -76,14 +76,16 @@ margin-top:60px;
 .research-card{
 padding:34px;
 border-radius:8px;
-background:rgba(15,23,42,.9);
-border:1px solid rgba(255,255,255,.08);
+background:rgba(15,23,42,.72);
+backdrop-filter:blur(20px);
+-webkit-backdrop-filter:blur(20px);
+border:1px solid var(--border);
 transition:.3s;
 }
 
 .research-card:hover{
 transform:translateY(-8px);
-border-color:#38bdf8;
+border-color:var(--border-bright);
 }
 
 .icon{
@@ -94,7 +96,7 @@ place-items:center;
 border-radius:8px;
 background:rgba(56,189,248,.12);
 border:1px solid rgba(56,189,248,.22);
-color:#38bdf8;
+color:var(--primary);
 font-size:13px;
 font-weight:900;
 letter-spacing:0;
@@ -106,7 +108,7 @@ margin-bottom:12px;
 }
 
 .research-card p{
-color:#cbd5e1;
+color:var(--text-soft);
 line-height:1.7;
 }
 

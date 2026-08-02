@@ -74,20 +74,22 @@
 .feature-card {
   padding: 34px;
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
   transition: 0.3s;
 }
 
 .feature-card:hover {
   transform: translateY(-8px);
-  border-color: #38bdf8;
+  border-color: var(--border-bright);
 }
 
 .feature-card span {
   display: inline-block;
   margin-bottom: 18px;
-  color: #38bdf8;
+  color: var(--primary);
   font-weight: 900;
   letter-spacing: 0.12em;
 }
@@ -99,7 +101,7 @@
 
 .feature-card p {
   margin: 0;
-  color: #cbd5e1;
+  color: var(--text-soft);
   line-height: 1.7;
 }
 
