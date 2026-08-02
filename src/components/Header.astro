@@ -8,6 +8,13 @@
       </span>
     </a>
 
+    <input type="checkbox" id="nav-toggle" class="nav-toggle-input" />
+    <label for="nav-toggle" class="nav-toggle-label" aria-label="Toggle navigation menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </label>
+
     <nav class="nav-links" aria-label="Main navigation">
       <a href="/">Home</a>
       <a href="/#about">About</a>
@@ -16,6 +23,7 @@
       <a href="/#features">Features</a>
       <a href="/#roadmap">Roadmap</a>
       <a href="/blog">Blog</a>
+      <a href="/contact" class="nav-cta-mobile">Contact Kamran</a>
     </nav>
 
     <a href="/contact" class="header-cta">
@@ -23,6 +31,18 @@
     </a>
   </div>
 </header>
+
+<script>
+  const navToggle = document.getElementById("nav-toggle");
+  const navLinkEls = document.querySelectorAll(".nav-links a");
+  navLinkEls.forEach((link) => {
+    link.addEventListener("click", () => {
+      if (navToggle instanceof HTMLInputElement) {
+        navToggle.checked = false;
+      }
+    });
+  });
+</script>
 
 <style>
 .site-header {
@@ -109,13 +129,108 @@
   transform: translateY(-2px);
 }
 
-@media (max-width: 980px) {
-  .nav-links {
-    display: none;
-  }
+.nav-toggle-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
 
+.nav-toggle-label {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.nav-toggle-label:hover {
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.nav-toggle-input:focus-visible + .nav-toggle-label {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.nav-toggle-label span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--text-main);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.nav-toggle-input:checked ~ .nav-toggle-label span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle-input:checked ~ .nav-toggle-label span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle-input:checked ~ .nav-toggle-label span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.nav-cta-mobile {
+  display: none;
+}
+
+@media (max-width: 980px) {
   .site-header {
     padding: 16px 18px;
+  }
+
+  .nav-toggle-label {
+    display: inline-flex;
+  }
+
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 12px 18px 20px;
+    background: rgba(5, 11, 24, 0.97);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  }
+
+  .nav-toggle-input:checked ~ .nav-links {
+    display: flex;
+  }
+
+  .nav-links a {
+    padding: 12px 6px;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  }
+
+  .nav-links a:last-of-type {
+    border-bottom: none;
+  }
+
+  .nav-cta-mobile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    min-height: 46px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: white;
+    font-weight: 800;
   }
 }
 
