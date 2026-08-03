@@ -1,0 +1,271 @@
+---
+import { getAgentBySlug } from "../data/agents.js";
+
+const visual = getAgentBySlug("visual");
+const voice = getAgentBySlug("voice");
+const music = getAgentBySlug("music");
+const thumbnail = getAgentBySlug("thumbnail");
+const compliance = getAgentBySlug("compliance");
+const analytics = getAgentBySlug("analytics");
+const knowledge = getAgentBySlug("knowledge");
+
+// Real pipeline order, verified against produce_next_video.py's main()
+// function directly -- not the generic "Research -> Knowledge Brain ->
+// Developer -> Content -> Publishing -> Analytics -> Learning" flow
+// requested, which doesn't match what the code actually does (grep
+// confirms knowledge_brain/ is never referenced in produce_next_video.py,
+// and publishing is never automatic). This tells the same request -> work
+// -> publish -> learn story, but every step is checkable against real code.
+const FLOW = [
+  {
+    step: "01",
+    name: "Topic Queued",
+    description: "The next topic is pulled from a real, human-curated content queue -- not a live user request.",
+    capabilityStatus: "Operational",
+    checkpoint: false,
+  },
+  {
+    step: "02",
+    name: "Script Written",
+    description: "Narration is drafted, then automatically validated for duplicated wording, CTAs, and URLs before any expensive work starts.",
+    capabilityStatus: "Operational",
+    checkpoint: false,
+  },
+  {
+    step: "03",
+    name: visual.name,
+    description: visual.purpose,
+    capabilityStatus: visual.capabilityStatus,
+    agentStatus: visual.agentStatus,
+    checkpoint: false,
+  },
+  {
+    step: "04",
+    name: voice.name,
+    description: voice.purpose,
+    capabilityStatus: voice.capabilityStatus,
+    agentStatus: voice.agentStatus,
+    checkpoint: false,
+  },
+  {
+    step: "05",
+    name: music.name,
+    description: music.purpose,
+    capabilityStatus: music.capabilityStatus,
+    agentStatus: music.agentStatus,
+    checkpoint: false,
+  },
+  {
+    step: "06",
+    name: thumbnail.name,
+    description: thumbnail.purpose,
+    capabilityStatus: thumbnail.capabilityStatus,
+    agentStatus: thumbnail.agentStatus,
+    checkpoint: false,
+  },
+  {
+    step: "07",
+    name: compliance.name,
+    description: compliance.purpose,
+    capabilityStatus: compliance.capabilityStatus,
+    agentStatus: compliance.agentStatus,
+    checkpoint: false,
+  },
+  {
+    step: "08",
+    name: "Human Review",
+    description: "Every video stops here. A person watches it, checks the facts, and decides go or no-go -- never skipped, never automated.",
+    capabilityStatus: "Operational",
+    checkpoint: true,
+  },
+  {
+    step: "09",
+    name: "Publishing",
+    description: "Only happens after human approval. KAI OS never uploads or publishes anything on its own.",
+    capabilityStatus: "Operational",
+    checkpoint: true,
+  },
+  {
+    step: "10",
+    name: "Analytics",
+    description: analytics.purpose,
+    capabilityStatus: analytics.capabilityStatus,
+    agentStatus: analytics.agentStatus,
+    checkpoint: false,
+  },
+  {
+    step: "11",
+    name: "Knowledge Brain",
+    description: knowledge.purpose,
+    capabilityStatus: knowledge.capabilityStatus,
+    agentStatus: knowledge.agentStatus,
+    checkpoint: false,
+  },
+];
+
+function statusClass(status: string) {
+  if (status === "Operational") return "status-pill--operational";
+  if (status === "In Development") return "status-pill--in-development";
+  if (status === "Coming Soon") return "status-pill--coming-soon";
+  return "status-pill--planned";
+}
+---
+
+<section class="agent-ecosystem" id="ecosystem">
+  <div class="container">
+    <div class="section-center">
+      <div class="section-badge">Agent Ecosystem</div>
+
+      <h2 class="section-title">
+        How a video actually moves through KAI OS.
+      </h2>
+
+      <p class="section-subtitle">
+        This is the real pipeline, not a simplified diagram -- every step below is
+        checkable against the production code. Steps marked
+        <strong>Human Checkpoint</strong> are never automated, by design.
+      </p>
+    </div>
+
+    <div class="ecosystem-flow">
+      {FLOW.map((node) => (
+        <div class:list={["ecosystem-node", "reveal", { "ecosystem-node--checkpoint": node.checkpoint }]}>
+          <div class="ecosystem-node-marker">{node.step}</div>
+          <div class="ecosystem-node-body">
+            <div class="ecosystem-node-header">
+              <h3>{node.name}</h3>
+              {node.checkpoint && <span class="checkpoint-badge">Human Checkpoint</span>}
+            </div>
+            <p>{node.description}</p>
+            <div class="ecosystem-node-status">
+              <span class={`status-pill ${statusClass(node.capabilityStatus)}`}>{node.capabilityStatus}</span>
+              {node.agentStatus && (
+                <span class={`status-pill ${statusClass(node.agentStatus)}`}>Agent: {node.agentStatus}</span>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.agent-ecosystem {
+  background:
+    radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.07), transparent 32%),
+    linear-gradient(180deg, #050b18 0%, #08111f 100%);
+}
+
+.ecosystem-flow {
+  position: relative;
+  max-width: 760px;
+  margin: 64px auto 0;
+  padding-left: 40px;
+  border-left: 2px solid var(--border);
+}
+
+.ecosystem-node {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.ecosystem-node:last-child {
+  margin-bottom: 0;
+}
+
+.ecosystem-node-marker {
+  position: absolute;
+  left: -57px;
+  top: 24px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--bg-main);
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.ecosystem-node--checkpoint .ecosystem-node-marker {
+  border-color: var(--violet);
+  color: var(--violet);
+}
+
+.ecosystem-node-body {
+  padding: 26px 28px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  transition: 0.25s ease;
+}
+
+.ecosystem-node--checkpoint .ecosystem-node-body {
+  border-color: rgba(129, 140, 248, 0.35);
+}
+
+.ecosystem-node-body:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-bright);
+}
+
+.ecosystem-node-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.ecosystem-node-header h3 {
+  margin: 0;
+  font-size: 19px;
+}
+
+.checkpoint-badge {
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(129, 140, 248, 0.14);
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  color: var(--violet);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ecosystem-node-body p {
+  margin: 0 0 14px;
+  color: var(--text-soft);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.ecosystem-node-status {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 700px) {
+  .ecosystem-flow {
+    padding-left: 30px;
+  }
+
+  .ecosystem-node-marker {
+    left: -47px;
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+
+  .ecosystem-node-body {
+    padding: 20px;
+  }
+}
+</style>
