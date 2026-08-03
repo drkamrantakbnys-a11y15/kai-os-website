@@ -1,0 +1,302 @@
+---
+// Real stage data. Every "reference" and "technicalDetails" entry names a
+// file that was confirmed to exist in the KAI_OS codebase before being
+// written here (produce_next_video.py, pre_generation_validation.py,
+// compliance_gateway.py, developer_memory/, knowledge_brain/,
+// visual_intelligence/, narration_gateway.py, music_provider_router.py,
+// video_assembly_gateway.py, thumbnail_gateway.py, approve_and_upload.py,
+// content_pipeline/pipeline_metrics.py, collect_analytics.py) -- not
+// invented for this page.
+const STAGES = [
+  {
+    step: "01",
+    title: "Input",
+    status: "Operational",
+    summary: "Work begins from a real, human-curated topic queue -- not a live user request.",
+    detail: "The next topic is pulled from a maintained queue file, not generated on the fly. Manual topic selection is how the queue is built today.",
+    future: "Automated, research-driven topic scheduling is planned but not built -- it depends on the Research Agent, which is currently Planned, not Operational.",
+    reference: "content_pipeline/topic_queue.json",
+    technicalDetails: ["produce_next_video.py (_load_next_topic)", "content_pipeline/topic_queue.json", "content_pipeline/asset_index.json"],
+  },
+  {
+    step: "02",
+    title: "Planning",
+    status: "Operational",
+    summary: "The script is drafted, then automatically checked before any expensive work starts.",
+    detail: "A pre-generation gate scans for duplicated wording, repeated CTAs, and duplicate URL mentions. If it fails, the script is regenerated -- bounded to 2 retries, never an infinite loop. If it's still failing after that, production proceeds anyway, because the post-assembly compliance check is the final, authoritative safety net.",
+    future: null,
+    reference: "pre_generation_validation.py",
+    technicalDetails: ["produce_next_video.py (_write_script)", "pre_generation_validation.py", "compliance_gateway.py (shared duplicate-detection logic)"],
+  },
+  {
+    step: "03",
+    title: "Memory",
+    status: "Partially Implemented",
+    summary: "Developer Memory, an Improvement Backlog, and a Knowledge Brain all exist as real, working tools.",
+    detail: "Developer Memory is an append-only ledger of real bugs, fixes, and decisions. The Knowledge Brain indexes real reports for keyword search. Both work when used directly.",
+    future: "Neither is automatically wired into every production run yet -- today they're used directly by the engineering process, not triggered autonomously per video.",
+    reference: "developer_memory/",
+    technicalDetails: ["developer_memory/", "knowledge_brain/"],
+  },
+  {
+    step: "04",
+    title: "Intelligence",
+    status: "Operational",
+    summary: "Several specialized capabilities cooperate on each video: visual sourcing, narration, music, and compliance checking.",
+    detail: "Each of these runs as real, tested logic on every video produced today -- not a simulation.",
+    future: "None of these run yet as standalone, autonomous agents (see the Agent Ecosystem section above) -- that packaging work is In Development, not finished.",
+    reference: "visual_intelligence/",
+    technicalDetails: ["visual_intelligence/", "narration_gateway.py", "music_provider_router.py", "compliance_gateway.py"],
+  },
+  {
+    step: "05",
+    title: "Creation",
+    status: "Operational",
+    summary: "Script, scenes, voice, music, assembly, thumbnail, and reports come together into one finished draft.",
+    detail: "This is the real production pipeline, start to finish, for every video produced today.",
+    future: null,
+    reference: "produce_next_video.py",
+    technicalDetails: ["produce_next_video.py", "video_assembly_gateway.py", "thumbnail_gateway.py"],
+  },
+  {
+    step: "06",
+    title: "Review",
+    status: "Human Controlled",
+    summary: "Compliance checks and a mandatory human review gate every single video -- never skipped, never automated.",
+    detail: "Automated checks cover script risk, repeated content, licensing, and AI disclosure. But the video is never marked ready to publish without a person actually watching it and approving it first. Many AI-content sites don't show this step -- it's shown here on purpose.",
+    future: null,
+    reference: "compliance_gateway.py",
+    technicalDetails: ["compliance_gateway.py (run_compliance_check)", "READY_FOR_REVIEW.json manifest, written per video"],
+  },
+  {
+    step: "07",
+    title: "Delivery",
+    status: "Human Controlled",
+    summary: "After approval, a separate, explicit step publishes the video -- upload is never automatic.",
+    detail: "A full asset folder (script, narration, captions, thumbnail, metadata, compliance report, CEO report) is built for every video regardless of whether it's ever uploaded.",
+    future: null,
+    reference: "approve_and_upload.py",
+    technicalDetails: ["approve_and_upload.py", "per-video asset folder (script.json, metadata.json, compliance_report.json, ceo_report.md, ...)"],
+  },
+  {
+    step: "08",
+    title: "Learning",
+    status: "Partially Implemented",
+    summary: "Real metrics and real lessons are recorded after every video -- full automatic self-improvement isn't built yet.",
+    detail: "Pipeline Metrics tracks real KPIs (repair counts, compliance pass rate, scene counts, and more) across runs, including real downward-trend detection. Developer Memory records what actually went wrong and how it was fixed, so the same bug isn't solved twice.",
+    future: "There is no self-learning or live-adaptation loop today -- improvements happen through direct engineering work informed by these real records, not an autonomous process.",
+    reference: "content_pipeline/pipeline_metrics.py",
+    technicalDetails: ["content_pipeline/pipeline_metrics.py", "developer_memory/", "knowledge_brain/ (not yet auto-wired in)"],
+  },
+];
+
+function statusClass(status: string) {
+  if (status === "Operational") return "status-pill--operational";
+  if (status === "In Development") return "status-pill--in-development";
+  if (status === "Partially Implemented") return "status-pill--partially-implemented";
+  if (status === "Human Controlled") return "status-pill--human-controlled";
+  if (status === "Illustrative") return "status-pill--illustrative";
+  if (status === "Coming Soon") return "status-pill--coming-soon";
+  return "status-pill--planned";
+}
+---
+
+<section class="how-it-works" id="how-it-works">
+  <div class="container">
+    <div class="section-center">
+      <div class="section-badge">How KAI Works</div>
+
+      <h2 class="section-title">
+        How KAI Works
+      </h2>
+
+      <p class="section-subtitle">
+        Every result created by Project KAI follows a structured operating pipeline
+        rather than a single AI prompt. Eight real stages, each labeled honestly.
+      </p>
+    </div>
+
+    <div class="stages-flow">
+      {STAGES.map((stage) => (
+        <div class="stage-node reveal">
+          <div class="stage-marker">{stage.step}</div>
+          <div class="stage-body">
+            <div class="stage-header">
+              <h3>{stage.title}</h3>
+              <span class={`status-pill ${statusClass(stage.status)}`}>{stage.status}</span>
+            </div>
+
+            <p class="stage-summary">{stage.summary}</p>
+            <p class="stage-detail">{stage.detail}</p>
+
+            {stage.future && (
+              <p class="stage-future"><strong>Future:</strong> {stage.future}</p>
+            )}
+
+            <details class="stage-technical">
+              <summary>Technical Details</summary>
+              <ul>
+                {stage.technicalDetails.map((item) => (
+                  <li><code>{item}</code></li>
+                ))}
+              </ul>
+            </details>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.how-it-works {
+  background:
+    radial-gradient(circle at 85% 12%, rgba(129, 140, 248, 0.07), transparent 32%),
+    linear-gradient(180deg, #08111f 0%, #050b18 100%);
+}
+
+.stages-flow {
+  position: relative;
+  max-width: 780px;
+  margin: 64px auto 0;
+  padding-left: 40px;
+  border-left: 2px solid var(--border);
+}
+
+.stage-node {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.stage-node:last-child {
+  margin-bottom: 0;
+}
+
+.stage-marker {
+  position: absolute;
+  left: -57px;
+  top: 24px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--bg-main);
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.stage-body {
+  padding: 26px 28px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  transition: 0.25s ease;
+}
+
+.stage-body:hover {
+  border-color: var(--border-bright);
+}
+
+.stage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.stage-header h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.stage-summary {
+  margin: 0 0 10px;
+  color: var(--text-main);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.stage-detail {
+  margin: 0 0 12px;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.stage-future {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.08);
+  border-left: 2px solid var(--text-muted);
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.stage-future strong {
+  color: var(--text-soft);
+}
+
+.stage-technical {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.stage-technical summary {
+  cursor: pointer;
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.stage-technical summary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.stage-technical ul {
+  margin: 12px 0 0;
+  padding-left: 18px;
+}
+
+.stage-technical li {
+  margin-bottom: 6px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.stage-technical code {
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  color: var(--text-soft);
+}
+
+@media (max-width: 700px) {
+  .stages-flow {
+    padding-left: 30px;
+  }
+
+  .stage-marker {
+    left: -47px;
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+  }
+
+  .stage-body {
+    padding: 20px;
+  }
+}
+</style>

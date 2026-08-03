@@ -359,6 +359,24 @@ section {
   color: var(--text-muted);
 }
 
+.status-pill--partially-implemented {
+  background: rgba(250, 204, 21, 0.12);
+  border-color: rgba(250, 204, 21, 0.32);
+  color: #facc15;
+}
+
+.status-pill--human-controlled {
+  background: rgba(129, 140, 248, 0.14);
+  border-color: rgba(129, 140, 248, 0.35);
+  color: var(--violet);
+}
+
+.status-pill--illustrative {
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px dashed rgba(148, 163, 184, 0.34);
+  color: var(--text-soft);
+}
+
 @media (max-width: 1100px) {
   :root {
     --section-padding: 96px;
