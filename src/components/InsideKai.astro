@@ -1,0 +1,145 @@
+<section class="inside-kai" id="inside-kai">
+  <div class="container">
+    <div class="section-center">
+      <div class="section-badge">Inside KAI</div>
+
+      <h2 class="section-title">
+        A look at how the system works.
+      </h2>
+
+      <p class="section-subtitle">
+        An illustrative example of the kind of work KAI OS agents do day to day.
+        This is not a live feed yet -- real-time activity logging is on the roadmap.
+      </p>
+    </div>
+
+    <div class="activity-feed reveal">
+      <div class="activity-item">
+        <span class="activity-time">09:14</span>
+        <span class="activity-agent">Research Agent</span>
+        <span class="activity-action">Collected AI research papers</span>
+      </div>
+
+      <div class="activity-item">
+        <span class="activity-time">09:26</span>
+        <span class="activity-agent">Content Agent</span>
+        <span class="activity-action">Generated a video script draft</span>
+      </div>
+
+      <div class="activity-item">
+        <span class="activity-time">09:40</span>
+        <span class="activity-agent">Visual Agent</span>
+        <span class="activity-action">Created a thumbnail candidate</span>
+      </div>
+
+      <div class="activity-item">
+        <span class="activity-time">09:55</span>
+        <span class="activity-agent">SEO Agent</span>
+        <span class="activity-action">Reviewed video metadata and tags</span>
+      </div>
+
+      <div class="activity-item">
+        <span class="activity-time">10:12</span>
+        <span class="activity-agent">Developer Agent</span>
+        <span class="activity-action">Diagnosed and fixed a production defect</span>
+      </div>
+
+      <div class="activity-item">
+        <span class="activity-time">10:24</span>
+        <span class="activity-agent">Knowledge Brain</span>
+        <span class="activity-action">Indexed a new engineering report</span>
+      </div>
+
+      <div class="activity-item">
+        <span class="activity-time">10:39</span>
+        <span class="activity-agent">Analytics Agent</span>
+        <span class="activity-action">Updated the production dashboard</span>
+      </div>
+    </div>
+
+    <p class="activity-disclaimer">
+      Example activity shown for illustration -- not connected to live production data yet.
+    </p>
+  </div>
+</section>
+
+<style>
+.inside-kai {
+  background:
+    radial-gradient(circle at 82% 15%, rgba(129, 140, 248, 0.08), transparent 34%),
+    linear-gradient(180deg, #08111f 0%, #050b18 100%);
+}
+
+.activity-feed {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 12px;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.72), rgba(8, 17, 31, 0.72));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.activity-item {
+  display: grid;
+  grid-template-columns: 64px 160px 1fr;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-time {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.activity-agent {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.24);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  width: max-content;
+}
+
+.activity-action {
+  color: var(--text-soft);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.activity-disclaimer {
+  max-width: 780px;
+  margin: 20px auto 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+@media (max-width: 700px) {
+  .activity-item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 16px;
+  }
+
+  .activity-time {
+    order: -1;
+  }
+}
+</style>
