@@ -1,0 +1,138 @@
+---
+// Every claim below is checkable against real, already-established facts
+// from this session's own work -- not written as generic trust-page
+// copy. Privacy specifically states what's real and true today (a static
+// site with no backend, so no data collection happens by construction),
+// rather than defaulting to "under development" when something more
+// accurate and more honest is available.
+const PILLARS = [
+  {
+    icon: "◈",
+    title: "Human Review",
+    body: "Every video produced by KAI OS stops for review before it's marked ready. A person checks the facts, watches the result, and decides go or no-go. Publishing only happens after that explicit approval -- KAI OS has never uploaded or published anything on its own.",
+  },
+  {
+    icon: "◇",
+    title: "Engineering Standards",
+    body: "Every real fix ships with regression tests -- not just a patch. Work happens in small, verified increments, each one built, tested, and checked before the next begins. Data and logic live in one place, reused everywhere, not copied between components.",
+  },
+  {
+    icon: "◎",
+    title: "Transparency",
+    body: "No fabricated statistics, testimonials, team members, or customer logos appear anywhere on this site. What's shown as the roadmap reflects real, ongoing work. Every status label on this site (Operational, In Development, Planned, Coming Soon) is checked against real code before publishing, not assumed.",
+  },
+  {
+    icon: "◐",
+    title: "Continuous Improvement",
+    body: "A real, append-only Developer Memory records bugs, fixes, and lessons so the same problem isn't solved twice. Pipeline Metrics tracks real production KPIs across runs. An Improvement Backlog keeps every planned change written down, not forgotten between sessions.",
+  },
+  {
+    icon: "◑",
+    title: "Privacy",
+    body: "This site is static: no accounts, no payment processing, no backend database, and no analytics service connected today -- so no personal data is collected by construction, not by policy alone. Broader security documentation beyond that is still being built out.",
+    link: { href: "/privacy", text: "Read the full Privacy Policy" },
+  },
+  {
+    icon: "◒",
+    title: "Future Philosophy",
+    body: "Build AI that assists people, not one that replaces their judgment. Keep humans in control of every consequential decision. Build modular systems that can be reviewed piece by piece. Choose transparency over automation hype, every time.",
+  },
+];
+---
+
+<section class="trust" id="trust">
+  <div class="container">
+    <div class="section-center">
+      <div class="section-badge">Trust &amp; Transparency</div>
+
+      <h2 class="section-title">
+        Trust &amp; Transparency
+      </h2>
+
+      <p class="section-subtitle">
+        We believe trustworthy AI is built through engineering discipline, human
+        oversight, and transparent development.
+      </p>
+    </div>
+
+    <div class="trust-grid">
+      {PILLARS.map((pillar) => (
+        <article class="content-card trust-card">
+          <div class="trust-icon" aria-hidden="true">{pillar.icon}</div>
+          <h3>{pillar.title}</h3>
+          <p>{pillar.body}</p>
+          {pillar.link && <a href={pillar.link.href} class="trust-link">{pillar.link.text}</a>}
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.trust {
+  background:
+    radial-gradient(circle at 20% 15%, rgba(56, 189, 248, 0.06), transparent 32%),
+    linear-gradient(180deg, #050b18 0%, #08111f 100%);
+}
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.trust-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trust-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 6px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  color: var(--primary);
+  font-size: 20px;
+}
+
+.trust-card h3 {
+  margin: 0 0 4px;
+  font-size: 19px;
+}
+
+.trust-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.trust-link {
+  margin-top: 8px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.trust-link:hover {
+  color: var(--text-main);
+}
+
+@media (max-width: 1000px) {
+  .trust-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .trust-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
