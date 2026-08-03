@@ -1,0 +1,347 @@
+---
+// Every document category below is real and verified to exist in the
+// KAI_OS codebase before being written here -- dates are real git-log or
+// filesystem-mtime values (checked directly), not placeholders. None of
+// these are hosted publicly yet, so every "View Documentation" button
+// says "Coming Soon" rather than linking anywhere -- the documents are
+// real, public access to them is not, and this page never blurs that
+// distinction.
+const DOCS = [
+  {
+    title: "Engineering Reports",
+    purpose: "Architecture decisions, bug root-causes, and system audits produced throughout development.",
+    status: "Actively Maintained",
+    lastUpdated: "2026-06-26",
+    description: "Dozens of real engineering reports exist internally, covering everything from architecture audits to production-readiness checklists.",
+  },
+  {
+    title: "CEO Reports",
+    purpose: "A business-level summary for every video produced: what worked, what was fixed, what it means for the business.",
+    status: "Actively Maintained",
+    lastUpdated: "2026-08-03",
+    description: "Every produced video gets a real CEO Report -- production summary, content intelligence review, and lessons learned.",
+  },
+  {
+    title: "Pipeline Metrics",
+    purpose: "Real production KPIs tracked across every video run.",
+    status: "Actively Maintained",
+    lastUpdated: "2026-07-31",
+    description: "An append-only metrics log covering repair counts, compliance pass rate, scene counts, and real trend detection across recent runs.",
+  },
+  {
+    title: "Improvement Backlog",
+    purpose: "Every planned improvement, tracked so nothing gets lost between sessions.",
+    status: "Actively Maintained",
+    lastUpdated: "2026-08-03",
+    description: "This website's own improvement backlog -- the same document driving the sprints rolling out across this site.",
+  },
+  {
+    title: "Developer Memory",
+    purpose: "A permanent, append-only record of real bugs, root causes, and fixes.",
+    status: "Actively Maintained",
+    lastUpdated: "2026-07-31",
+    description: "Every real engineering incident this project has hit gets recorded here, so the same problem is never solved twice.",
+  },
+  {
+    title: "Architecture Documents",
+    purpose: "Written architecture proposals and system-design records for major subsystems.",
+    status: "Actively Maintained",
+    lastUpdated: "2026-07-31",
+    description: "Documents covering the Visual Intelligence Engine, the agent architecture, and related systems.",
+  },
+  {
+    title: "Quality Reports",
+    purpose: "An honest per-video quality assessment.",
+    status: "Actively Maintained",
+    lastUpdated: "2026-08-03",
+    description: "Every produced video gets a real quality report: a verified engineering score, plus a creative score explicitly labeled as subjective judgment, never a fabricated rating.",
+  },
+];
+
+const METRICS = [
+  { label: "Documentation", status: "Partially Implemented", note: "Real and extensive, not yet public." },
+  { label: "Testing", status: "Operational", note: "Every real fix ships with regression tests." },
+  { label: "Quality", status: "Partially Implemented", note: "Real per-video scoring exists; no trained quality model yet." },
+  { label: "Architecture", status: "Partially Implemented", note: "Real, documented, still evolving." },
+  { label: "Automation", status: "Partially Implemented", note: "Production is automated; review and publishing are human-controlled by design." },
+  { label: "Memory", status: "Partially Implemented", note: "Real ledgers exist, not yet auto-wired into every run." },
+  { label: "Review", status: "Operational", note: "Every video is reviewed by a person, without exception." },
+  { label: "Reports", status: "Operational", note: "Generated automatically for every video produced." },
+];
+
+const PRINCIPLES = [
+  "Build incrementally",
+  "Never fabricate",
+  "Human oversight",
+  "Evidence before claims",
+  "Regression testing",
+  "Reuse before rewrite",
+];
+
+function statusClass(status: string) {
+  if (status === "Operational") return "status-pill--operational";
+  if (status === "Partially Implemented") return "status-pill--partially-implemented";
+  return "status-pill--planned";
+}
+---
+
+<section class="documentation" id="documentation">
+  <div class="container">
+    <div class="section-center">
+      <div class="section-badge">Documentation Preview</div>
+
+      <h2 class="section-title">
+        Documentation Preview
+      </h2>
+
+      <p class="section-subtitle">
+        Every improvement is documented, tested, and tracked as Project KAI evolves.
+      </p>
+    </div>
+
+    <div class="docs-grid">
+      {DOCS.map((doc) => (
+        <article class="content-card doc-card">
+          <div class="doc-card-header">
+            <h3>{doc.title}</h3>
+            <span class="status-pill status-pill--partially-implemented">{doc.status}</span>
+          </div>
+          <p class="doc-purpose">{doc.purpose}</p>
+          <p class="doc-description">{doc.description}</p>
+          <p class="doc-updated">Last updated: {doc.lastUpdated}</p>
+          <span class="secondary-button doc-button" aria-disabled="true">Coming Soon</span>
+        </article>
+      ))}
+    </div>
+
+    <div class="section-center panel-heading">
+      <h3>Engineering Metrics</h3>
+      <p class="section-subtitle small">No fabricated numbers -- just where each real system stands today.</p>
+    </div>
+
+    <div class="metrics-grid">
+      {METRICS.map((metric) => (
+        <div class="metric-card">
+          <div class="metric-card-top">
+            <span class="metric-label">{metric.label}</span>
+            <span class={`status-pill ${statusClass(metric.status)}`}>{metric.status}</span>
+          </div>
+          <p class="metric-note">{metric.note}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="focus-principles-grid">
+      <div class="content-card focus-card">
+        <div class="section-badge">Current Focus</div>
+        <h3>What Project KAI is working on right now</h3>
+        <ul>
+          <li>Phase 1: producing an initial batch of review-ready YouTube videos</li>
+          <li>Website: turning ProjectKAI.dev into a premium, honest public presence</li>
+          <li>AI Agent Architecture: formalizing today's real pipeline logic into standalone agents</li>
+        </ul>
+      </div>
+
+      <div class="content-card principles-card">
+        <div class="section-badge">Engineering Principles</div>
+        <h3>What actually guides this project</h3>
+        <ul class="principles-list">
+          {PRINCIPLES.map((principle) => <li>{principle}</li>)}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.documentation {
+  background:
+    radial-gradient(circle at 75% 10%, rgba(56, 189, 248, 0.06), transparent 32%),
+    linear-gradient(180deg, #050b18 0%, #08111f 100%);
+}
+
+.docs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-bottom: 80px;
+}
+
+.doc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.doc-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.doc-card-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.doc-purpose {
+  margin: 0;
+  color: var(--text-main);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.doc-description {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.doc-updated {
+  margin: 4px 0 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.doc-button {
+  min-height: 40px;
+  padding: 0 18px;
+  font-size: 13px;
+  cursor: default;
+  opacity: 0.75;
+}
+
+.panel-heading {
+  margin-bottom: 32px;
+}
+
+.panel-heading h3 {
+  margin: 0 0 10px;
+  font-size: 2rem;
+}
+
+.section-subtitle.small {
+  font-size: 1rem;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 80px;
+}
+
+.metric-card {
+  padding: 20px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+}
+
+.metric-card-top {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.metric-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.metric-note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.focus-principles-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.focus-card h3,
+.principles-card h3 {
+  margin: 16px 0 16px;
+  font-size: 1.35rem;
+}
+
+.focus-card ul,
+.principles-list {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text-soft);
+}
+
+.focus-card li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+  font-size: 14.5px;
+}
+
+.principles-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  list-style: none;
+  padding-left: 0;
+}
+
+.principles-list li {
+  padding-left: 18px;
+  position: relative;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.principles-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+@media (max-width: 1100px) {
+  .docs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .focus-principles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .docs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .principles-list {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
