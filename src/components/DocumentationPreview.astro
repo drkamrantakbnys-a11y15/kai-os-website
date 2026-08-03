@@ -241,6 +241,12 @@ function statusClass(status: string) {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  transition: 0.25s ease;
+}
+
+.metric-card:hover {
+  border-color: var(--border-bright);
 }
 
 .metric-card-top {
