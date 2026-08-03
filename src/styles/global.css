@@ -335,6 +335,12 @@ section {
   color: var(--primary);
 }
 
+.status-pill--operational {
+  background: rgba(34, 197, 94, 0.14);
+  border-color: rgba(34, 197, 94, 0.35);
+  color: #4ade80;
+}
+
 .status-pill--in-development {
   background: rgba(56, 189, 248, 0.12);
   border-color: rgba(56, 189, 248, 0.3);
