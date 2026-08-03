@@ -1,0 +1,123 @@
+<section class="community" id="community">
+  <div class="container">
+    <div class="section-center">
+      <div class="section-badge">Community</div>
+
+      <h2 class="section-title">
+        Follow the journey.
+      </h2>
+
+      <p class="section-subtitle">
+        Project KAI is being built in public. These channels are planned but not
+        live yet -- check back as the project grows.
+      </p>
+    </div>
+
+    <div class="community-grid">
+      <div class="community-card">
+        <span class="community-icon" aria-hidden="true">◈</span>
+        <h3>Discord</h3>
+        <span class="community-status">Coming Soon</span>
+      </div>
+
+      <div class="community-card">
+        <span class="community-icon" aria-hidden="true">◇</span>
+        <h3>GitHub</h3>
+        <span class="community-status">Coming Soon</span>
+      </div>
+
+      <div class="community-card">
+        <span class="community-icon" aria-hidden="true">▷</span>
+        <h3>YouTube</h3>
+        <span class="community-status">Coming Soon</span>
+      </div>
+
+      <div class="community-card">
+        <span class="community-icon" aria-hidden="true">◐</span>
+        <h3>Twitter / X</h3>
+        <span class="community-status">Coming Soon</span>
+      </div>
+
+      <div class="community-card">
+        <span class="community-icon" aria-hidden="true">◑</span>
+        <h3>LinkedIn</h3>
+        <span class="community-status">Coming Soon</span>
+      </div>
+
+      <div class="community-card">
+        <span class="community-icon" aria-hidden="true">◎</span>
+        <h3>Roadmap Voting</h3>
+        <span class="community-status">Coming Soon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.community {
+  background:
+    radial-gradient(circle at 20% 80%, rgba(129, 140, 248, 0.07), transparent 34%),
+    linear-gradient(180deg, #050b18 0%, #08111f 100%);
+}
+
+.community-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.community-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 30px 20px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  text-align: center;
+  transition: 0.25s ease;
+}
+
+.community-card:hover {
+  border-color: var(--border-bright);
+  transform: translateY(-4px);
+}
+
+.community-icon {
+  font-size: 28px;
+  color: var(--text-muted);
+}
+
+.community-card h3 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--text-main);
+}
+
+.community-status {
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .community-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .community-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
