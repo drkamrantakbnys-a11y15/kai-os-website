@@ -453,6 +453,17 @@ html.js :is(.reveal, .section-center, .content-card, .article-card,
   .research-card, .founder-panel) {
   opacity: 0;
   transform: translateY(28px);
+}
+
+/* Scope the reveal transition to :not(.reveal-done) so it only governs the
+   one-time entrance. Once interactions.js adds .reveal-done (right after
+   the entrance finishes), this stops matching and each card's own
+   transition (e.g. .agent-card's 0.25s) governs hover again -- otherwise
+   this rule's higher specificity permanently wins over every card's own
+   transition, forcing all their hover animations to the reveal's 0.7s. */
+html.js :is(.reveal, .section-center, .content-card, .article-card,
+  .feature-card, .stat-card, .timeline-item, .about-card, .agent-card,
+  .research-card, .founder-panel):not(.reveal-done) {
   transition:
     opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);

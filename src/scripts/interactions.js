@@ -19,7 +19,7 @@ function setupReveal() {
   if (!targets.length) return;
 
   if (prefersReducedMotion || !("IntersectionObserver" in window)) {
-    targets.forEach((el) => el.classList.add("is-visible"));
+    targets.forEach((el) => el.classList.add("is-visible", "reveal-done"));
     return;
   }
 
@@ -27,8 +27,20 @@ function setupReveal() {
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
+          const el = entry.target;
+          el.classList.add("is-visible");
+          // Once the one-time entrance transition finishes, hand the
+          // `transition` property back to the element's own component rule
+          // (e.g. .agent-card's 0.25s hover transition) so it isn't stuck
+          // permanently on the reveal system's slower 0.7s timing.
+          el.addEventListener(
+            "transitionend",
+            (event) => {
+              if (event.target === el) el.classList.add("reveal-done");
+            },
+            { once: true }
+          );
+          observer.unobserve(el);
         }
       });
     },
