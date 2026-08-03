@@ -5,8 +5,8 @@ import Footer from "../components/Footer.astro";
 ---
 
 <Layout
-  title="KAI OS Agents | Project KAI"
-  description="Explore KAI OS agents from Project KAI for research, content creation, automation, business planning, development, and workflow improvement."
+  title="All 13 KAI OS Agents | Project KAI"
+  description="The complete, real KAI OS agent architecture -- 13 specialized agents, each with an honest implementation status: In Development, Planned, or Coming Soon."
   canonicalPath="/agents"
 >
   <Header />
@@ -15,47 +15,192 @@ import Footer from "../components/Footer.astro";
     <section class="page-hero">
       <div class="container">
         <p class="page-kicker">AI Agent Ecosystem</p>
-        <h1 class="page-title">Specialized agents for research, content, automation, business, and system growth.</h1>
+        <h1 class="page-title">The complete KAI OS agent architecture -- 13 agents, honestly labeled.</h1>
         <p class="page-lede">
-          KAI OS uses focused agents as building blocks. Each agent can be improved independently and connected to broader workflows only when the system is ready.
+          Every agent below is a real, documented part of the KAI OS codebase
+          (<code>sub_agents/agents.py</code>). None of them run as autonomous, callable
+          agents yet -- that's a deliberate, explicit scope boundary, not an oversight. What
+          differs between them is whether the capability each one describes already runs in
+          production today (as inline pipeline logic, not yet a standalone agent), exists as
+          real supporting code that isn't wired in automatically yet, or hasn't been built at
+          all. Status labels below reflect that distinction honestly.
         </p>
       </div>
     </section>
 
     <section class="page-section">
-      <div class="container content-grid">
-        <article class="content-card">
+      <div class="container content-grid agents-full-grid">
+
+        <article class="content-card agent-detail-card">
+          <span class="status-pill status-pill--in-development">In Development</span>
+          <h2>Visual Agent</h2>
+          <p class="agent-purpose">Sources and manages scene visuals through the Visual Asset Ledger, with duplicate-checking against every prior video.</p>
+          <p class="agent-io"><strong>Inputs:</strong> Scene descriptions, a topic ID, a video ID.</p>
+          <p class="agent-io"><strong>Outputs:</strong> Sourced visual assets recorded in the ledger, with duplicate-check results per scene.</p>
+          <p class="agent-today">Today: this logic already runs automatically on every real video produced -- as inline pipeline code, not yet packaged as a standalone callable agent.</p>
+        </article>
+
+        <article class="content-card agent-detail-card">
+          <span class="status-pill status-pill--in-development">In Development</span>
+          <h2>Thumbnail Agent</h2>
+          <p class="agent-purpose">Generates and ranks thumbnail candidates, avoiding repeated backgrounds already used on prior videos.</p>
+          <p class="agent-io"><strong>Inputs:</strong> A video title/topic, target headline text options.</p>
+          <p class="agent-io"><strong>Outputs:</strong> Candidate thumbnails recorded in the ledger; final selection is human-reviewed.</p>
+          <p class="agent-today">Today: thumbnail generation and duplicate-avoidance already run automatically on every real video.</p>
+        </article>
+
+        <article class="content-card agent-detail-card">
+          <span class="status-pill status-pill--in-development">In Development</span>
+          <h2>Music Agent</h2>
+          <p class="agent-purpose">Selects background music by mood and checks reuse frequency before sourcing a track.</p>
+          <p class="agent-io"><strong>Inputs:</strong> A target mood tag, a video ID.</p>
+          <p class="agent-io"><strong>Outputs:</strong> A sourced track recorded in the ledger, or a reuse-frequency warning.</p>
+          <p class="agent-today">Today: music sourcing and reuse-tracking already run automatically on every real video.</p>
+        </article>
+
+        <article class="content-card agent-detail-card">
+          <span class="status-pill status-pill--in-development">In Development</span>
+          <h2>Voice Agent</h2>
+          <p class="agent-purpose">Synthesizes narration audio and records it in the asset ledger.</p>
+          <p class="agent-io"><strong>Inputs:</strong> Narration text, a topic ID.</p>
+          <p class="agent-io"><strong>Outputs:</strong> Synthesized narration recorded in the ledger.</p>
+          <p class="agent-today">Today: narration generation already runs automatically on every real video, currently limited to a single voice and provider.</p>
+        </article>
+
+        <article class="content-card agent-detail-card">
+          <span class="status-pill status-pill--in-development">In Development</span>
+          <h2>Compliance Agent</h2>
+          <p class="agent-purpose">Reviews scripts and assets against compliance and licensing checks before anything is marked ready for review.</p>
+          <p class="agent-io"><strong>Inputs:</strong> A script/narration text, scene results, licensing metadata.</p>
+          <p class="agent-io"><strong>Outputs:</strong> A compliance report flagging any issues -- never an auto-publish signal.</p>
+          <p class="agent-today">Today: this exact check already runs automatically on every real video, currently as inline logic rather than a separate callable agent.</p>
+        </article>
+
+        <article class="content-card agent-detail-card">
+          <span class="status-pill status-pill--planned">Planned</span>
           <h2>Developer Agent</h2>
-          <p>Supports code, documentation, architecture reviews, and practical software improvement.</p>
+          <p class="agent-purpose">Analyzes code, finds bottlenecks, and proposes changes for human review -- sandbox, test, benchmark, approve, then production, never auto-deploy.</p>
+          <p class="agent-io"><strong>Inputs:</strong> A task description, relevant file paths, prior lessons learned.</p>
+          <p class="agent-io"><strong>Outputs:</strong> A proposed diff/plan and benchmark results, submitted for human approval.</p>
+          <p class="agent-today">Today: this work happens through direct human-AI collaboration each session, not an autonomous agent.</p>
         </article>
 
-        <article class="content-card">
-          <h2>Content Agent</h2>
-          <p>Supports articles, scripts, publication planning, editorial workflows, and launch-ready content systems.</p>
+        <article class="content-card agent-detail-card">
+          <span class="status-pill status-pill--planned">Planned</span>
+          <h2>Knowledge Agent</h2>
+          <p class="agent-purpose">Searches production, CEO, engineering, and compliance reports to answer questions like "have we used this before?"</p>
+          <p class="agent-io"><strong>Inputs:</strong> A natural-language-ish query string.</p>
+          <p class="agent-io"><strong>Outputs:</strong> Matching report excerpts with file paths (keyword-matched, not semantic search).</p>
+          <p class="agent-today">Today: the underlying search tool is real and works when run directly -- it isn't wired into the automatic production pipeline yet.</p>
         </article>
 
-        <article class="content-card">
+        <article class="content-card agent-detail-card">
+          <span class="status-pill status-pill--planned">Planned</span>
+          <h2>Memory Agent</h2>
+          <p class="agent-purpose">Records bugs, fixes, decisions, and lessons into a permanent, append-only ledger -- the "remember what happened" counterpart to every other agent.</p>
+          <p class="agent-io"><strong>Inputs:</strong> An event description (bug, fix, decision, asset generated).</p>
+          <p class="agent-io"><strong>Outputs:</strong> An appended, immutable record in the relevant ledger.</p>
+          <p class="agent-today">Today: the ledger is real and actively used -- entries are written directly by the engineering process, not by an autonomous agent yet.</p>
+        </article>
+
+        <article class="content-card agent-detail-card">
+          <span class="status-pill status-pill--planned">Planned</span>
+          <h2>SEO Agent</h2>
+          <p class="agent-purpose">Would review and optimize titles, descriptions, and tags against known-performing patterns.</p>
+          <p class="agent-io"><strong>Inputs:</strong> Draft metadata (titles, description, tags) for a video.</p>
+          <p class="agent-io"><strong>Outputs:</strong> Suggested metadata revisions with a stated rationale -- never auto-applied.</p>
+          <p class="agent-today">Today: not yet built. This needs enough real performance data to learn from, which doesn't exist yet.</p>
+        </article>
+
+        <article class="content-card agent-detail-card">
+          <span class="status-pill status-pill--planned">Planned</span>
+          <h2>Analytics Agent</h2>
+          <p class="agent-purpose">Would orchestrate real analytics collection into a summarized performance digest.</p>
+          <p class="agent-io"><strong>Inputs:</strong> A time window or list of topic IDs.</p>
+          <p class="agent-io"><strong>Outputs:</strong> A performance report, honestly scoped to whatever real data is actually available.</p>
+          <p class="agent-today">Today: not yet running. Supporting code exists, but real analytics access isn't authorized/connected yet.</p>
+        </article>
+
+        <article class="content-card agent-detail-card">
+          <span class="status-pill status-pill--planned">Planned</span>
           <h2>Research Agent</h2>
-          <p>Explores AI, automation, software systems, business models, and emerging technology patterns.</p>
+          <p class="agent-purpose">Would gather topic and trend research for future content ideas, with a stated evidence basis for every suggestion.</p>
+          <p class="agent-io"><strong>Inputs:</strong> A subject area or gap analysis against the existing topic queue.</p>
+          <p class="agent-io"><strong>Outputs:</strong> Candidate new topics, never presented with fabricated trend claims.</p>
+          <p class="agent-today">Today: not yet built. Depends on a trend-intelligence subsystem that doesn't exist yet.</p>
         </article>
 
-        <article class="content-card">
-          <h2>Business Agent</h2>
-          <p>Plans offers, monetization paths, digital products, and practical income systems.</p>
+        <article class="content-card agent-detail-card">
+          <span class="status-pill status-pill--planned">Planned</span>
+          <h2>Website Agent</h2>
+          <p class="agent-purpose">Would implement the defined website-integration interfaces once they're needed.</p>
+          <p class="agent-io"><strong>Inputs:</strong> Not yet defined beyond the interface layer.</p>
+          <p class="agent-io"><strong>Outputs:</strong> Not yet defined beyond the interface layer.</p>
+          <p class="agent-today">Today: this website is built through direct human-AI collaboration, not by this agent. Only the interface layer exists.</p>
         </article>
 
-        <article class="content-card">
-          <h2>Automation Agent</h2>
-          <p>Designs controlled workflows for repeated tasks, operations, reporting, and launch execution.</p>
+        <article class="content-card agent-detail-card">
+          <span class="status-pill status-pill--coming-soon">Coming Soon</span>
+          <h2>Trend Agent</h2>
+          <p class="agent-purpose">Would populate trend-monitoring data once real analytics and social monitoring exist.</p>
+          <p class="agent-io"><strong>Inputs:</strong> Not yet defined.</p>
+          <p class="agent-io"><strong>Outputs:</strong> Not yet defined.</p>
+          <p class="agent-today">Today: zero implementation. This is the one agent with no supporting code built yet at all.</p>
         </article>
 
-        <article class="content-card">
-          <h2>Meta Agent</h2>
-          <p>Coordinates progress, captures lessons, tracks decisions, and supports long-term system alignment.</p>
-        </article>
       </div>
     </section>
   </main>
 
   <Footer />
 </Layout>
+
+<style>
+.agents-full-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.agent-detail-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-content: start;
+}
+
+.agent-detail-card h2 {
+  margin: 4px 0 0;
+}
+
+.agent-purpose {
+  color: var(--text-soft);
+}
+
+.agent-io {
+  font-size: 0.92rem;
+  color: var(--text-soft);
+}
+
+.agent-io strong {
+  color: var(--text-main);
+}
+
+.agent-today {
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 1100px) {
+  .agents-full-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .agents-full-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
