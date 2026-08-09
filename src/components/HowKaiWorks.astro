@@ -15,6 +15,7 @@ const STAGES = [
     summary: "Work begins from a real, human-curated topic queue -- not a live user request.",
     detail: "The next topic is pulled from a maintained queue file, not generated on the fly. Manual topic selection is how the queue is built today.",
     future: "Automated, research-driven topic scheduling is planned but not built -- it depends on the Research Agent, which is currently Planned, not Operational.",
+    humanControl: "Full -- topic selection is entirely manual today.",
     reference: "content_pipeline/topic_queue.json",
     technicalDetails: ["produce_next_video.py (_load_next_topic)", "content_pipeline/topic_queue.json", "content_pipeline/asset_index.json"],
   },
@@ -25,6 +26,7 @@ const STAGES = [
     summary: "The script is drafted, then automatically checked before any expensive work starts.",
     detail: "A pre-generation gate scans for duplicated wording, repeated CTAs, and duplicate URL mentions. If it fails, the script is regenerated -- bounded to 2 retries, never an infinite loop. If it's still failing after that, production proceeds anyway, because the post-assembly compliance check is the final, authoritative safety net.",
     future: null,
+    humanControl: "None at this stage -- the check is fully automated. Its findings feed the mandatory human review at stage 06.",
     reference: "pre_generation_validation.py",
     technicalDetails: ["produce_next_video.py (_write_script)", "pre_generation_validation.py", "compliance_gateway.py (shared duplicate-detection logic)"],
   },
@@ -35,6 +37,7 @@ const STAGES = [
     summary: "Developer Memory, an Improvement Backlog, and a Knowledge Brain all exist as real, working tools.",
     detail: "Developer Memory is an append-only ledger of real bugs, fixes, and decisions. The Knowledge Brain indexes real reports for keyword search. Both work when used directly.",
     future: "Neither is automatically wired into every production run yet -- today they're used directly by the engineering process, not triggered autonomously per video.",
+    humanControl: "Full -- both tools are used directly by engineers, not triggered automatically.",
     reference: "developer_memory/",
     technicalDetails: ["developer_memory/", "knowledge_brain/"],
   },
@@ -45,6 +48,7 @@ const STAGES = [
     summary: "Several specialized capabilities cooperate on each video: visual sourcing, narration, music, and compliance checking.",
     detail: "Each of these runs as real, tested logic on every video produced today -- not a simulation.",
     future: "None of these run yet as standalone, autonomous agents (see the Agent Ecosystem section above) -- that packaging work is In Development, not finished.",
+    humanControl: "None at this stage -- runs automatically; human review happens later, at stage 06.",
     reference: "visual_intelligence/",
     technicalDetails: ["visual_intelligence/", "narration_gateway.py", "music_provider_router.py", "compliance_gateway.py"],
   },
@@ -55,6 +59,7 @@ const STAGES = [
     summary: "Script, scenes, voice, music, assembly, thumbnail, and reports come together into one finished draft.",
     detail: "This is the real production pipeline, start to finish, for every video produced today.",
     future: null,
+    humanControl: "None at this stage -- fully automated; human review happens next, at stage 06.",
     reference: "produce_next_video.py",
     technicalDetails: ["produce_next_video.py", "video_assembly_gateway.py", "thumbnail_gateway.py"],
   },
@@ -65,6 +70,7 @@ const STAGES = [
     summary: "Compliance checks and a mandatory human review gate every single video -- never skipped, never automated.",
     detail: "Automated checks cover script risk, repeated content, licensing, and AI disclosure. But the video is never marked ready to publish without a person actually watching it and approving it first. Many AI-content sites don't show this step -- it's shown here on purpose.",
     future: null,
+    humanControl: "Every video, without exception -- a person watches and approves before anything is marked ready.",
     reference: "compliance_gateway.py",
     technicalDetails: ["compliance_gateway.py (run_compliance_check)", "READY_FOR_REVIEW.json manifest, written per video"],
   },
@@ -75,6 +81,7 @@ const STAGES = [
     summary: "After approval, a separate, explicit step publishes the video -- upload is never automatic.",
     detail: "A full asset folder (script, narration, captions, thumbnail, metadata, compliance report, CEO report) is built for every video regardless of whether it's ever uploaded.",
     future: null,
+    humanControl: "Every video, without exception -- publishing only happens after explicit approval. KAI OS has never uploaded anything on its own.",
     reference: "approve_and_upload.py",
     technicalDetails: ["approve_and_upload.py", "per-video asset folder (script.json, metadata.json, compliance_report.json, ceo_report.md, ...)"],
   },
@@ -85,6 +92,7 @@ const STAGES = [
     summary: "Real metrics and real lessons are recorded after every video -- full automatic self-improvement isn't built yet.",
     detail: "Pipeline Metrics tracks real KPIs (repair counts, compliance pass rate, scene counts, and more) across runs, including real downward-trend detection. Developer Memory records what actually went wrong and how it was fixed, so the same bug isn't solved twice.",
     future: "There is no self-learning or live-adaptation loop today -- improvements happen through direct engineering work informed by these real records, not an autonomous process.",
+    humanControl: "Full -- engineers read these real records and decide what to improve; nothing acts on them automatically.",
     reference: "content_pipeline/pipeline_metrics.py",
     technicalDetails: ["content_pipeline/pipeline_metrics.py", "developer_memory/", "knowledge_brain/ (not yet auto-wired in)"],
   },
@@ -132,6 +140,17 @@ function statusClass(status: string) {
             {stage.future && (
               <p class="stage-future"><strong>Future:</strong> {stage.future}</p>
             )}
+
+            <div class="stage-evidence-row">
+              <div class="stage-evidence-item">
+                <span class="stage-evidence-label">Human Control</span>
+                <span class="stage-evidence-value">{stage.humanControl}</span>
+              </div>
+              <div class="stage-evidence-item">
+                <span class="stage-evidence-label">Source</span>
+                <span class="stage-evidence-value"><code>{stage.reference}</code></span>
+              </div>
+            </div>
 
             <details class="stage-technical">
               <summary>Technical Details</summary>
@@ -241,6 +260,49 @@ function statusClass(status: string) {
   color: var(--text-muted);
   font-size: 13px;
   line-height: 1.6;
+}
+
+.stage-evidence-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.stage-evidence-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.stage-evidence-label {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.stage-evidence-value {
+  color: var(--text-soft);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.stage-evidence-value code {
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  color: var(--text-main);
+  word-break: break-word;
+}
+
+@media (max-width: 560px) {
+  .stage-evidence-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stage-future strong {
