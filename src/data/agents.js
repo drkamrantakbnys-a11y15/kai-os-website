@@ -15,10 +15,26 @@
 // flow (subset of fields) so the two never drift out of sync.
 export const AGENTS_LAST_UPDATED = "2026-07-31";
 
+// Functional layers group agents by their own `purpose` field below --
+// not a new claim, just a presentational grouping of facts already
+// established per-agent. Kept flat (no layer) would also be valid; this
+// exists because the grouping is unambiguous from the real purposes,
+// per Sprint 4's "if classification is ambiguous, keep the flat model."
+export const LAYERS = [
+  { key: "intelligence", label: "Intelligence" },
+  { key: "creation", label: "Creation" },
+  { key: "quality-safety", label: "Quality & Safety" },
+  { key: "knowledge", label: "Knowledge" },
+  { key: "analytics", label: "Analytics" },
+  { key: "operations", label: "Operations" },
+  { key: "developer-infrastructure", label: "Developer Infrastructure" },
+];
+
 export const AGENTS = [
   {
     slug: "visual",
     name: "Visual Agent",
+    layer: "creation",
     capabilityStatus: "Operational",
     agentStatus: "In Development",
     purpose: "Sources and manages scene visuals through the Visual Asset Ledger, with duplicate-checking against every prior video.",
@@ -32,6 +48,7 @@ export const AGENTS = [
   {
     slug: "thumbnail",
     name: "Thumbnail Agent",
+    layer: "creation",
     capabilityStatus: "Operational",
     agentStatus: "In Development",
     purpose: "Generates and ranks thumbnail candidates, avoiding backgrounds already used on prior videos.",
@@ -45,6 +62,7 @@ export const AGENTS = [
   {
     slug: "music",
     name: "Music Agent",
+    layer: "creation",
     capabilityStatus: "Operational",
     agentStatus: "In Development",
     purpose: "Selects background music by mood and checks reuse frequency before sourcing a track.",
@@ -58,6 +76,7 @@ export const AGENTS = [
   {
     slug: "voice",
     name: "Voice Agent",
+    layer: "creation",
     capabilityStatus: "Operational",
     agentStatus: "In Development",
     purpose: "Synthesizes narration audio and records it in the asset ledger.",
@@ -71,6 +90,7 @@ export const AGENTS = [
   {
     slug: "compliance",
     name: "Compliance Agent",
+    layer: "quality-safety",
     capabilityStatus: "Operational",
     agentStatus: "In Development",
     purpose: "Reviews scripts and assets against compliance and licensing checks before anything is marked ready for review.",
@@ -84,6 +104,7 @@ export const AGENTS = [
   {
     slug: "developer",
     name: "Developer Agent",
+    layer: "developer-infrastructure",
     capabilityStatus: "Planned",
     agentStatus: "Planned",
     purpose: "Analyzes code, finds bottlenecks, and proposes changes for human review -- sandbox, test, benchmark, approve, then production, never auto-deploy.",
@@ -97,6 +118,7 @@ export const AGENTS = [
   {
     slug: "knowledge",
     name: "Knowledge Agent",
+    layer: "knowledge",
     capabilityStatus: "Planned",
     agentStatus: "Planned",
     purpose: "Searches production, CEO, engineering, and compliance reports to answer questions like \"have we used this before?\"",
@@ -110,6 +132,7 @@ export const AGENTS = [
   {
     slug: "memory",
     name: "Memory Agent",
+    layer: "knowledge",
     capabilityStatus: "Planned",
     agentStatus: "Planned",
     purpose: "Records bugs, fixes, decisions, and lessons into a permanent, append-only ledger -- the \"remember what happened\" counterpart to every other agent.",
@@ -123,6 +146,7 @@ export const AGENTS = [
   {
     slug: "seo",
     name: "SEO Agent",
+    layer: "operations",
     capabilityStatus: "Planned",
     agentStatus: "Planned",
     purpose: "Would review and optimize titles, descriptions, and tags against known-performing patterns.",
@@ -136,6 +160,7 @@ export const AGENTS = [
   {
     slug: "analytics",
     name: "Analytics Agent",
+    layer: "analytics",
     capabilityStatus: "Planned",
     agentStatus: "Planned",
     purpose: "Would orchestrate real analytics collection into a summarized performance digest.",
@@ -149,6 +174,7 @@ export const AGENTS = [
   {
     slug: "research",
     name: "Research Agent",
+    layer: "intelligence",
     capabilityStatus: "Planned",
     agentStatus: "Planned",
     purpose: "Would gather topic and trend research for future content ideas, with a stated evidence basis for every suggestion.",
@@ -162,6 +188,7 @@ export const AGENTS = [
   {
     slug: "website",
     name: "Website Agent",
+    layer: "operations",
     capabilityStatus: "Planned",
     agentStatus: "Planned",
     purpose: "Would implement the defined website-integration interfaces once they're needed.",
@@ -175,6 +202,7 @@ export const AGENTS = [
   {
     slug: "trend",
     name: "Trend Agent",
+    layer: "analytics",
     capabilityStatus: "Coming Soon",
     agentStatus: "Coming Soon",
     purpose: "Would populate trend-monitoring data once real analytics and social monitoring exist.",

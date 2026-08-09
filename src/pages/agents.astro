@@ -2,7 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import { AGENTS, AGENTS_LAST_UPDATED } from "../data/agents.js";
+import { AGENTS, AGENTS_LAST_UPDATED, LAYERS } from "../data/agents.js";
 import kaiOsData from "../data/generated/kai-os-public-data.json";
 
 const LAST_UPDATED = AGENTS_LAST_UPDATED;
@@ -54,55 +54,97 @@ function statusClass(status: string) {
       </div>
     </section>
 
-    <section class="page-section">
-      <div class="container agents-full-grid">
-        {AGENTS.map((agent) => (
-          <article class="content-card agent-detail-card">
-            <div class="agent-status-row">
-              <div class="agent-status-item">
-                <span class="agent-status-label">Capability</span>
-                <span class={`status-pill ${statusClass(agent.capabilityStatus)}`}>{agent.capabilityStatus}</span>
-              </div>
-              <div class="agent-status-item">
-                <span class="agent-status-label">Autonomous Agent</span>
-                <span class={`status-pill ${statusClass(agent.agentStatus)}`}>{agent.agentStatus}</span>
-              </div>
+    {LAYERS.map((layer) => {
+      const layerAgents = AGENTS.filter((agent) => agent.layer === layer.key);
+      if (!layerAgents.length) return null;
+      return (
+        <section class="page-section agent-layer-section">
+          <div class="container">
+            <div class="agent-layer-heading">
+              <h2>{layer.label}</h2>
+              <span class="agent-layer-count">{layerAgents.length} agent{layerAgents.length === 1 ? "" : "s"}</span>
             </div>
+            <div class="agents-full-grid">
+              {layerAgents.map((agent) => (
+                <article class="content-card agent-detail-card">
+                  <div class="agent-status-row">
+                    <div class="agent-status-item">
+                      <span class="agent-status-label">Capability</span>
+                      <span class={`status-pill ${statusClass(agent.capabilityStatus)}`}>{agent.capabilityStatus}</span>
+                    </div>
+                    <div class="agent-status-item">
+                      <span class="agent-status-label">Autonomous Agent</span>
+                      <span class={`status-pill ${statusClass(agent.agentStatus)}`}>{agent.agentStatus}</span>
+                    </div>
+                  </div>
 
-            <h2>{agent.name}</h2>
-            <p class="agent-purpose">{agent.purpose}</p>
+                  <h3>{agent.name}</h3>
+                  <p class="agent-purpose">{agent.purpose}</p>
 
-            <dl class="agent-fields">
-              <dt>Inputs</dt>
-              <dd>{agent.inputs}</dd>
+                  <dl class="agent-fields">
+                    <dt>Inputs</dt>
+                    <dd>{agent.inputs}</dd>
 
-              <dt>Outputs</dt>
-              <dd>{agent.outputs}</dd>
+                    <dt>Outputs</dt>
+                    <dd>{agent.outputs}</dd>
 
-              <dt>Dependencies</dt>
-              <dd>{agent.dependencies}</dd>
+                    <dt>Dependencies</dt>
+                    <dd>{agent.dependencies}</dd>
 
-              <dt>Current Capability</dt>
-              <dd>{agent.currentCapability}</dd>
+                    <dt>Current Capability</dt>
+                    <dd>{agent.currentCapability}</dd>
 
-              <dt>Automation Level</dt>
-              <dd>{agent.automationLevel}</dd>
+                    <dt>Automation Level</dt>
+                    <dd>{agent.automationLevel}</dd>
 
-              <dt>Roadmap</dt>
-              <dd>{agent.roadmap}</dd>
-            </dl>
+                    <dt>Roadmap</dt>
+                    <dd>{agent.roadmap}</dd>
+                  </dl>
 
-            <p class="agent-updated">Last updated: {LAST_UPDATED}</p>
-          </article>
-        ))}
-      </div>
-    </section>
+                  <p class="agent-updated">Last updated: {LAST_UPDATED}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    })}
   </main>
 
   <Footer />
 </Layout>
 
 <style>
+.agent-layer-section {
+  padding-top: 0;
+  padding-bottom: 56px;
+}
+
+.agent-layer-section:last-of-type {
+  padding-bottom: var(--section-padding);
+}
+
+.agent-layer-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.agent-layer-heading h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.agent-layer-count {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .verified-summary {
   padding-top: 0;
   padding-bottom: 40px;

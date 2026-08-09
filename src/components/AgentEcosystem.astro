@@ -92,6 +92,11 @@ const FLOW = [
     capabilityStatus: analytics.capabilityStatus,
     agentStatus: analytics.agentStatus,
     checkpoint: false,
+    // Publishing does not automatically trigger this today -- collect_analytics.py
+    // is a separate, manually-run script (confirmed via source, not the sequential
+    // position in this diagram). Labeled so the flow doesn't imply automatic
+    // hand-off where none exists yet.
+    plannedConnection: true,
   },
   {
     step: "11",
@@ -100,6 +105,9 @@ const FLOW = [
     capabilityStatus: knowledge.capabilityStatus,
     agentStatus: knowledge.agentStatus,
     checkpoint: false,
+    // Same reasoning: knowledge_brain/ is real and works when queried
+    // directly, but nothing in the pipeline calls it automatically yet.
+    plannedConnection: true,
   },
 ];
 
@@ -132,6 +140,11 @@ function statusClass(status: string) {
         <div class:list={["ecosystem-node", "reveal", { "ecosystem-node--checkpoint": node.checkpoint }]}>
           <div class="ecosystem-node-marker">{node.step}</div>
           <div class="ecosystem-node-body">
+            {node.plannedConnection && (
+              <p class="planned-connection-note">
+                Planned connection -- not yet triggered automatically by the step above it.
+              </p>
+            )}
             <div class="ecosystem-node-header">
               <h3>{node.name}</h3>
               {node.checkpoint && <span class="checkpoint-badge">Human Checkpoint</span>}
@@ -226,6 +239,18 @@ function statusClass(status: string) {
 .ecosystem-node-header h3 {
   margin: 0;
   font-size: 20px;
+}
+
+.planned-connection-note {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.08);
+  border-left: 2px dashed var(--text-muted);
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .checkpoint-badge {
