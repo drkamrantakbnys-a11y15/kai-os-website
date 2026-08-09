@@ -2,10 +2,13 @@
 // Every document category below is real and verified to exist in the
 // KAI_OS codebase before being written here -- dates are real git-log or
 // filesystem-mtime values (checked directly), not placeholders. None of
-// these are hosted publicly yet, so every "View Documentation" button
-// says "Coming Soon" rather than linking anywhere -- the documents are
-// real, public access to them is not, and this page never blurs that
-// distinction.
+// the documents themselves are hosted publicly yet, so every "View
+// Documentation" button says "Coming Soon" rather than linking anywhere.
+// As of Sprint 7, real AGGREGATE facts derived from some of these
+// documents are public -- see the Public Evidence links below the grid.
+// The distinction matters: /status shows real counts, not the raw
+// pipeline_metrics.jsonl log itself; /knowledge shows a real report
+// count, not the report contents. This page never blurs that line.
 const DOCS = [
   {
     title: "Engineering Reports",
@@ -114,6 +117,18 @@ function statusClass(status: string) {
       ))}
     </div>
 
+    <div class="public-evidence-row">
+      <p class="public-evidence-text">
+        The documents above remain internal. Real, aggregate facts derived from some of them
+        are already public:
+      </p>
+      <div class="public-evidence-links">
+        <a href="/status">System Status →</a>
+        <a href="/changelog">Engineering Changelog →</a>
+        <a href="/knowledge">Knowledge Brain →</a>
+      </div>
+    </div>
+
     <div class="section-center panel-heading">
       <h3>Engineering Metrics</h3>
       <p class="section-subtitle small">No fabricated numbers -- just where each real system stands today.</p>
@@ -164,7 +179,53 @@ function statusClass(status: string) {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 22px;
-  margin-bottom: 80px;
+  margin-bottom: 32px;
+}
+
+.public-evidence-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  max-width: 720px;
+  margin: 0 auto 64px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.5);
+  text-align: center;
+}
+
+.public-evidence-text {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.public-evidence-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+}
+
+.public-evidence-links a {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.public-evidence-links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+  .public-evidence-row {
+    flex-direction: column;
+  }
 }
 
 .doc-card {
