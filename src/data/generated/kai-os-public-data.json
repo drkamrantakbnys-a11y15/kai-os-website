@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T08:31:04.093421+00:00",
+  "generated_at": "2026-08-09T09:57:15.066531+00:00",
   "note": "Generated from the KAI OS repository during the latest website data-sync run. Not live.",
   "agents": {
     "total_capabilities": 13,
@@ -24,7 +24,7 @@
     "source": "KAI OS desktop operator subsystem"
   },
   "engineering": {
-    "total_test_files": 683,
+    "total_test_files": 687,
     "source": "KAI OS automated test suite"
   },
   "production": {
@@ -34,5 +34,14 @@
       "queued": 13
     },
     "completed_total": 5
+  },
+  "knowledge_brain": {
+    "total_reports": 98,
+    "root_reports": 53,
+    "topic_reports": 45,
+    "mechanism": "Word-overlap keyword search (lowercase alphanumeric tokens, ranked by intersection count). Not semantic search -- no embeddings, no vector index.",
+    "persisted_index": false,
+    "automated": false,
+    "source": "KAI OS knowledge_brain/indexer.py (all_reports/search)"
   }
 }

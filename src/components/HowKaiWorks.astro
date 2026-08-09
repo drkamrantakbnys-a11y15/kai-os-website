@@ -38,6 +38,7 @@ const STAGES = [
     detail: "Developer Memory is an append-only ledger of real bugs, fixes, and decisions. The Knowledge Brain indexes real reports for keyword search. Both work when used directly.",
     future: "Neither is automatically wired into every production run yet -- today they're used directly by the engineering process, not triggered autonomously per video.",
     humanControl: "Full -- both tools are used directly by engineers, not triggered automatically.",
+    link: { href: "/knowledge", text: "See the real Knowledge Brain numbers" },
     reference: "developer_memory/",
     technicalDetails: ["developer_memory/", "knowledge_brain/"],
   },
@@ -151,6 +152,10 @@ function statusClass(status: string) {
                 <span class="stage-evidence-value"><code>{stage.reference}</code></span>
               </div>
             </div>
+
+            {stage.link && (
+              <a href={stage.link.href} class="stage-link">{stage.link.text} →</a>
+            )}
 
             <details class="stage-technical">
               <summary>Technical Details</summary>
@@ -307,6 +312,18 @@ function statusClass(status: string) {
 
 .stage-future strong {
   color: var(--text-soft);
+}
+
+.stage-link {
+  display: inline-block;
+  margin: 0 0 14px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.stage-link:hover {
+  text-decoration: underline;
 }
 
 .stage-technical {

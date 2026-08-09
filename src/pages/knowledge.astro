@@ -1,0 +1,373 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import kaiOsData from "../data/generated/kai-os-public-data.json";
+
+const { knowledge_brain, generated_at } = kaiOsData;
+const generatedDate = new Date(generated_at).toLocaleDateString("en-US", {
+  year: "numeric", month: "long", day: "numeric",
+});
+---
+
+<Layout
+  title="Knowledge Brain | Project KAI"
+  description="How Project KAI's Knowledge Brain actually works today: real, build-time-measured facts about a read-only keyword search tool over real engineering reports -- not a marketing description of an AI memory system."
+  canonicalPath="/knowledge"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Knowledge Brain</p>
+        <h1 class="page-title">A real, small, honest search tool -- not an AI memory system.</h1>
+        <p class="page-lede">
+          Every video Project KAI produces leaves behind real evidence: a CEO report, a
+          compliance report, a fact-check note, a quality score. The Knowledge Brain is the
+          tool that searches across that evidence and the project's own engineering reports.
+          As of the latest data sync ({generatedDate}), it indexes
+          <strong>{knowledge_brain.total_reports} real reports</strong>. It is <strong>not</strong> semantic
+          search, it does <strong>not</strong> maintain a persisted index, and it is <strong>not</strong>
+          wired into any automatic process today.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container knowledge-evidence-grid">
+        <article class="content-card knowledge-evidence-card">
+          <div class="section-badge">What it indexes</div>
+          <h2>{knowledge_brain.total_reports} real reports</h2>
+          <dl class="knowledge-stat-list">
+            <div>
+              <dt>Root-level reports</dt>
+              <dd>{knowledge_brain.root_reports} -- engineering, launch, and governance <code>.md</code> documents at the repository root.</dd>
+            </div>
+            <div>
+              <dt>Per-video reports</dt>
+              <dd>{knowledge_brain.topic_reports} -- <code>ceo_report.md</code>, <code>compliance_report.json</code>, <code>fact_check.json</code>, and <code>quality_score.json</code> for each produced video.</dd>
+            </div>
+          </dl>
+        </article>
+
+        <article class="content-card knowledge-evidence-card">
+          <div class="section-badge">How it searches</div>
+          <h2>Keyword overlap, not meaning</h2>
+          <p>{knowledge_brain.mechanism}</p>
+          <p class="knowledge-example">
+            Example, straight from the tool's own source comment: a query like
+            <em>"have we ever used this thumbnail?"</em> will find reports containing the word
+            "thumbnail" -- not reports that discuss the same idea using different words.
+            That's the honest limitation of keyword search, stated plainly rather than
+            papered over.
+          </p>
+        </article>
+
+        <article class="content-card knowledge-evidence-card">
+          <div class="section-badge">What it doesn't do</div>
+          <h2>No index, no automation</h2>
+          <ul class="knowledge-list">
+            <li><strong>No persisted index</strong> -- every search re-reads the real files fresh. Small enough corpus that this can never go stale, at the cost of taking slightly longer per search.</li>
+            <li><strong>Not automated</strong> -- a repository-wide check found zero callers outside its own package. It's invoked directly by an engineer, not triggered by production, publishing, or analytics.</li>
+            <li><strong>Read-only</strong> -- it never writes, moves, or deletes anything it indexes.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="page-section knowledge-flow-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">How evidence actually moves</div>
+          <h2 class="section-title">From production output to a manual search.</h2>
+        </div>
+        <div class="knowledge-flow">
+          <div class="knowledge-flow-step">
+            <span class="knowledge-flow-label">Active</span>
+            <p>Production output</p>
+          </div>
+          <div class="knowledge-flow-arrow">↓</div>
+          <div class="knowledge-flow-step">
+            <span class="knowledge-flow-label">Active</span>
+            <p>Real reports written per video (CEO report, compliance report, fact-check, quality score)</p>
+          </div>
+          <div class="knowledge-flow-arrow knowledge-flow-arrow--manual">↓<span>Manual invocation only</span></div>
+          <div class="knowledge-flow-step">
+            <span class="knowledge-flow-label knowledge-flow-label--manual">Manual</span>
+            <p>Knowledge Brain search (<code>knowledge_brain/indexer.py</code>)</p>
+          </div>
+          <div class="knowledge-flow-arrow">↓</div>
+          <div class="knowledge-flow-step">
+            <span class="knowledge-flow-label knowledge-flow-label--manual">Manual</span>
+            <p>Human reads the results and decides</p>
+          </div>
+        </div>
+        <p class="knowledge-flow-note">
+          This is not an automatic pipeline. Nothing in the real production or publishing code
+          calls the Knowledge Brain today -- an engineer runs a search directly when they want
+          to check something.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="knowledge-capability-grid">
+          <div class="content-card knowledge-capability-card">
+            <div class="section-badge">Current</div>
+            <ul class="knowledge-list">
+              <li>Searches all {knowledge_brain.total_reports} real reports on demand</li>
+              <li>Ranks results by keyword-overlap count</li>
+              <li>Read-only -- never modifies what it indexes</li>
+              <li>Callable directly as a Python function today</li>
+            </ul>
+          </div>
+          <div class="content-card knowledge-capability-card">
+            <div class="section-badge">Planned</div>
+            <ul class="knowledge-list">
+              <li>Upgrade to semantic search -- gated on the report corpus growing large enough that keyword search's limitation starts actually costing time, per the project's own real roadmap</li>
+              <li>Automatic wiring into production runs, so lessons surface without a manual search</li>
+            </ul>
+          </div>
+        </div>
+
+        <details class="knowledge-technical">
+          <summary>Technical Details</summary>
+          <ul>
+            <li><code>knowledge_brain/indexer.py</code> -- <code>all_reports()</code>, <code>search()</code></li>
+            <li>Report categories: <code>root_report</code>, <code>topic_report:&lt;video-id&gt;</code></li>
+            <li>Search: lowercase alphanumeric tokenization, ranked by set-intersection size between query and content</li>
+            <li>{knowledge_brain.source}</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.knowledge-evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.knowledge-evidence-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.knowledge-evidence-card h2 {
+  margin: 4px 0 0;
+  font-size: 22px;
+}
+
+.knowledge-evidence-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.knowledge-example {
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.08);
+  border-left: 2px solid var(--text-muted);
+  color: var(--text-muted) !important;
+  font-size: 13px !important;
+}
+
+.knowledge-stat-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.knowledge-stat-list dt {
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 3px;
+}
+
+.knowledge-stat-list dd {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.knowledge-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-soft);
+}
+
+.knowledge-list li {
+  margin-bottom: 8px;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.knowledge-evidence-card code,
+.knowledge-stat-list code {
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  color: var(--text-main);
+  font-size: 0.92em;
+}
+
+.knowledge-flow-section {
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.knowledge-flow {
+  max-width: 560px;
+  margin: 48px auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.knowledge-flow-step {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.knowledge-flow-step p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.knowledge-flow-step code {
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  color: var(--text-main);
+}
+
+.knowledge-flow-label {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.14);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: var(--primary);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.knowledge-flow-label--manual {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: var(--text-muted);
+}
+
+.knowledge-flow-arrow {
+  color: var(--text-muted);
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 0;
+}
+
+.knowledge-flow-arrow--manual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.knowledge-flow-arrow--manual span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.knowledge-flow-note {
+  max-width: 560px;
+  margin: 24px auto 0;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  line-height: 1.65;
+  text-align: center;
+}
+
+.knowledge-capability-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.knowledge-capability-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.knowledge-technical {
+  max-width: 640px;
+  margin: 0 auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.knowledge-technical summary {
+  cursor: pointer;
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.knowledge-technical summary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.knowledge-technical ul {
+  margin: 14px 0 0;
+  padding-left: 18px;
+}
+
+.knowledge-technical li {
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.knowledge-technical code {
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  color: var(--text-soft);
+}
+
+@media (max-width: 900px) {
+  .knowledge-evidence-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .knowledge-capability-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
