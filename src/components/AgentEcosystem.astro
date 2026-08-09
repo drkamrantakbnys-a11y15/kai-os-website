@@ -33,6 +33,7 @@ const FLOW = [
   },
   {
     step: "03",
+    slug: visual.slug,
     name: visual.name,
     description: visual.purpose,
     capabilityStatus: visual.capabilityStatus,
@@ -41,6 +42,7 @@ const FLOW = [
   },
   {
     step: "04",
+    slug: voice.slug,
     name: voice.name,
     description: voice.purpose,
     capabilityStatus: voice.capabilityStatus,
@@ -49,6 +51,7 @@ const FLOW = [
   },
   {
     step: "05",
+    slug: music.slug,
     name: music.name,
     description: music.purpose,
     capabilityStatus: music.capabilityStatus,
@@ -57,6 +60,7 @@ const FLOW = [
   },
   {
     step: "06",
+    slug: thumbnail.slug,
     name: thumbnail.name,
     description: thumbnail.purpose,
     capabilityStatus: thumbnail.capabilityStatus,
@@ -65,6 +69,7 @@ const FLOW = [
   },
   {
     step: "07",
+    slug: compliance.slug,
     name: compliance.name,
     description: compliance.purpose,
     capabilityStatus: compliance.capabilityStatus,
@@ -87,6 +92,7 @@ const FLOW = [
   },
   {
     step: "10",
+    slug: analytics.slug,
     name: "Analytics",
     description: analytics.purpose,
     capabilityStatus: analytics.capabilityStatus,
@@ -100,6 +106,7 @@ const FLOW = [
   },
   {
     step: "11",
+    slug: knowledge.slug,
     name: "Knowledge Brain",
     description: knowledge.purpose,
     capabilityStatus: knowledge.capabilityStatus,
@@ -137,7 +144,10 @@ function statusClass(status: string) {
 
     <div class="ecosystem-flow">
       {FLOW.map((node) => (
-        <div class:list={["ecosystem-node", "reveal", { "ecosystem-node--checkpoint": node.checkpoint }]}>
+        <div
+          id={node.slug ? `ecosystem-${node.slug}` : undefined}
+          class:list={["ecosystem-node", "reveal", { "ecosystem-node--checkpoint": node.checkpoint }]}
+        >
           <div class="ecosystem-node-marker">{node.step}</div>
           <div class="ecosystem-node-body">
             {node.plannedConnection && (
@@ -181,6 +191,7 @@ function statusClass(status: string) {
 .ecosystem-node {
   position: relative;
   margin-bottom: 24px;
+  scroll-margin-top: 100px;
 }
 
 .ecosystem-node:last-child {

@@ -8,6 +8,13 @@ import kaiOsData from "../data/generated/kai-os-public-data.json";
 const LAST_UPDATED = AGENTS_LAST_UPDATED;
 const { total_capabilities, capability_status_counts } = kaiOsData.agents;
 
+// Slugs with a matching node in AgentEcosystem.astro's real pipeline flow
+// (verified by direct cross-reference against that component's FLOW array).
+// Not every agent appears there -- only the ones the real pipeline actually
+// reaches today (Operational agents) plus the two Planned ones that already
+// have a labeled "planned connection" node (Analytics, Knowledge).
+const ECOSYSTEM_SLUGS = new Set(["visual", "voice", "music", "thumbnail", "compliance", "analytics", "knowledge"]);
+
 function statusClass(status: string) {
   if (status === "Operational") return "status-pill--operational";
   if (status === "In Development") return "status-pill--in-development";
@@ -102,6 +109,10 @@ function statusClass(status: string) {
                   </dl>
 
                   <p class="agent-updated">Last updated: {LAST_UPDATED}</p>
+
+                  {ECOSYSTEM_SLUGS.has(agent.slug) && (
+                    <a href={`/#ecosystem-${agent.slug}`} class="agent-ecosystem-link">See this in the pipeline flow →</a>
+                  )}
                 </article>
               ))}
             </div>
@@ -237,6 +248,18 @@ function statusClass(status: string) {
   border-top: 1px solid var(--border);
   font-size: 0.82rem;
   color: var(--text-muted);
+}
+
+.agent-ecosystem-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.agent-ecosystem-link:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 900px) {

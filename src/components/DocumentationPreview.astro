@@ -1,4 +1,7 @@
 ---
+import { CHANGELOG } from "../data/changelog.js";
+const latestChangelogEntry = CHANGELOG[0];
+
 // Every document category below is real and verified to exist in the
 // KAI_OS codebase before being written here -- dates are real git-log or
 // filesystem-mtime values (checked directly), not placeholders. None of
@@ -128,6 +131,9 @@ function statusClass(status: string) {
         <a href="/changelog">Engineering Changelog →</a>
         <a href="/knowledge">Knowledge Brain →</a>
       </div>
+      <a href="/changelog" class="public-evidence-latest">
+        Latest engineering work ({latestChangelogEntry.date}): {latestChangelogEntry.title} →
+      </a>
     </div>
 
     <div class="section-center panel-heading">
@@ -221,6 +227,20 @@ function statusClass(status: string) {
 
 .public-evidence-links a:hover {
   text-decoration: underline;
+}
+
+.public-evidence-latest {
+  display: block;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.public-evidence-latest:hover {
+  color: var(--primary);
 }
 
 @media (max-width: 700px) {
