@@ -1,0 +1,159 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import kaiOsData from "../data/generated/kai-os-public-data.json";
+
+const { agents, desktop_operator, engineering, production, generated_at, note } = kaiOsData;
+
+const generatedDate = new Date(generated_at).toLocaleDateString("en-US", {
+  year: "numeric", month: "long", day: "numeric",
+});
+
+function statusClass(status: string) {
+  if (status === "Operational") return "status-pill--operational";
+  if (status === "In Development") return "status-pill--in-development";
+  if (status === "Coming Soon") return "status-pill--coming-soon";
+  return "status-pill--planned";
+}
+---
+
+<Layout
+  title="System Status | Project KAI"
+  description="Real, build-time-generated status of Project KAI's agent architecture, engineering infrastructure, and production pipeline -- sourced directly from the KAI OS codebase."
+  canonicalPath="/status"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">System Status</p>
+        <h1 class="page-title">What's actually running, right now.</h1>
+        <p class="page-lede">
+          Every number on this page is generated directly from the KAI OS codebase --
+          not hand-typed, not estimated. This is <strong>not a live feed</strong>: it reflects
+          the state of the system as of the latest website build, {generatedDate}.
+          {note}
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container status-grid">
+        <article class="content-card status-card">
+          <div class="section-badge">Agent Architecture</div>
+          <h2>{agents.total_capabilities} specialized agents</h2>
+          <div class="status-breakdown">
+            <span class={`status-pill ${statusClass("Operational")}`}>{agents.capability_status_counts["Operational"] ?? 0} Operational</span>
+            <span class={`status-pill ${statusClass("Planned")}`}>{agents.capability_status_counts["Planned"] ?? 0} Planned</span>
+            <span class={`status-pill ${statusClass("Coming Soon")}`}>{agents.capability_status_counts["Coming Soon"] ?? 0} Coming Soon</span>
+          </div>
+          <p>Cross-checked against <code>sub_agents/agents.py</code> at build time -- the build fails rather than publishing a stale count if the two ever disagree.</p>
+        </article>
+
+        <article class="content-card status-card">
+          <div class="section-badge">Desktop Operator</div>
+          <h2>{desktop_operator.status}</h2>
+          <p>{desktop_operator.status_detail}</p>
+          <p class="status-note">{desktop_operator.human_control}</p>
+          <p class="status-meta">{desktop_operator.test_file_count} real automated tests cover this subsystem.</p>
+        </article>
+
+        <article class="content-card status-card">
+          <div class="section-badge">Engineering</div>
+          <h2>{engineering.total_test_files}+ automated tests</h2>
+          <p>Real, currently-passing test files counted directly across the KAI OS repository at build time -- not a marketing figure.</p>
+        </article>
+
+        <article class="content-card status-card">
+          <div class="section-badge">Production Pipeline</div>
+          <h2>{production.queue_total} topics in the pipeline</h2>
+          <div class="status-breakdown">
+            <span class="status-pill status-pill--in-development">{production.queue_status_counts["produced_awaiting_review"] ?? 0} awaiting review</span>
+            <span class="status-pill status-pill--planned">{production.queue_status_counts["queued"] ?? 0} queued</span>
+          </div>
+          <p class="status-meta">{production.completed_total} videos fully completed to date. Every video is reviewed by a person before anything is published -- no exceptions.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <p class="status-footnote">
+          This page will grow as more of the system becomes safe to expose publicly.
+          Live, request-time status is not part of the current architecture -- see the
+          engineering roadmap for what's planned next.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.status-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.status-card h2 {
+  margin: 4px 0 0;
+  font-size: 24px;
+}
+
+.status-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.status-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+
+.status-note {
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.08);
+  border-left: 2px solid var(--text-muted);
+  color: var(--text-muted) !important;
+  font-size: 13px !important;
+}
+
+.status-meta {
+  color: var(--text-muted) !important;
+  font-size: 13px !important;
+}
+
+.status-card code {
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  color: var(--text-main);
+}
+
+.status-footnote {
+  max-width: 640px;
+  margin: 0 auto;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

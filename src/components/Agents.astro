@@ -1,3 +1,12 @@
+---
+import kaiOsData from "../data/generated/kai-os-public-data.json";
+
+const { total_capabilities, capability_status_counts } = kaiOsData.agents;
+const operationalCount = capability_status_counts["Operational"] ?? 0;
+const plannedCount = capability_status_counts["Planned"] ?? 0;
+const comingSoonCount = capability_status_counts["Coming Soon"] ?? 0;
+---
+
 <section class="agents" id="agents">
   <div class="container">
     <div class="section-center">
@@ -52,11 +61,13 @@
     </div>
 
     <div class="agents-footer">
-      <div class="section-badge">13 Specialized AI Systems</div>
+      <div class="section-badge">{total_capabilities} Specialized AI Systems</div>
       <p>These six are the primary highlights. Project KAI's real architecture defines
-        <strong>13 specialized agents</strong> in total, each with an honestly-labeled
-        Capability Status and Autonomous Agent Status.</p>
-      <a href="/agents" class="secondary-button">Explore All 13 Agents</a>
+        <strong>{total_capabilities} specialized agents</strong> in total —
+        <strong>{operationalCount} with an operational capability today</strong>,
+        {plannedCount} planned, and {comingSoonCount} coming soon — each with an
+        honestly-labeled Capability Status and Autonomous Agent Status.</p>
+      <a href="/agents" class="secondary-button">Explore All {total_capabilities} Agents</a>
     </div>
   </div>
 </section>

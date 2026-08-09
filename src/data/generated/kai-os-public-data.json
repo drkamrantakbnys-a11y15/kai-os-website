@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-08-09T08:31:04.093421+00:00",
+  "note": "Generated from the KAI OS repository during the latest website data-sync run. Not live.",
+  "agents": {
+    "total_capabilities": 13,
+    "capability_status_counts": {
+      "Operational": 5,
+      "Planned": 7,
+      "Coming Soon": 1
+    },
+    "autonomy_status_counts": {
+      "In Development": 5,
+      "Planned": 7,
+      "Coming Soon": 1
+    },
+    "source": "KAI OS agent registry (sub_agents/agents.py, cross-checked against the website's own curated agent data)"
+  },
+  "desktop_operator": {
+    "purpose": "Command, control, and approval infrastructure being built for future controlled interaction with the KAI operating environment.",
+    "status": "In Development",
+    "status_detail": "Real, extensively tested architecture -- not yet wired to observe or control anything live. The package's own module documentation explicitly states it does not yet activate automation.",
+    "human_control": "Approval and kill-switch gating are foundational design principles built into the architecture from the start, ahead of any live automation.",
+    "test_file_count": 370,
+    "source": "KAI OS desktop operator subsystem"
+  },
+  "engineering": {
+    "total_test_files": 683,
+    "source": "KAI OS automated test suite"
+  },
+  "production": {
+    "queue_total": 25,
+    "queue_status_counts": {
+      "produced_awaiting_review": 12,
+      "queued": 13
+    },
+    "completed_total": 5
+  }
+}

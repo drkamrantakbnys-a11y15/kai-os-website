@@ -3,8 +3,10 @@ import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { AGENTS, AGENTS_LAST_UPDATED } from "../data/agents.js";
+import kaiOsData from "../data/generated/kai-os-public-data.json";
 
 const LAST_UPDATED = AGENTS_LAST_UPDATED;
+const { total_capabilities, capability_status_counts } = kaiOsData.agents;
 
 function statusClass(status: string) {
   if (status === "Operational") return "status-pill--operational";
@@ -35,6 +37,19 @@ function statusClass(status: string) {
           already run automatically today as inline pipeline logic; none of them run yet as
           independent autonomous agents (<code>SubAgentSkeleton.execute()</code> raises
           <code>NotImplementedError</code> unconditionally, for all 13, by design).
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section verified-summary">
+      <div class="container">
+        <p class="verified-summary-text">
+          <strong>{total_capabilities} agents</strong> cross-checked against <code>sub_agents/agents.py</code> at
+          the last data sync —
+          <strong>{capability_status_counts["Operational"] ?? 0} Operational</strong>,
+          <strong>{capability_status_counts["Planned"] ?? 0} Planned</strong>,
+          <strong>{capability_status_counts["Coming Soon"] ?? 0} Coming Soon</strong>.
+          {kaiOsData.note}
         </p>
       </div>
     </section>
@@ -88,6 +103,29 @@ function statusClass(status: string) {
 </Layout>
 
 <style>
+.verified-summary {
+  padding-top: 0;
+  padding-bottom: 40px;
+}
+
+.verified-summary-text {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.5);
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.verified-summary-text code {
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  color: var(--text-main);
+}
+
 .agents-full-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

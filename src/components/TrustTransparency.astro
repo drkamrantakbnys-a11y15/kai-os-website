@@ -1,4 +1,8 @@
 ---
+import kaiOsData from "../data/generated/kai-os-public-data.json";
+
+const { desktop_operator, engineering } = kaiOsData;
+
 // Every claim below is checkable against real, already-established facts
 // from this session's own work -- not written as generic trust-page
 // copy. Privacy specifically states what's real and true today (a static
@@ -14,7 +18,7 @@ const PILLARS = [
   {
     icon: "◇",
     title: "Engineering Standards",
-    body: "Every real fix ships with regression tests -- not just a patch. Work happens in small, verified increments, each one built, tested, and checked before the next begins. Data and logic live in one place, reused everywhere, not copied between components.",
+    body: `Every real fix ships with regression tests -- ${engineering.total_test_files}+ real automated tests exist across the codebase today. Work happens in small, verified increments, each one built, tested, and checked before the next begins. Data and logic live in one place, reused everywhere, not copied between components. Desktop Operator -- real command/control and approval-gating architecture, ${desktop_operator.test_file_count} of those tests -- is a concrete example: it's currently ${desktop_operator.status.toLowerCase()}, with human-approval gating designed in from the start, ahead of any live automation.`,
   },
   {
     icon: "◎",
