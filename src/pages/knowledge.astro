@@ -141,6 +141,12 @@ const generatedDate = new Date(generated_at).toLocaleDateString("en-US", {
             <li>{knowledge_brain.source}</li>
           </ul>
         </details>
+
+        <div class="knowledge-related-links">
+          <a href="/#how-it-works">See where this fits in the production pipeline →</a>
+          <a href="/status">View current system status →</a>
+          <a href="/docs">Explore the documentation index →</a>
+        </div>
       </div>
     </section>
   </main>
@@ -320,6 +326,25 @@ const generatedDate = new Date(generated_at).toLocaleDateString("en-US", {
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.knowledge-related-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  max-width: 640px;
+  margin: 32px auto 0;
+}
+
+.knowledge-related-links a {
+  color: var(--primary);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.knowledge-related-links a:hover {
+  text-decoration: underline;
 }
 
 .knowledge-technical {

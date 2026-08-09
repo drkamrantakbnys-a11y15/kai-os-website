@@ -1,0 +1,148 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { DOC_CATEGORIES } from "../data/docs.js";
+
+function statusClass(status: string) {
+  if (status === "Available") return "status-pill--operational";
+  if (status === "Internal") return "status-pill--illustrative";
+  return "status-pill--planned";
+}
+---
+
+<Layout
+  title="Documentation | Project KAI"
+  description="An index of Project KAI's real documentation and evidence -- how the product works, what's currently true, and where to verify it. Not a marketing summary."
+  canonicalPath="/docs"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Documentation</p>
+        <h1 class="page-title">Understand how Project KAI is built, operated, and evolved.</h1>
+        <p class="page-lede">
+          This page doesn't contain new content -- it's an index of what already exists across
+          the site, organized so you can find the real evidence behind any claim quickly.
+          Every entry below links to a page that's live today.
+        </p>
+      </div>
+    </section>
+
+    {DOC_CATEGORIES.map((category) => (
+      <section class="page-section docs-category-section">
+        <div class="container">
+          <div class="docs-category-heading">
+            <h2>{category.label}</h2>
+            <p>{category.description}</p>
+          </div>
+          <div class="docs-hub-grid">
+            {category.docs.map((doc) => (
+              <article class="content-card docs-hub-card">
+                <div class="docs-hub-card-header">
+                  <h3>{doc.title}</h3>
+                  <span class={`status-pill ${statusClass(doc.status)}`}>{doc.status}</span>
+                </div>
+                <p>{doc.description}</p>
+                {doc.route ? (
+                  <a href={doc.route} class="docs-hub-link">{doc.cta} →</a>
+                ) : (
+                  <span class="docs-hub-link docs-hub-link--disabled" aria-disabled="true">Not public</span>
+                )}
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    ))}
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.docs-category-section {
+  padding-top: 0;
+  padding-bottom: 56px;
+}
+
+.docs-category-section:last-of-type {
+  padding-bottom: var(--section-padding);
+}
+
+.docs-category-heading {
+  margin-bottom: 24px;
+}
+
+.docs-category-heading h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.docs-category-heading p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.docs-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.docs-hub-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.docs-hub-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.docs-hub-card-header h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.docs-hub-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.docs-hub-link {
+  align-self: flex-start;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.docs-hub-link:hover {
+  text-decoration: underline;
+}
+
+.docs-hub-link--disabled {
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.docs-hub-link--disabled:hover {
+  text-decoration: none;
+}
+
+@media (max-width: 700px) {
+  .docs-hub-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
