@@ -1,0 +1,136 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { CHANGELOG, CHANGELOG_LAST_UPDATED } from "../data/changelog.js";
+---
+
+<Layout
+  title="Changelog | Project KAI"
+  description="A real, evidence-backed changelog of Project KAI's website engineering -- sourced directly from this repository's git history, not manufactured release notes."
+  canonicalPath="/changelog"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Engineering Changelog</p>
+        <h1 class="page-title">What actually shipped, in order.</h1>
+        <p class="page-lede">
+          Every entry below comes directly from this website's real git history --
+          not written after the fact to sound impressive. Commit hashes are included
+          as evidence; verifiable with <code>git show &lt;hash&gt;</code> in this repository.
+          Last checked against git history: {CHANGELOG_LAST_UPDATED}.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container changelog-list">
+        {CHANGELOG.map((entry) => (
+          <article class="content-card changelog-entry">
+            <div class="changelog-header">
+              <span class="changelog-date">{entry.date}</span>
+              <h2>{entry.title}</h2>
+            </div>
+            <ul class="changelog-items">
+              {entry.entries.map((item) => <li>{item}</li>)}
+            </ul>
+            <details class="changelog-evidence">
+              <summary>Commit evidence ({entry.commits.length})</summary>
+              <ul class="changelog-commits">
+                {entry.commits.map((hash) => <li><code>{hash}</code></li>)}
+              </ul>
+            </details>
+          </article>
+        ))}
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.changelog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.changelog-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.changelog-header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.changelog-date {
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.changelog-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.changelog-items {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text-soft);
+}
+
+.changelog-items li {
+  margin-bottom: 8px;
+  line-height: 1.65;
+  font-size: 14.5px;
+}
+
+.changelog-evidence {
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.changelog-evidence summary {
+  cursor: pointer;
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.changelog-evidence summary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.changelog-commits {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  list-style: none;
+}
+
+.changelog-commits code {
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
+</style>

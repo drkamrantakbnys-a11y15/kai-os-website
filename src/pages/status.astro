@@ -32,10 +32,37 @@ function statusClass(status: string) {
         <h1 class="page-title">What's actually running, right now.</h1>
         <p class="page-lede">
           Every number on this page is generated directly from the KAI OS codebase --
-          not hand-typed, not estimated. This is <strong>not a live feed</strong>: it reflects
-          the state of the system as of the latest website build, {generatedDate}.
-          {note}
+          not hand-typed, not estimated. This is a <strong>build-time system snapshot, not
+          a live feed</strong>: it reflects the state of the system as of the latest
+          website build, {generatedDate}. {note}
         </p>
+      </div>
+    </section>
+
+    <section class="page-section system-summary">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">System</div>
+          <h2 class="section-title">Four real layers, one static site.</h2>
+        </div>
+        <div class="system-summary-grid">
+          <div class="system-summary-item">
+            <h3>Website</h3>
+            <p>Static, Astro-built. No backend, no database, no real-time infrastructure.</p>
+          </div>
+          <div class="system-summary-item">
+            <h3>Core Architecture</h3>
+            <p>KAI OS -- the real production codebase this site describes, developed independently in a separate repository.</p>
+          </div>
+          <div class="system-summary-item">
+            <h3>Agent Registry</h3>
+            <p><a href="/agents">13 real agents</a>, each with an honestly-labeled Capability Status and Autonomous Agent Status.</p>
+          </div>
+          <div class="system-summary-item">
+            <h3>Public Data Bridge</h3>
+            <p>A sanitized, build-time-only export from KAI OS to this site -- <a href="/changelog">documented</a>, one direction, read-only.</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -93,6 +120,46 @@ function statusClass(status: string) {
 </Layout>
 
 <style>
+.system-summary {
+  padding-top: 0;
+}
+
+.system-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 48px;
+}
+
+.system-summary-item h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: var(--text-main);
+}
+
+.system-summary-item p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.system-summary-item a {
+  color: var(--primary);
+}
+
+@media (max-width: 900px) {
+  .system-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .system-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .status-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
