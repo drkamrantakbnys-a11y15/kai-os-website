@@ -6,13 +6,15 @@ interface Props {
   description?: string;
   canonicalPath?: string;
   ogImagePath?: string;
+  noindex?: boolean;
 }
 
 const {
-  title = "Project KAI | KAI OS Modular AI Operating System",
-  description = "Project KAI is the public home of KAI OS, a modular AI operating system for automation, research, content creation, digital business, and intelligent workflows.",
+  title = "Project KAI | Discover AI, Technology, Science & the Future",
+  description = "Project KAI is an AI, technology, and discovery media platform -- news, future radar, experiments, reviews, and education, powered by KAI OS, its modular AI operating system.",
   canonicalPath = "/",
-  ogImagePath = "/og-image.svg"
+  ogImagePath = "/og-image.png",
+  noindex = false
 } = Astro.props;
 
 const canonicalUrl = canonicalPath === "/"
@@ -48,7 +50,7 @@ const ogImageUrl = `https://projectkai.dev${ogImagePath}`;
 
   <meta
     name="robots"
-    content="index, follow"
+    content={noindex ? "noindex, nofollow" : "index, follow"}
   />
 
   <link
@@ -98,7 +100,7 @@ const ogImageUrl = `https://projectkai.dev${ogImagePath}`;
 
   <meta
     property="og:image:alt"
-    content="Project KAI — KAI OS, a modular AI operating system."
+    content="Project KAI — discover AI, technology, science, and the future."
   />
 
   <meta
@@ -136,9 +138,8 @@ const ogImageUrl = `https://projectkai.dev${ogImagePath}`;
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Project KAI",
-    "alternateName": "KAI OS",
     "url": "https://projectkai.dev/",
-    "description": "Project KAI is the public home of KAI OS, a modular AI operating system for automation, research, content creation, digital business, and intelligent workflows.",
+    "description": "Project KAI is an AI, technology, and discovery media platform -- news, future radar, experiments, reviews, and education, powered by KAI OS, its modular AI operating system.",
     "founder": {
       "@type": "Person",
       "name": "Kamran Tak",
@@ -157,6 +158,11 @@ const ogImageUrl = `https://projectkai.dev${ogImagePath}`;
   <slot />
 
   <script src="../scripts/interactions.js"></script>
+
+  <script>
+    import { trackPageView } from "../lib/analytics.js";
+    trackPageView(window.location.pathname);
+  </script>
 
 </body>
 

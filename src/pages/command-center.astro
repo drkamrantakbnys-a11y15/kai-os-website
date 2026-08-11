@@ -1,0 +1,815 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import kaiOsData from "../data/generated/kai-os-public-data.json";
+import { NEWS } from "../data/news.js";
+import { FUTURE_RADAR } from "../data/futureRadar.js";
+
+let healthSnapshot = null;
+try {
+  healthSnapshot = (await import("../data/generated/kai-os-health-snapshot.json")).default;
+} catch {
+  // Not generated yet on this machine -- honestly show "not available"
+  // below rather than fabricate a health section. Run
+  // `python scripts/generate_health_snapshot.py` in KAI_OS to produce it.
+}
+
+const { agents, desktop_operator, engineering, production, security, generated_at, note } = kaiOsData;
+
+const SEVERITY_LABEL = { GREEN: "Operational", YELLOW: "Degraded", RED: "Blocked" };
+// RED intentionally does not reuse "status-planned" (that class means
+// "not started yet," a different, less urgent meaning than "currently
+// blocked") -- "status-blocked" is a small page-scoped class added below.
+const SEVERITY_TIER = { GREEN: "status-operational", YELLOW: "status-development", RED: "status-blocked" };
+const healthGeneratedDate = healthSnapshot
+  ? new Date(healthSnapshot.generated_at).toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "2-digit" })
+  : null;
+
+// Per-channel YouTube identity (Phase 3B) -- sourced from the same
+// "YouTube channel identity" health check's structured `channels` array,
+// never from a separate live call. Shows PRIMARY/SECONDARY side by side.
+// Only fields already present in the sanitized JSON are rendered -- no
+// token values, no file paths, ever.
+const youtubeChannels = healthSnapshot
+  ? healthSnapshot.checks.find((c) => c.check === "YouTube channel identity")?.channels ?? null
+  : null;
+const CHANNEL_STATUS_TIER = {
+  VERIFIED: "status-operational",
+  NOT_AUTHENTICATED: "status-blocked",
+  KAI_YOUTUBE_CHANNEL_MISMATCH: "status-blocked",
+};
+const CHANNEL_STATUS_LABEL = {
+  VERIFIED: "Verified",
+  NOT_AUTHENTICATED: "Not Authenticated",
+  KAI_YOUTUBE_CHANNEL_MISMATCH: "Channel Mismatch",
+};
+
+const generatedDate = new Date(generated_at).toLocaleDateString("en-US", {
+  year: "numeric", month: "long", day: "numeric",
+});
+
+// Core node diagram -- each node routes to the closest real, existing
+// page. "Memory" has no dedicated /memory explainer yet, so it honestly
+// routes to /knowledge (the real, closest evidence for the memory
+// capability today -- knowledge.search/memory.search/memory.write are
+// the actual active capabilities) rather than a fabricated route.
+const CORE_NODES = [
+  { label: "Memory", href: "/knowledge", area: "memory", note: "Knowledge Brain + memory capabilities" },
+  { label: "Agents", href: "/agents", area: "agents", note: "13 declared agents" },
+  { label: "Security", href: "/security", area: "security", note: `${security.active_capability_count} active capabilities` },
+  { label: "Tools", href: "/desktop-operator", area: "tools", note: "Command & control pipeline" },
+  { label: "Actions", href: "/status", area: "actions", note: "Real system status" },
+];
+
+// System Status (Section 2) -- every status here is derived from the
+// same build-time public-data snapshot the rest of the site already
+// uses, or from this page's own honest classification where no single
+// generated field covers it (e.g. "Website" itself). Never a live ping.
+const SYSTEM_STATUS = [
+  {
+    name: "KAI OS",
+    description: "The overall modular operating system -- agents, memory, orchestration, and security, developed as a separate real codebase.",
+    tier: "status-operational", label: "Operational",
+    evidence: { href: "/status", text: "See system status" },
+  },
+  {
+    name: "Content Engine",
+    description: `The real YouTube production pipeline -- ${production.completed_total} videos produced, uploaded, and YouTube-verified to date.`,
+    tier: "status-operational", label: "Operational",
+    evidence: { href: "/status", text: "See production status" },
+  },
+  {
+    name: "Security Layer",
+    description: `Default-deny capability authorization. ${security.active_capability_count} of ${security.total_capabilities_declared} declared capabilities are currently active.`,
+    tier: "status-operational", label: "Operational",
+    evidence: { href: "/security", text: "See security architecture" },
+  },
+  {
+    name: "Memory Layer",
+    description: "Append-only developer memory -- search and write are both real, active, LOW-risk capabilities today. A dedicated explainer page is still being built.",
+    tier: "status-operational", label: "Operational",
+    evidence: { href: "/security", text: "See the capability grants" },
+  },
+  {
+    name: "Desktop Operator",
+    description: desktop_operator.status_detail,
+    tier: "status-development", label: "In Development",
+    evidence: { href: "/desktop-operator", text: "See the command & control pipeline" },
+  },
+  {
+    name: "Agent Framework",
+    description: `The security-gated orchestration layer is real and operational; most of the ${agents.total_capabilities} declared agents themselves are still in development or planned.`,
+    tier: "status-development", label: "In Development",
+    evidence: { href: "/agents", text: "See all agents" },
+  },
+  {
+    name: "Website",
+    description: "This static site -- no backend, no database, no live telemetry. What you're looking at right now.",
+    tier: "status-operational", label: "Operational",
+    evidence: { href: "/changelog", text: "See how it changed over time" },
+  },
+];
+
+// Agent Matrix (Section 3) -- conceptual business-function categories,
+// deliberately distinct from the 13 technical sub_agents.py classes
+// (see /agents for those). Only "YouTube / Content" has any real,
+// operational implementation; everything else is honestly PLANNED
+// unless a real sub-agent already exists for it (Research, Developer /
+// Meta), in which case its real capabilityStatus from agents.js is used
+// rather than invented. Trading is explicitly PLANNED, no live data,
+// no connection to the real trading system, per standing project rule.
+const AGENT_MATRIX = [
+  {
+    name: "YouTube / Content", tier: "status-operational", label: "Operational",
+    mission: `Researches, writes, assembles, and publishes videos end-to-end. ${production.completed_total} real uploads to date.`,
+    explore: { href: "/status", text: "See production status" },
+  },
+  {
+    name: "Research", tier: "status-planned", label: "Planned",
+    mission: "Would source, verify, and summarize real information for KAI to act on. Declared in the agent registry; not yet implemented.",
+    explore: { href: "/agents", text: "See agent registry" },
+  },
+  {
+    name: "Developer / Meta", tier: "status-planned", label: "Planned",
+    mission: "Would build software, fix bugs, and maintain KAI OS's own codebase. Declared in the agent registry; not yet implemented.",
+    explore: { href: "/agents", text: "See agent registry" },
+  },
+  {
+    name: "Trading", tier: "status-planned", label: "Planned",
+    mission: "Future autonomous market-analysis and trading research capability. A separate, independent trading system already exists in the KAI OS backend -- it is not connected here, shows no live data, and is out of scope for this website.",
+    explore: null,
+  },
+  {
+    name: "Affiliate", tier: "status-planned", label: "Planned",
+    mission: "Future capability for identifying and managing affiliate revenue opportunities. Not yet started.",
+    explore: null,
+  },
+  {
+    name: "Digital Products", tier: "status-planned", label: "Planned",
+    mission: "Future capability for building and managing digital products. Not yet started.",
+    explore: null,
+  },
+  {
+    name: "Freelance", tier: "status-planned", label: "Planned",
+    mission: "Future capability for sourcing and completing freelance work. Not yet started.",
+    explore: null,
+  },
+  {
+    name: "Remote Jobs", tier: "status-planned", label: "Planned",
+    mission: "Future capability for identifying remote work opportunities. Not yet started.",
+    explore: null,
+  },
+  {
+    name: "Course Selling", tier: "status-planned", label: "Planned",
+    mission: "Future capability for packaging and selling educational content. Not yet started.",
+    explore: null,
+  },
+  {
+    name: "Web3", tier: "status-planned", label: "Planned",
+    mission: "Future capability for on-chain / decentralized-web interaction. Not yet started.",
+    explore: null,
+  },
+  {
+    name: "Micro Tasks", tier: "status-planned", label: "Planned",
+    mission: "Future capability for small, discrete automatable tasks. Not yet started.",
+    explore: null,
+  },
+];
+
+// Quick Actions (Section 4) -- real routes link normally; anything not
+// yet built uses a controlled "coming soon" interaction instead of a
+// dead or fabricated link.
+const QUICK_ACTIONS = [
+  { label: "Explore Agents", href: "/agents" },
+  { label: "Security Model", href: "/security" },
+  { label: "KAI Knowledge", href: "/knowledge" },
+  { label: "Desktop Operator", href: "/desktop-operator" },
+  { label: "Roadmap", href: "/#roadmap" },
+  { label: "Media Network", href: "/media" },
+  { label: "Discover", href: "/discover" },
+  { label: "AI News", href: "/ai-news" },
+  { label: "Future Radar", href: "/future-radar" },
+  { label: "AI Facts", href: "/fun-facts" },
+  { label: "AI Jokes", href: "/ai-jokes" },
+  { label: "Experiments", href: "/experiments" },
+  { label: "Reviews", href: "/reviews" },
+  { label: "Search", href: "/search" },
+  { label: "Agent Builder", href: "/agent-builder" },
+  { label: "Analytics", href: "/analytics" },
+];
+
+// Media Network cards (Section 27 -- Command Center reflects the new
+// ecosystem). All content pages are real and live; the Content Router
+// is a real deterministic function; Comment Assistant is design-only.
+const MEDIA_NETWORK_CARDS = [
+  { name: "Media Network Hub", tier: "status-operational", label: "Operational", description: "The front door connecting both real YouTube channels and this website.", evidence: { href: "/media", text: "Visit the Media Network" } },
+  { name: "Content Routing", tier: "status-operational", label: "Operational", description: "A deterministic, explainable content router -- not an AI classifier.", evidence: { href: "/media", text: "See the router demo" } },
+  { name: "AI News", tier: "status-development", label: "In Development", description: `${NEWS.length} curated, sourced news items. No live feed -- a News Agent is Planned.`, evidence: { href: "/ai-news", text: "Read AI News" } },
+  { name: "Future Radar", tier: "status-development", label: "In Development", description: `${FUTURE_RADAR.length} tracked signals, every probability a labeled KAI Estimate.`, evidence: { href: "/future-radar", text: "See the Future Radar" } },
+  { name: "Discover", tier: "status-operational", label: "Operational", description: "Sourced stories and KAI Documentaries -- curiosity-driven, not fabricated.", evidence: { href: "/discover", text: "Explore Discoveries" } },
+  { name: "Community", tier: "status-development", label: "In Development", description: "Comment UI live across the network -- no backend, nothing persisted yet.", evidence: { href: "/media", text: "See the ecosystem" } },
+];
+---
+
+<Layout
+  title="KAI Command Center | Project KAI"
+  description="A public control interface for Project KAI -- real system status, the agent ecosystem, and what's next, all sourced from verified project data."
+  canonicalPath="/command-center"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero cc-hero">
+      <div class="container">
+        <p class="page-kicker">Command Center</p>
+        <h1 class="page-title">KAI Command Center</h1>
+        <p class="page-lede">
+          Explore the systems, agents, intelligence layers and experiments behind Project KAI.
+          Generated {generatedDate} from verified project data -- this is a system map, not a live feed.
+        </p>
+
+        <div class="core-diagram" role="group" aria-label="KAI Core system map">
+          <a href="/knowledge" class="core-node" style="grid-area: memory;">
+            <span class="core-node-label">Memory</span>
+            <span class="core-node-note">Knowledge Brain</span>
+          </a>
+          <a href="/agents" class="core-node" style="grid-area: agents;">
+            <span class="core-node-label">Agents</span>
+            <span class="core-node-note">13 declared</span>
+          </a>
+          <div class="core-node core-node--center" style="grid-area: core;" aria-hidden="true">
+            <span class="core-node-label">KAI Core</span>
+          </div>
+          <a href="/security" class="core-node" style="grid-area: security;">
+            <span class="core-node-label">Security</span>
+            <span class="core-node-note">{security.active_capability_count} active</span>
+          </a>
+          <a href="/desktop-operator" class="core-node" style="grid-area: tools;">
+            <span class="core-node-label">Tools</span>
+            <span class="core-node-note">Command & control</span>
+          </a>
+          <a href="/status" class="core-node" style="grid-area: actions;">
+            <span class="core-node-label">Actions</span>
+            <span class="core-node-note">System status</span>
+          </a>
+        </div>
+        <p class="cc-personality">System map available -- click any node to explore that layer.</p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">System Status</div>
+          <h2 class="section-title">What's actually running.</h2>
+          <p class="section-subtitle">
+            Status derived from verified project data, generated at build time -- not live telemetry.
+            Not everything shown below is operational yet.
+          </p>
+        </div>
+
+        <div class="cc-status-grid">
+          {SYSTEM_STATUS.map((item) => (
+            <article class="content-card cc-status-card">
+              <div class="cc-status-head">
+                <h3>{item.name}</h3>
+                <span class={`status-badge ${item.tier}`}>{item.label}</span>
+              </div>
+              <p>{item.description}</p>
+              <a class="cc-evidence-link" href={item.evidence.href}>{item.evidence.text} →</a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section" id="infrastructure-health">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">Infrastructure Health</div>
+          <h2 class="section-title">The real, current blockers.</h2>
+          <p class="section-subtitle">
+            {healthSnapshot
+              ? `From a real infrastructure_health_check.py run, generated ${healthGeneratedDate} -- not live telemetry, refreshed by re-running that script.`
+              : "No health snapshot has been generated on this build. Run python scripts/generate_health_snapshot.py in KAI_OS to produce one -- nothing fabricated here in its absence."}
+          </p>
+        </div>
+
+        {healthSnapshot && (
+          <>
+            <div class="cc-status-grid">
+              {healthSnapshot.checks.map((check) => (
+                <article class="content-card cc-status-card">
+                  <div class="cc-status-head">
+                    <h3>{check.check}</h3>
+                    <span class={`status-badge ${SEVERITY_TIER[check.severity]}`}>{SEVERITY_LABEL[check.severity]}</span>
+                  </div>
+                  <p>{check.detail}</p>
+                  {check.repair_category && <p class="cc-repair-category">{check.repair_category.replaceAll("_", " ")}</p>}
+                  {check.recommended_action && <p class="cc-recommended-action">→ {check.recommended_action}</p>}
+                </article>
+              ))}
+            </div>
+            <p class="cc-personality">
+              {healthSnapshot.summary.GREEN} operational, {healthSnapshot.summary.YELLOW} degraded, {healthSnapshot.summary.RED} blocked -- of {healthSnapshot.checks.length} real checks.
+            </p>
+          </>
+        )}
+      </div>
+    </section>
+
+    <section class="page-section" id="youtube-channels">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">YouTube Channels</div>
+          <h2 class="section-title">Two channels, one identity guard.</h2>
+          <p class="section-subtitle">
+            {healthSnapshot
+              ? `From the same infrastructure_health_check.py run, generated ${healthGeneratedDate} -- each channel's identity is verified against a hard-coded channel ID before any upload or thumbnail action is ever permitted.`
+              : "No health snapshot has been generated on this build. Run python scripts/generate_health_snapshot.py in KAI_OS to produce one -- nothing fabricated here in its absence."}
+          </p>
+        </div>
+
+        {youtubeChannels && (
+          <div class="cc-status-grid">
+            {youtubeChannels.map((ch) => (
+              <article class="content-card cc-status-card">
+                <div class="cc-status-head">
+                  <h3>{ch.name}</h3>
+                  <span class={`status-badge ${CHANNEL_STATUS_TIER[ch.status] ?? "status-blocked"}`}>
+                    {CHANNEL_STATUS_LABEL[ch.status] ?? ch.status}
+                  </span>
+                </div>
+                <p class="cc-repair-category">{ch.destination}</p>
+                <p>Channel ID: {ch.channel_id}</p>
+                <p>Authenticated: {ch.authenticated ? "Yes" : "No"} &middot; Verified: {ch.verified ? "Yes" : "No"}</p>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">Media Network</div>
+          <h2 class="section-title">The ecosystem beyond production.</h2>
+          <p class="section-subtitle">
+            Two real YouTube channels and a growing website ecosystem -- honestly labeled by what's
+            actually live versus still in development.
+          </p>
+        </div>
+
+        <div class="cc-status-grid">
+          {MEDIA_NETWORK_CARDS.map((item) => (
+            <article class="content-card cc-status-card">
+              <div class="cc-status-head">
+                <h3>{item.name}</h3>
+                <span class={`status-badge ${item.tier}`}>{item.label}</span>
+              </div>
+              <p>{item.description}</p>
+              <a class="cc-evidence-link" href={item.evidence.href}>{item.evidence.text} →</a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section" id="content-pipeline">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">Content Pipeline</div>
+          <h2 class="section-title">How an idea becomes a video.</h2>
+          <p class="section-subtitle">
+            A public-safe view of the real production pipeline -- no credentials, no internal
+            file paths, no implementation details beyond the stage names themselves.
+          </p>
+        </div>
+
+        <div class="pipeline-flow">
+          {["Idea", "Research", "Classify", "Channel Routing", "Script", "Review (human)", "Production", "Video", "Website", "Short / Reel", "Analytics"].map((stage, i, arr) => (
+            <>
+              <div class={`pipeline-stage ${stage.includes("human") ? "pipeline-stage--gate" : ""}`}>{stage}</div>
+              {i < arr.length - 1 && <span class="pipeline-arrow">→</span>}
+            </>
+          ))}
+        </div>
+        <p class="cc-personality">Channel Routing uses the same deterministic router shown on the Media Network hub.</p>
+      </div>
+    </section>
+
+    <section class="page-section" id="comment-assistant">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">Comment Assistant -- Design Only</div>
+          <h2 class="section-title">How KAI would help answer comments -- someday.</h2>
+          <p class="section-subtitle">
+            Not built. Not running. Shown here as the documented design -- see
+            PROJECT_KAI_MEDIA_NETWORK_ARCHITECTURE.md for the full spec. Comments themselves have
+            no backend yet, so there is nothing for this to analyze even if it existed.
+          </p>
+        </div>
+
+        <div class="assistant-flow">
+          {["Comment", "KAI Analysis", "Intent Detection", "Tone Suggestion", "Suggested Reply", "Edit", "Human Approval (mandatory)", "Publish"].map((step, i, arr) => (
+            <>
+              <div class={`assistant-step ${step.includes("mandatory") ? "assistant-step--gate" : ""}`}>{step}</div>
+              {i < arr.length - 1 && <span class="assistant-arrow">↓</span>}
+            </>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">Agent Matrix</div>
+          <h2 class="section-title">The agent ecosystem -- real and conceptual.</h2>
+          <p class="section-subtitle">
+            Some of these are real, working capabilities. Most are future directions, honestly
+            labeled Planned. Trading remains fully separate from this website by design -- see its card for why.
+          </p>
+        </div>
+
+        <div class="cc-matrix-grid">
+          {AGENT_MATRIX.map((item) => (
+            <article class="content-card cc-matrix-card">
+              <div class="cc-status-head">
+                <h3>{item.name}</h3>
+                <span class={`status-badge ${item.tier}`}>{item.label}</span>
+              </div>
+              <p>{item.mission}</p>
+              {item.explore && <a class="cc-evidence-link" href={item.explore.href}>{item.explore.text} →</a>}
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">Quick Actions</div>
+          <h2 class="section-title">Jump straight in.</h2>
+          <p class="section-subtitle">Explore how KAI is being built -- some capabilities are still under development.</p>
+        </div>
+
+        <div class="cc-actions-grid" id="quick-actions">
+          {QUICK_ACTIONS.map((action) => (
+            action.href ? (
+              <a href={action.href} class="cc-action">{action.label}</a>
+            ) : (
+              <button type="button" class="cc-action cc-action--soon" data-label={action.label} aria-expanded="false">
+                {action.label}
+              </button>
+            )
+          ))}
+        </div>
+        <p class="cc-soon-note" id="quick-actions-note" hidden></p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <p class="status-footnote">
+          This page displays project data, not live telemetry -- no real-time activity, no simulated users,
+          no fabricated metrics. {note} This page will be updated as capabilities change.
+        </p>
+        <div class="status-related-links">
+          <a href="/status">See overall system status →</a>
+          <a href="/security">See the security architecture →</a>
+          <a href="/docs">Explore the documentation index →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  const note = document.getElementById("quick-actions-note");
+  document.querySelectorAll(".cc-action--soon").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const label = btn.getAttribute("data-label");
+      const alreadyOpenForThis = btn.getAttribute("aria-expanded") === "true";
+      document.querySelectorAll(".cc-action--soon").forEach((b) => b.setAttribute("aria-expanded", "false"));
+      if (alreadyOpenForThis) {
+        if (note) note.hidden = true;
+        return;
+      }
+      btn.setAttribute("aria-expanded", "true");
+      if (note) {
+        note.textContent = `${label} is coming in a future phase -- not yet built.`;
+        note.hidden = false;
+      }
+    });
+  });
+</script>
+
+<style>
+.cc-hero {
+  padding-bottom: 40px;
+}
+
+.cc-personality {
+  margin: 28px 0 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  font-style: italic;
+}
+
+.core-diagram {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: repeat(4, auto);
+  grid-template-areas:
+    ".      memory   ."
+    "agents core     security"
+    ".      tools    ."
+    ".      actions  .";
+  gap: 16px;
+  max-width: 720px;
+  margin: 48px auto 0;
+}
+
+.core-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 92px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border);
+  text-align: center;
+  transition: 0.25s ease;
+}
+
+a.core-node:hover,
+a.core-node:focus-visible {
+  border-color: var(--border-bright);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-3px);
+}
+
+.core-node--center {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(129, 140, 248, 0.14));
+  border: 1px solid var(--border-bright);
+  box-shadow: var(--shadow-glow);
+  min-height: 110px;
+}
+
+.core-node--center .core-node-label {
+  font-size: 17px;
+}
+
+.core-node-label {
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.core-node-note {
+  color: var(--text-muted);
+  font-size: 11.5px;
+}
+
+.pipeline-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pipeline-stage {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.5);
+  color: var(--text-soft);
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pipeline-stage--gate {
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  background: rgba(250, 204, 21, 0.08);
+  color: #facc15;
+}
+
+.pipeline-arrow {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.assistant-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.assistant-step {
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px dashed var(--border);
+  background: rgba(15, 23, 42, 0.5);
+  color: var(--text-soft);
+  font-size: 13.5px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.assistant-step--gate {
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  background: rgba(250, 204, 21, 0.08);
+  color: #facc15;
+}
+
+.assistant-arrow {
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.cc-status-grid,
+.cc-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.cc-status-card,
+.cc-matrix-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cc-status-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cc-status-head h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.cc-status-card p,
+.cc-matrix-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.65;
+  flex-grow: 1;
+}
+
+.status-blocked {
+  background: rgba(248, 113, 113, 0.13);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  color: #f87171;
+}
+
+.cc-repair-category {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.cc-recommended-action {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-soft);
+  font-style: italic;
+}
+
+.cc-evidence-link {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cc-evidence-link:hover {
+  text-decoration: underline;
+}
+
+.cc-actions-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 40px;
+}
+
+.cc-action {
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.6);
+  color: var(--text-soft);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.cc-action:hover,
+.cc-action:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.cc-action--soon[aria-expanded="true"] {
+  border-color: rgba(148, 163, 184, 0.4);
+  border-style: dashed;
+  color: var(--text-muted);
+}
+
+.cc-soon-note {
+  margin: 18px auto 0;
+  max-width: 480px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-style: italic;
+}
+
+.status-footnote {
+  max-width: 680px;
+  margin: 0 auto;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.status-related-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-top: 20px;
+}
+
+.status-related-links a {
+  color: var(--primary);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.status-related-links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .cc-status-grid,
+  .cc-matrix-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .core-diagram {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "core"
+      "memory"
+      "agents"
+      "security"
+      "tools"
+      "actions";
+    max-width: 320px;
+  }
+
+  .cc-status-grid,
+  .cc-matrix-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cc-action {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+</style>

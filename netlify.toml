@@ -1,0 +1,26 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# /admin is already excluded from search engines via robots.txt and its
+# own noindex prop (Layout.astro) -- this adds the same signal at the
+# HTTP header level, which robots.txt/meta tags cannot provide, for
+# defense in depth. No other route needs this: the rest of the site is
+# intentionally public.
+[[headers]]
+  for = "/admin*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+# Baseline hardening headers -- real, standard defensive value for a
+# public site with third-party form submissions (comments, feature
+# requests) and no server-side code of its own to add these otherwise.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"

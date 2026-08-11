@@ -5,17 +5,21 @@
   <div class="container hero-container">
     <div class="hero-content">
       <div class="section-badge">
-        Project KAI / KAI OS
+        Project KAI
       </div>
 
       <h1>
-        Project KAI builds<br />
-        <span class="gradient-text">KAI OS</span>
+        Discover what<br />
+        <span class="gradient-text">comes next.</span>
       </h1>
 
       <p>
-        Project KAI is the public home of KAI OS, a modular AI operating system for automation,
-        research, content creation, digital business, and long-term intelligent workflows.
+        Project KAI is an AI, technology, and discovery media platform -- news, future radar,
+        experiments, and reviews, powered by KAI OS, its modular AI operating system: specialized
+        agents, a shared memory layer, and a default-deny security model, built one verified
+        capability at a time instead of announced all at once. This site is the public record of
+        that build -- what's running today, what's still in development, and how to check either
+        claim yourself.
       </p>
 
       <div class="hero-actions">
@@ -23,22 +27,22 @@
           Explore Agents
         </a>
 
-        <a href="#research" class="secondary-button">
-          Read Research
+        <a href="/security" class="secondary-button">
+          See the Security Model
         </a>
       </div>
 
       <div class="hero-proof">
-        <span>13 AI Agents</span>
-        <span>Human-Curated</span>
-        <span>Human-Reviewed</span>
+        <a href="/agents">13 AI Agents</a>
+        <a href="/security">3 Active Capabilities</a>
+        <a href="/status">Human-Reviewed</a>
       </div>
     </div>
 
-    <div class="hero-system" aria-label="KAI OS system overview">
+    <div class="hero-system" aria-label="Project KAI system overview">
       <div class="system-topline">
-        <span>KAI OS System Map</span>
-        <span>V1.0 Static Launch</span>
+        <span>Project KAI System Map</span>
+        <span>Static, Evidence-Driven Site</span>
       </div>
 
       <div class="system-grid">
@@ -182,13 +186,21 @@
   flex-wrap: wrap;
 }
 
-.hero-proof span {
+.hero-proof a {
   padding: 10px 14px;
   border: 1px solid var(--border);
   border-radius: 999px;
   color: var(--text-muted);
   font-size: 13px;
+  font-weight: 700;
   background: rgba(15, 23, 42, 0.5);
+  transition: 0.2s ease;
+}
+
+.hero-proof a:hover {
+  color: var(--primary);
+  border-color: var(--border-bright);
+  transform: translateY(-2px);
 }
 
 .hero-glow {

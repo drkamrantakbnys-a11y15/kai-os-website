@@ -1,0 +1,197 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import kaiOsData from "../data/generated/kai-os-public-data.json";
+import { isBackendConfigured } from "../lib/supabase.js";
+
+const { production } = kaiOsData;
+
+// Every metric below is honestly labeled -- collect_analytics.py
+// exists in KAI OS but its YouTube Analytics OAuth scope was never
+// authorized (confirmed against the real Analytics Agent entry in
+// src/data/agents.js). No view/CTR/subscriber number is fabricated.
+// "Website Page Views" and "Comment Volume" are now REAL where a
+// backend is configured -- see supabase/schema.sql's page_views table
+// and src/lib/analytics.js -- and honestly NOT_CONNECTED otherwise.
+const METRICS = [
+  { name: "YouTube Views", state: "NOT_CONNECTED", detail: "Requires YouTube Analytics OAuth scope, not yet authorized." },
+  { name: "YouTube Watch Time", state: "NOT_CONNECTED", detail: "Requires YouTube Analytics OAuth scope, not yet authorized." },
+  { name: "YouTube Click-Through Rate", state: "NOT_CONNECTED", detail: "Requires YouTube Analytics OAuth scope, not yet authorized." },
+  { name: "YouTube Subscriber Growth", state: "NOT_CONNECTED", detail: "Requires YouTube Analytics OAuth scope, not yet authorized." },
+  {
+    name: "Website Page Views (aggregate)",
+    state: isBackendConfigured ? "DATA_AVAILABLE" : "NOT_CONNECTED",
+    detail: isBackendConfigured ? "Real, from the page_views table -- see /admin for the aggregate count." : "Requires a configured backend -- see supabase/schema.sql.",
+  },
+  {
+    name: "Comment Volume",
+    state: isBackendConfigured ? "DATA_AVAILABLE" : "NOT_CONNECTED",
+    detail: isBackendConfigured ? "Real, from the comments table -- see /admin." : "No comment backend configured yet -- see /media.",
+  },
+  { name: "Production Queue", state: "DATA_AVAILABLE", detail: `${production.completed_total} completed, ${production.queue_total} in queue -- real, from the content pipeline.` },
+];
+
+const STATE_LABEL = { DATA_AVAILABLE: "Data Available", DATA_LIMITED: "Data Limited", AWAITING_OAUTH_SCOPE: "Awaiting OAuth Scope", NOT_CONNECTED: "Not Connected" };
+const STATE_TIER = { DATA_AVAILABLE: "status-operational", DATA_LIMITED: "status-development", AWAITING_OAUTH_SCOPE: "status-experimental", NOT_CONNECTED: "status-planned" };
+---
+
+<Layout
+  title="Analytics | Project KAI"
+  description="Honest analytics status -- no fabricated views, CTR, or subscriber numbers. Most metrics are not connected yet."
+  canonicalPath="/analytics"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Analytics</p>
+        <h1 class="page-title">Honest analytics -- most of it isn't connected yet.</h1>
+        <p class="page-lede">
+          No views, watch time, CTR, or subscriber numbers are shown here unless they're real and
+          verified. <code>collect_analytics.py</code> exists in KAI OS, but the YouTube Analytics
+          OAuth scope it needs has never been authorized.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="analytics-grid">
+          {METRICS.map((m) => (
+            <article class="content-card analytics-card">
+              <div class="cc-status-head">
+                <h3>{m.name}</h3>
+                <span class={`status-badge ${STATE_TIER[m.state]}`}>{STATE_LABEL[m.state]}</span>
+              </div>
+              <p>{m.detail}</p>
+            </article>
+          ))}
+        </div>
+
+        <div class="section-center">
+          <div class="section-badge">This Device</div>
+          <h2 class="section-title">Real, but only for this browser.</h2>
+          <p class="section-subtitle">
+            Not a site-wide count -- just how many times pages have loaded on this device. No cookies, no cross-device tracking.
+          </p>
+        </div>
+        <div id="device-analytics" class="device-analytics">
+          <p class="analytics-loading">Loading...</p>
+        </div>
+
+        <p class="status-footnote">
+          When the Analytics Agent's OAuth scope is authorized (see <a href="/agents">the Agent
+          Network</a>), this page updates to show real numbers -- never fabricated ones in the
+          meantime.
+        </p>
+        <div class="status-related-links">
+          <a href="/status">See system status →</a>
+          <a href="/command-center">Back to Command Center →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  import { getLocalPageViews } from "../lib/analytics.js";
+
+  const el = document.getElementById("device-analytics");
+  const counts = getLocalPageViews();
+  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+  el.innerHTML = entries.length
+    ? `<div class="device-analytics-grid">${entries.slice(0, 12).map(([path, count]) => `
+        <div class="device-analytics-row"><span>${path}</span><strong>${count}</strong></div>`).join("")}</div>`
+    : `<p class="analytics-loading">No page views recorded on this device yet.</p>`;
+</script>
+
+<style>
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.analytics-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cc-status-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cc-status-head h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.analytics-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.status-related-links a {
+  color: var(--primary);
+}
+
+.device-analytics {
+  max-width: 560px;
+  margin: 0 auto 32px;
+}
+
+.analytics-loading {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.device-analytics-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.device-analytics-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.4);
+  font-size: 13px;
+}
+
+.device-analytics-row span {
+  color: var(--text-soft);
+}
+
+.device-analytics-row strong {
+  color: var(--primary);
+}
+
+@media (max-width: 900px) {
+  .analytics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

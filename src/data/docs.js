@@ -39,11 +39,116 @@ export const DOC_CATEGORIES = [
         status: "Available",
         cta: "Explore",
       },
+      {
+        title: "Command Center",
+        description: "The public system map -- real status cards, the agent network, and quick actions into every real page.",
+        route: "/command-center",
+        status: "Available",
+        cta: "Explore",
+      },
+      {
+        title: "AI Fun Facts",
+        description: "A small, hand-curated, sourced collection of real AI/computing history facts.",
+        route: "/fun-facts",
+        status: "Available",
+        cta: "Explore",
+      },
+      {
+        title: "AI Jokes",
+        description: "A small, curated collection of AI, programming, and robot jokes -- entertainment, not factual intelligence.",
+        route: "/ai-jokes",
+        status: "Available",
+        cta: "Explore",
+      },
+    ],
+  },
+  {
+    key: "media-network",
+    label: "02 -- Media Network",
+    description: "The AI + technology + future discovery ecosystem -- two real YouTube channels and this website.",
+    docs: [
+      {
+        title: "Learn",
+        description: "Structured AI learning paths -- curriculum architecture only, routing toward the real secondary channel.",
+        route: "/learn",
+        status: "Available",
+        cta: "Explore",
+      },
+      {
+        title: "Media Network Hub",
+        description: "Both real YouTube channels, the deterministic content router, and the ecosystem loop connecting them.",
+        route: "/media",
+        status: "Available",
+        cta: "Explore",
+      },
+      {
+        title: "Discover",
+        description: "Sourced discovery stories and KAI Documentaries -- longer, chapter-based explorations.",
+        route: "/discover",
+        status: "Available",
+        cta: "Explore",
+      },
+      {
+        title: "Future Radar",
+        description: "Emerging technology signals, every probability a labeled KAI Estimate -- never a guarantee.",
+        route: "/future-radar",
+        status: "Available",
+        cta: "Explore",
+      },
+      {
+        title: "AI News Center",
+        description: "Curated, sourced AI and technology news -- not a live feed.",
+        route: "/ai-news",
+        status: "Available",
+        cta: "Read",
+      },
+      {
+        title: "Experiments",
+        description: "Questions Project KAI is testing, honestly labeled Proposed until actually run.",
+        route: "/experiments",
+        status: "Available",
+        cta: "Explore",
+      },
+      {
+        title: "App & Gadget Reviews",
+        description: "AI apps and gadgets, honestly labeled by how deeply they were actually evaluated.",
+        route: "/reviews",
+        status: "Available",
+        cta: "Explore",
+      },
+      {
+        title: "Agent Builder",
+        description: "An educational, static walkthrough of how a KAI agent is designed to work.",
+        route: "/agent-builder",
+        status: "Available",
+        cta: "Explore",
+      },
+      {
+        title: "Analytics",
+        description: "Honest analytics status -- most metrics not connected yet, none fabricated.",
+        route: "/analytics",
+        status: "Available",
+        cta: "View",
+      },
+      {
+        title: "Search",
+        description: "Client-side search across the entire Media Network content index.",
+        route: "/search",
+        status: "Available",
+        cta: "Search",
+      },
+      {
+        title: "Saved",
+        description: "Bookmarked content -- stored on-device, mirrored to your account when signed in.",
+        route: "/saved",
+        status: "Available",
+        cta: "View",
+      },
     ],
   },
   {
     key: "system",
-    label: "02 -- System",
+    label: "03 -- System",
     description: "The current, evidence-backed state of the system.",
     docs: [
       {
@@ -64,7 +169,7 @@ export const DOC_CATEGORIES = [
   },
   {
     key: "engineering",
-    label: "03 -- Engineering",
+    label: "04 -- Engineering",
     description: "Real engineering history and standards.",
     docs: [
       {
@@ -92,13 +197,27 @@ export const DOC_CATEGORIES = [
   },
   {
     key: "transparency",
-    label: "04 -- Transparency",
+    label: "05 -- Transparency",
     description: "Where evidence and human control live.",
     docs: [
       {
         title: "Trust & Transparency",
         description: "Six real pillars -- Human Review, Engineering Standards, Transparency, Continuous Improvement, Privacy, Future Philosophy.",
         route: "/#trust",
+        status: "Available",
+        cta: "Explore",
+      },
+      {
+        title: "Security Architecture",
+        description: "The real, verified capability-based security model enforced inside KAI OS -- default-deny authorization, kill switches, revocation, rate limiting, audit logging.",
+        route: "/security",
+        status: "Available",
+        cta: "Explore",
+      },
+      {
+        title: "Desktop Operator & Command Control",
+        description: "The real intent-to-audit pipeline every privileged action flows through, and the honest current status of the Desktop Operator subsystem specifically.",
+        route: "/desktop-operator",
         status: "Available",
         cta: "Explore",
       },
@@ -113,7 +232,7 @@ export const DOC_CATEGORIES = [
   },
   {
     key: "company",
-    label: "05 -- Company",
+    label: "06 -- Company",
     description: "What Project KAI is and who's building it.",
     docs: [
       {

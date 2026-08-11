@@ -1,0 +1,194 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import CommentSection from "../components/CommentSection.astro";
+import NextDiscovery from "../components/NextDiscovery.astro";
+import { LEARNING_PATHS } from "../data/learningPaths.js";
+import { CHANNELS } from "../data/channels.js";
+
+const lessonsChannel = CHANNELS.find((c) => c.slug === "project-kai-ai-lessons");
+---
+
+<Layout
+  title="Learn | Project KAI"
+  description="Structured learning paths for AI -- from zero to building your first agent. Powered by Project Kai AI Lessons, the secondary educational channel."
+  canonicalPath="/learn"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Learn</p>
+        <h1 class="page-title">Structured paths, not a firehose.</h1>
+        <p class="page-lede">
+          {LEARNING_PATHS.length} learning paths -- curriculum architecture only, no login, no
+          progress tracking, no course backend yet. Each path routes toward
+          <a href={lessonsChannel.url} target="_blank" rel="noopener noreferrer">{lessonsChannel.name}</a>,
+          the real secondary educational channel.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="paths-grid" id="paths-grid">
+          {LEARNING_PATHS.map((path) => (
+            <article class="content-card path-card" id={path.id}>
+              <div class="path-head">
+                <h3>{path.title}</h3>
+                <span class="path-audience">{path.audience}</span>
+              </div>
+              <p>{path.description}</p>
+              <button type="button" class="secondary-button path-toggle" data-path={path.id} aria-expanded="false">
+                View {path.steps.length} steps
+              </button>
+              <ol class="path-steps" id={`steps-${path.id}`} hidden>
+                {path.steps.map((step, i) => (
+                  <li>
+                    <strong>{i + 1}. {step.title}</strong>
+                    <span>{step.description}</span>
+                  </li>
+                ))}
+              </ol>
+            </article>
+          ))}
+        </div>
+
+        <div class="content-card learn-cta">
+          <h3>Watch the lessons</h3>
+          <p>Every path above is a curriculum map -- the actual video lessons live on the real secondary channel.</p>
+          <a href={lessonsChannel.url} target="_blank" rel="noopener noreferrer" class="primary-button">
+            Learn on {lessonsChannel.name} →
+          </a>
+        </div>
+
+        <NextDiscovery currentId="page-learn" tags={["ai", "tutorials"]} />
+
+        <CommentSection topic="Learning Paths" prompt="Which path should Project KAI build lessons for first?" />
+
+        <p class="status-footnote">
+          No progress is tracked, no account is required, and no video is guaranteed to exist for
+          every step yet -- this is the curriculum architecture, not a course platform.
+        </p>
+        <div class="status-related-links">
+          <a href="/media">Back to Media Network →</a>
+          <a href="/agents">See the Agent Network →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  document.querySelectorAll(".path-toggle").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-path");
+      const list = document.getElementById(`steps-${id}`);
+      const expanded = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", String(!expanded));
+      if (list) list.hidden = expanded;
+      btn.textContent = expanded ? `View ${list.children.length} steps` : "Hide steps";
+    });
+  });
+</script>
+
+<style>
+.paths-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  margin-bottom: 32px;
+}
+
+.path-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.path-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.path-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.path-audience {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.path-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.path-toggle {
+  align-self: flex-start;
+}
+
+.path-steps {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 10px;
+}
+
+.path-steps li {
+  color: var(--text-soft);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.path-steps li strong {
+  display: block;
+  color: var(--text-main);
+  font-size: 13.5px;
+}
+
+.learn-cta {
+  max-width: 560px;
+  margin: 0 auto 40px;
+  text-align: center;
+  gap: 14px;
+}
+
+.learn-cta h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.learn-cta p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.status-related-links a {
+  color: var(--primary);
+}
+
+@media (max-width: 900px) {
+  .paths-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

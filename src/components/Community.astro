@@ -8,12 +8,24 @@
       </h2>
 
       <p class="section-subtitle">
-        Project KAI is being built in public. These channels are planned but not
-        live yet -- check back as the project grows.
+        Project KAI is being built in public. Two real YouTube channels are live today;
+        the rest are planned -- check back as the project grows.
       </p>
     </div>
 
     <div class="community-grid">
+      <a href="https://www.youtube.com/channel/UCgEKqjS1eM4Q8KUxloKVNKA" target="_blank" rel="noopener noreferrer" class="community-card community-card--live">
+        <span class="community-icon" aria-hidden="true">▷</span>
+        <h3>ProjectKAIAI</h3>
+        <span class="community-status community-status--live">Live</span>
+      </a>
+
+      <a href="https://www.youtube.com/channel/UC75pRQ4fzmpNDXUSaI9BNKQ" target="_blank" rel="noopener noreferrer" class="community-card community-card--live">
+        <span class="community-icon" aria-hidden="true">▷</span>
+        <h3>Project Kai AI Lessons</h3>
+        <span class="community-status community-status--live">Live</span>
+      </a>
+
       <div class="community-card">
         <span class="community-icon" aria-hidden="true">◈</span>
         <h3>Discord</h3>
@@ -23,12 +35,6 @@
       <div class="community-card">
         <span class="community-icon" aria-hidden="true">◇</span>
         <h3>GitHub</h3>
-        <span class="community-status">Coming Soon</span>
-      </div>
-
-      <div class="community-card">
-        <span class="community-icon" aria-hidden="true">▷</span>
-        <h3>YouTube</h3>
         <span class="community-status">Coming Soon</span>
       </div>
 
@@ -96,6 +102,16 @@
   margin: 0;
   font-size: 18px;
   color: var(--text-main);
+}
+
+.community-status--live {
+  background: rgba(74, 222, 128, 0.14);
+  border-color: rgba(74, 222, 128, 0.38);
+  color: #4ade80;
+}
+
+.community-card--live:hover {
+  border-color: rgba(74, 222, 128, 0.4);
 }
 
 .community-status {

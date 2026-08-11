@@ -1,0 +1,88 @@
+---
+// Save/Bookmark toggle (Live Website Master Implementation, Phase 23).
+// Always real: localStorage for anonymous visitors, mirrored to
+// Supabase only when a backend exists AND the visitor is signed in --
+// see src/lib/bookmarks.js.
+interface Props {
+  itemId: string;
+  itemType: string;
+  title: string;
+  href: string;
+}
+const { itemId, itemType, title, href } = Astro.props;
+---
+
+<button
+  type="button"
+  class="bookmark-btn"
+  data-item-id={itemId}
+  data-item-type={itemType}
+  data-title={title}
+  data-href={href}
+  aria-pressed="false"
+>
+  <span class="bookmark-icon" aria-hidden="true">☆</span>
+  <span class="bookmark-label">Save</span>
+</button>
+
+<style>
+.bookmark-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.bookmark-btn:hover,
+.bookmark-btn:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.bookmark-btn[aria-pressed="true"] {
+  border-color: rgba(56, 189, 248, 0.5);
+  background: rgba(56, 189, 248, 0.14);
+  color: var(--primary);
+}
+
+.bookmark-btn[aria-pressed="true"] .bookmark-icon {
+  color: #facc15;
+}
+</style>
+
+<script>
+  import { isLocalBookmarked, toggleBookmark } from "../lib/bookmarks.js";
+
+  document.querySelectorAll(".bookmark-btn").forEach((btn) => {
+    const itemId = btn.getAttribute("data-item-id");
+    const icon = btn.querySelector(".bookmark-icon");
+    const label = btn.querySelector(".bookmark-label");
+
+    function render(pressed) {
+      btn.setAttribute("aria-pressed", String(pressed));
+      icon.textContent = pressed ? "★" : "☆";
+      label.textContent = pressed ? "Saved" : "Save";
+    }
+
+    render(isLocalBookmarked(itemId));
+
+    btn.addEventListener("click", async () => {
+      const item = {
+        id: itemId,
+        type: btn.getAttribute("data-item-type"),
+        title: btn.getAttribute("data-title"),
+        href: btn.getAttribute("data-href"),
+      };
+      const nowBookmarked = await toggleBookmark(item);
+      render(nowBookmarked);
+    });
+  });
+</script>

@@ -1,0 +1,342 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import CommentSection from "../components/CommentSection.astro";
+import NextDiscovery from "../components/NextDiscovery.astro";
+import BookmarkButton from "../components/BookmarkButton.astro";
+import { FUTURE_RADAR, RADAR_CATEGORIES, RADAR_WINDOWS } from "../data/futureRadar.js";
+
+const ESTIMATE_TIER = {
+  HIGH: "status-operational", "MEDIUM-HIGH": "status-development",
+  MEDIUM: "status-development", "LOW-MEDIUM": "status-experimental", LOW: "status-planned",
+};
+---
+
+<Layout
+  title="Future Radar | Project KAI"
+  description="Emerging technology, tracked honestly -- every probability is a labeled KAI Estimate, never a guarantee."
+  canonicalPath="/future-radar"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Future Radar</p>
+        <h1 class="page-title">Where technology might be headed -- honestly labeled.</h1>
+        <p class="page-lede">
+          Every probability below is a <strong>KAI Estimate</strong> -- an exploratory,
+          human-reasoned scenario estimate, never a forecast or guarantee. Where no real source
+          supports a number, none is invented.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="radar-filters">
+          <div class="radar-filter-group">
+            <span class="radar-filter-label">Category</span>
+            <div class="radar-filter-row" id="radar-category-filters">
+              <button type="button" class="news-filter news-filter--active" data-filter-cat="all">All</button>
+              {RADAR_CATEGORIES.map((cat) => (
+                <button type="button" class="news-filter" data-filter-cat={cat}>{cat}</button>
+              ))}
+            </div>
+          </div>
+          <div class="radar-filter-group">
+            <span class="radar-filter-label">Window</span>
+            <div class="radar-filter-row" id="radar-window-filters">
+              <button type="button" class="news-filter news-filter--active" data-filter-window="all">All</button>
+              {RADAR_WINDOWS.map((w) => (
+                <button type="button" class="news-filter" data-filter-window={w}>{w}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div class="radar-grid" id="radar-grid">
+          {FUTURE_RADAR.map((item) => (
+            <article class="content-card radar-card" id={item.id} data-category={item.category} data-window={item.expectedWindow}>
+              <div class="radar-card-head">
+                <span class="news-category-tag">{item.category}</span>
+                <span class="radar-window-tag">{item.expectedWindow}</span>
+              </div>
+              <h3>{item.title}</h3>
+              <p class="radar-status">{item.currentStatus}</p>
+
+              <div class="radar-estimate">
+                <span class={`status-badge ${ESTIMATE_TIER[item.kaiEstimate]}`}>{item.probabilityLabel}: {item.kaiEstimate}</span>
+                <span class="radar-confidence">Confidence: {item.confidence}</span>
+              </div>
+              <p class="radar-disclaimer">Exploratory probability -- not a forecast or guarantee.</p>
+
+              <div class="radar-detail-grid">
+                <div>
+                  <span class="radar-detail-label">Why it matters</span>
+                  <p>{item.whyItMatters}</p>
+                </div>
+                <div>
+                  <span class="radar-detail-label">Could accelerate it</span>
+                  <p>{item.whatCouldAccelerate}</p>
+                </div>
+                <div>
+                  <span class="radar-detail-label">Could delay it</span>
+                  <p>{item.whatCouldDelay}</p>
+                </div>
+                <div>
+                  <span class="radar-detail-label">Would prove this wrong</span>
+                  <p>{item.invalidationConditions}</p>
+                </div>
+              </div>
+
+              <div class="radar-footer">
+                {item.sourceUrl ? (
+                  <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" class="news-source-link">{item.source} →</a>
+                ) : (
+                  <span class="radar-no-source">{item.source}</span>
+                )}
+                <span class="radar-updated">Last updated {item.lastUpdated}</span>
+              </div>
+              <BookmarkButton itemId={item.id} itemType="Future Radar" title={item.title} href={`/future-radar#${item.id}`} />
+            </article>
+          ))}
+        </div>
+
+        <NextDiscovery currentId="page-future-radar" tags={["news", "discover"]} />
+
+        <CommentSection topic="Future Radar" prompt="Is this future realistic? What should KAI track next?" />
+
+        <p class="status-footnote">
+          A future Future Radar Agent (monitor → identify signals → compare → build timeline →
+          estimate confidence → explain uncertainty → update entry) is Planned, not built -- see
+          <a href="/agents">the Agent Network</a>. Every entry above was assembled and checked by hand.
+        </p>
+        <div class="status-related-links">
+          <a href="/ai-news">See AI News →</a>
+          <a href="/experiments">See Experiments →</a>
+          <a href="/media">Back to Media Network →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  let activeCategory = "all";
+  let activeWindow = "all";
+  const cards = document.querySelectorAll("#radar-grid .radar-card");
+
+  function applyFilters() {
+    cards.forEach((card) => {
+      const catOk = activeCategory === "all" || card.getAttribute("data-category") === activeCategory;
+      const winOk = activeWindow === "all" || card.getAttribute("data-window") === activeWindow;
+      card.hidden = !(catOk && winOk);
+    });
+  }
+
+  document.querySelectorAll("#radar-category-filters .news-filter").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#radar-category-filters .news-filter").forEach((b) => b.classList.remove("news-filter--active"));
+      btn.classList.add("news-filter--active");
+      activeCategory = btn.getAttribute("data-filter-cat");
+      applyFilters();
+    });
+  });
+
+  document.querySelectorAll("#radar-window-filters .news-filter").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#radar-window-filters .news-filter").forEach((b) => b.classList.remove("news-filter--active"));
+      btn.classList.add("news-filter--active");
+      activeWindow = btn.getAttribute("data-filter-window");
+      applyFilters();
+    });
+  });
+</script>
+
+<style>
+.radar-filters {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.radar-filter-group {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.radar-filter-label {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.radar-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.news-filter {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.news-filter:hover, .news-filter:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.news-filter--active {
+  border-color: var(--border-bright);
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--primary);
+}
+
+.radar-grid {
+  display: grid;
+  gap: 22px;
+  margin-bottom: 40px;
+}
+
+.radar-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.radar-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.news-category-tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(129, 140, 248, 0.12);
+  color: var(--violet);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.radar-window-tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.radar-card h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.radar-status {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.radar-estimate {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.radar-confidence {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.radar-disclaimer {
+  margin: -4px 0 0;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-style: italic;
+}
+
+.radar-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  padding: 14px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid var(--border);
+}
+
+.radar-detail-label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.radar-detail-grid p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.radar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.news-source-link {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.radar-no-source {
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-style: italic;
+}
+
+.radar-updated {
+  color: var(--text-muted);
+  font-size: 11.5px;
+}
+
+.status-related-links a {
+  color: var(--primary);
+}
+
+@media (max-width: 700px) {
+  .radar-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

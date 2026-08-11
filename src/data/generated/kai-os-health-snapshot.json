@@ -1,0 +1,120 @@
+{
+  "generated_at": "2026-08-11T20:16:14.987411+00:00",
+  "note": "Generated from a real infrastructure_health_check.py run. Not live -- refresh by re-running this script.",
+  "checks": [
+    {
+      "check": "Ollama reachable",
+      "severity": "GREEN",
+      "detail": "Reachable at http://localhost:11434",
+      "repair_category": null,
+      "recommended_action": null
+    },
+    {
+      "check": "Required environment variables",
+      "severity": "GREEN",
+      "detail": "All present (values never printed)",
+      "repair_category": null,
+      "recommended_action": null
+    },
+    {
+      "check": "YouTube channel identity",
+      "severity": "RED",
+      "detail": "primary=ProjectKAIAI: NOT AUTHENTICATED; secondary=Project Kai AI Lessons: VERIFIED",
+      "repair_category": "BLOCKED_EXTERNAL_ACTION",
+      "recommended_action": "Run `python authorize_youtube.py primary` (or `secondary`) interactively and select the matching Google/YouTube channel when prompted.",
+      "channels": [
+        {
+          "destination": "primary",
+          "name": "ProjectKAIAI",
+          "channel_id": "UCgEKqjS1eM4Q8KUxloKVNKA",
+          "authenticated": false,
+          "verified": false,
+          "status": "NOT_AUTHENTICATED"
+        },
+        {
+          "destination": "secondary",
+          "name": "Project Kai AI Lessons",
+          "channel_id": "UC75pRQ4fzmpNDXUSaI9BNKQ",
+          "authenticated": true,
+          "verified": true,
+          "status": "VERIFIED"
+        }
+      ]
+    },
+    {
+      "check": "Content queue",
+      "severity": "GREEN",
+      "detail": "18 queued, 12 completed",
+      "repair_category": null,
+      "recommended_action": null
+    },
+    {
+      "check": "Stale queue items",
+      "severity": "GREEN",
+      "detail": "No queue item older than 14 days (or no queued_at timestamps to check)",
+      "repair_category": null,
+      "recommended_action": null
+    },
+    {
+      "check": "Recent production errors",
+      "severity": "YELLOW",
+      "detail": "27 ERROR line(s) in recent log; most recent: 2026-08-12 01:42:09,275 - ERROR - MemorySystem - Failed to initialize ChromaDB: Database error: error returned from database: (code: 14) unable to open database file",
+      "repair_category": "PENDING_HUMAN_APPROVAL",
+      "recommended_action": "Read the recent lines around the quoted ERROR in logs/kai_os_production.log to diagnose root cause before it recurs."
+    },
+    {
+      "check": "Disk space",
+      "severity": "GREEN",
+      "detail": "446.0 GB free",
+      "repair_category": null,
+      "recommended_action": null
+    },
+    {
+      "check": "Scheduled task",
+      "severity": "RED",
+      "detail": "Schedule Type=At logon time, Last Result=-1073741510 -- only a logon trigger, no daily schedule; last run result was -1073741510 (0 = success)",
+      "repair_category": "BLOCKED_EXTERNAL_ACTION",
+      "recommended_action": "In an Administrator PowerShell, add a daily trigger: Set-ScheduledTask -TaskName \"KAI_OS_Content_Production\" -Trigger (Get-ScheduledTask -TaskName \"KAI_OS_Content_Production\").Triggers + (New-ScheduledTaskTrigger -Daily -At \"08:00\")"
+    },
+    {
+      "check": "Supabase (website backend)",
+      "severity": "RED",
+      "detail": "Website environment configuration file does not exist -- not configured",
+      "repair_category": "BLOCKED_EXTERNAL_ACTION",
+      "recommended_action": "Create a Supabase project, run kai-os-website/supabase/schema.sql, then create the website's environment configuration file with PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY."
+    },
+    {
+      "check": "Token file git-ignore coverage",
+      "severity": "GREEN",
+      "detail": "All existing token files covered",
+      "repair_category": null,
+      "recommended_action": null
+    },
+    {
+      "check": "Website build output",
+      "severity": "GREEN",
+      "detail": "dist/index.html present, last built 0.2h ago",
+      "repair_category": null,
+      "recommended_action": null
+    },
+    {
+      "check": "LLM providers",
+      "severity": "GREEN",
+      "detail": "Configured: ollama",
+      "repair_category": null,
+      "recommended_action": null
+    },
+    {
+      "check": "Destination/channel ID consistency",
+      "severity": "GREEN",
+      "detail": "youtube_gateway.py and contentRouter.js agree on both channel IDs",
+      "repair_category": null,
+      "recommended_action": null
+    }
+  ],
+  "summary": {
+    "GREEN": 9,
+    "YELLOW": 1,
+    "RED": 3
+  }
+}

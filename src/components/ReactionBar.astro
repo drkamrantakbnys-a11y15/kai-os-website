@@ -1,0 +1,158 @@
+---
+// Lightweight reaction UI (originally Media Network + Engagement
+// Expansion; upgraded in the Live Website Intelligence & Community
+// Sprint). DEMO MODE (no backend configured): unchanged from the
+// original -- localStorage only, never described as shared. When a
+// backend is configured, reactions are also written to Supabase and
+// real aggregate counts (an actual COUNT, never fabricated) are shown
+// next to each button -- see supabase/schema.sql's honest note that
+// anonymous dedup is a UX nicety here, not a security guarantee.
+import { isBackendConfigured } from "../lib/supabase.js";
+
+interface Props {
+  itemId: string;
+  reactions?: string[];
+}
+const { itemId, reactions = ["Interesting", "Mind Blown", "Useful", "Funny"] } = Astro.props;
+---
+
+<div class="reaction-bar" data-item-id={itemId} data-backend-configured={String(isBackendConfigured)}>
+  {reactions.map((r) => (
+    <button type="button" class="reaction-btn" data-reaction={r}>
+      <span class="reaction-btn-label">{r}</span>
+      {isBackendConfigured && <span class="reaction-btn-count" data-count-for={r}></span>}
+    </button>
+  ))}
+  <span class="reaction-note">
+    {isBackendConfigured ? "Real counts -- your own reaction is remembered on this device." : "Your reactions only -- not shared or stored anywhere else."}
+  </span>
+</div>
+
+<style>
+.reaction-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.reaction-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.reaction-btn:hover,
+.reaction-btn:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.reaction-btn.reaction-btn--active {
+  border-color: rgba(56, 189, 248, 0.5);
+  background: rgba(56, 189, 248, 0.14);
+  color: var(--primary);
+}
+
+.reaction-btn-count {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.reaction-note {
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-style: italic;
+}
+</style>
+
+<script>
+  import { isBackendConfigured, getClient, safeCall } from "../lib/supabase.js";
+
+  const STORAGE_KEY = "kai-reactions-v1";
+
+  function loadReactions() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    } catch {
+      return {};
+    }
+  }
+
+  function saveReactions(data) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch {
+      // localStorage unavailable (private browsing, etc.) -- reactions
+      // simply won't persist across reloads. Not a functional error.
+    }
+  }
+
+  async function loadCounts(bar, itemId) {
+    if (!isBackendConfigured) return;
+    const client = getClient();
+    const result = await safeCall(() => client.from("reactions").select("reaction").eq("item_id", itemId));
+    if (!result.ok) return;
+    const counts = {};
+    (result.data || []).forEach((row) => {
+      counts[row.reaction] = (counts[row.reaction] || 0) + 1;
+    });
+    bar.querySelectorAll("[data-count-for]").forEach((el) => {
+      const reaction = el.getAttribute("data-count-for");
+      const n = counts[reaction] || 0;
+      el.textContent = n > 0 ? `(${n})` : "";
+    });
+  }
+
+  document.querySelectorAll(".reaction-bar").forEach((bar) => {
+    const itemId = bar.getAttribute("data-item-id");
+    const configured = bar.getAttribute("data-backend-configured") === "true" && isBackendConfigured;
+    const stored = loadReactions();
+    const activeReaction = stored[itemId];
+
+    if (configured) loadCounts(bar, itemId);
+
+    bar.querySelectorAll(".reaction-btn").forEach((btn) => {
+      if (btn.getAttribute("data-reaction") === activeReaction) {
+        btn.classList.add("reaction-btn--active");
+      }
+      btn.addEventListener("click", async () => {
+        const reaction = btn.getAttribute("data-reaction");
+        const current = loadReactions();
+        const isActive = btn.classList.contains("reaction-btn--active");
+        bar.querySelectorAll(".reaction-btn").forEach((b) => b.classList.remove("reaction-btn--active"));
+
+        if (isActive) {
+          delete current[itemId];
+        } else {
+          btn.classList.add("reaction-btn--active");
+          current[itemId] = reaction;
+
+          if (configured) {
+            const client = getClient();
+            let user = null;
+            try {
+              const authResult = await client.auth.getUser();
+              user = authResult?.data?.user || null;
+            } catch {
+              // Anonymous -- reaction posts with user_id null.
+            }
+            await safeCall(() => client.from("reactions").insert({ item_id: itemId, reaction, user_id: user ? user.id : null }));
+            loadCounts(bar, itemId);
+          }
+        }
+        saveReactions(current);
+      });
+    });
+  });
+</script>

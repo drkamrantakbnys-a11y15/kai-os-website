@@ -4,7 +4,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import kaiOsData from "../data/generated/kai-os-public-data.json";
 
-const { agents, desktop_operator, engineering, production, generated_at, note } = kaiOsData;
+const { agents, desktop_operator, engineering, production, security, generated_at, note } = kaiOsData;
 
 const generatedDate = new Date(generated_at).toLocaleDateString("en-US", {
   year: "numeric", month: "long", day: "numeric",
@@ -84,7 +84,7 @@ function statusClass(status: string) {
           <h2>{desktop_operator.status}</h2>
           <p>{desktop_operator.status_detail}</p>
           <p class="status-note">{desktop_operator.human_control}</p>
-          <p class="status-meta">{desktop_operator.test_file_count} real automated tests cover this subsystem.</p>
+          <p class="status-meta">{desktop_operator.test_file_count} real automated tests cover this subsystem. <a href="/desktop-operator">See the full command &amp; control pipeline →</a></p>
         </article>
 
         <article class="content-card status-card">
@@ -101,6 +101,13 @@ function statusClass(status: string) {
             <span class="status-pill status-pill--planned">{production.queue_status_counts["queued"] ?? 0} queued</span>
           </div>
           <p class="status-meta">{production.completed_total} videos fully completed to date. Every video is reviewed by a person before anything is published -- no exceptions.</p>
+        </article>
+
+        <article class="content-card status-card">
+          <div class="section-badge">Security Architecture</div>
+          <h2>{security.active_capability_count} of {security.total_capabilities_declared} capabilities active</h2>
+          <p>Default-deny authorization, revocation, kill switches, rate limiting, and audit logging -- enforced inside KAI OS, not on this website.</p>
+          <p class="status-meta"><a href="/security">See the full security architecture →</a></p>
         </article>
       </div>
     </section>

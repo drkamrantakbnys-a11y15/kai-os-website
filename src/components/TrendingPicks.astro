@@ -1,0 +1,99 @@
+---
+// "Worth Watching" / KAI Editorial Picks (Live Website Master
+// Implementation, Phase 3). No fabricated view/like/trend numbers --
+// every entry is explicitly labeled editorial judgment, resolved
+// against the real content index so titles/links never drift.
+import { CONTENT_INDEX } from "../data/contentIndex.js";
+import { EDITORIAL_PICKS } from "../data/editorialPicks.js";
+
+const picks = EDITORIAL_PICKS
+  .map((p) => {
+    const item = CONTENT_INDEX.find((i) => i.id === p.id);
+    return item ? { ...item, reason: p.reason } : null;
+  })
+  .filter(Boolean);
+---
+
+<div class="trending-picks">
+  <div class="trending-head">
+    <h3>Worth Watching</h3>
+    <span class="status-badge status-experimental">KAI Editorial Pick</span>
+  </div>
+  <p class="trending-note">Hand-picked by Project KAI, not ranked by views or likes -- none exist to rank by.</p>
+  <div class="trending-grid">
+    {picks.map((item) => (
+      <a href={item.href} class="content-card trending-card">
+        <span class="trending-type">{item.type}</span>
+        <span class="trending-title">{item.title}</span>
+        <span class="trending-reason">{item.reason}</span>
+      </a>
+    ))}
+  </div>
+</div>
+
+<style>
+.trending-picks {
+  display: grid;
+  gap: 14px;
+}
+
+.trending-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.trending-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.trending-note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-style: italic;
+}
+
+.trending-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.trending-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.trending-type {
+  color: var(--primary);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.trending-title {
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.trending-reason {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+  .trending-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .trending-grid { grid-template-columns: 1fr; }
+}
+</style>

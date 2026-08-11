@@ -1,0 +1,283 @@
+---
+// KAI Community Assistant (Live Website Master Implementation, Phase
+// 11). Identity: "KAI -- Project KAI Community Assistant." Never
+// impersonates Kamran Tak (the website owner) -- always speaks as the
+// assistant, never as "I, the founder."
+//
+// What's REAL today: content search, recommendation, and navigation --
+// genuinely implemented client-side over the real content index, not
+// faked. What's NOT real: free-form conversational answers (no LLM
+// backend connected). The mode selector changes only the tone of the
+// static framing text around real search results -- it never invents
+// facts, and is honestly labeled IN DEVELOPMENT for anything beyond
+// search/navigation.
+//
+// AI SAFETY (Live Website Master Implementation, Phase 28): the query
+// typed here is only ever used as a plain-text filter against
+// CONTENT_INDEX's own title/category/type/tags -- it is never
+// interpreted as an instruction, never concatenated into a prompt, and
+// never sent anywhere. There is nothing here for a prompt-injection
+// attack to inject into. If a real LLM backend is ever connected,
+// user input and fetched content must be kept as clearly-labeled data
+// in any prompt, never as instructions the model follows -- this
+// applies equally to comment bodies, which must never be treated as
+// commands by any future Comment Reply Assistant integration.
+import { CONTENT_INDEX } from "../data/contentIndex.js";
+
+// Live Website Intelligence + Media Network Activation Sprint, Phase 3
+// -- mode set realigned to the requested Humorous/Logical/Friendly/
+// Expert/Debate/KAI Editorial. Still purely cosmetic framing around
+// real search results, same as before -- no mode changes what's
+// actually found, only how the results are introduced.
+const MODES = ["Humorous", "Logical", "Friendly", "Expert", "Debate", "KAI Editorial"];
+
+const MODE_FRAMING = {
+  Humorous: "Dug through the archive -- here's what turned up:",
+  Logical: "Here is what matches, ranked by relevance:",
+  Friendly: "Happy to help! Here's what I found:",
+  Expert: "Based on the content index, the closest matches are:",
+  Debate: "Here's what's on record -- worth weighing both sides:",
+  "KAI Editorial": "Project KAI's own pick from what matches:",
+};
+---
+
+<div class="kai-assistant">
+  <div class="kai-assistant-head">
+    <div class="kai-assistant-identity">
+      <span class="kai-assistant-avatar">◉</span>
+      <div>
+        <strong>KAI</strong>
+        <span>Project KAI Community Assistant</span>
+      </div>
+    </div>
+    <span class="status-badge status-development">In Development</span>
+  </div>
+
+  <p class="kai-assistant-note">
+    Content search, recommendation, and navigation below are real -- they run against Project
+    KAI's actual content index. Free-form conversation is not connected to any AI backend yet;
+    KAI only ever returns real links, never generated prose pretending to be a conversation.
+  </p>
+
+  <div class="kai-assistant-modes">
+    {MODES.map((mode, i) => (
+      <button type="button" class={`kai-mode-btn ${i === 0 ? "kai-mode-btn--active" : ""}`} data-mode={mode}>{mode}</button>
+    ))}
+  </div>
+
+  <div class="kai-assistant-input-row">
+    <input type="text" id="kai-assistant-input" placeholder="Ask KAI to find something -- try 'humanoid robots'" aria-label="Ask KAI" />
+    <button type="button" class="primary-button" id="kai-assistant-submit">Ask KAI</button>
+  </div>
+
+  <div class="kai-assistant-results" id="kai-assistant-results" hidden></div>
+</div>
+
+<script define:vars={{ INDEX: CONTENT_INDEX, FRAMING: MODE_FRAMING }}>
+  let activeMode = "Logical";
+
+  document.querySelectorAll(".kai-mode-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".kai-mode-btn").forEach((b) => b.classList.remove("kai-mode-btn--active"));
+      btn.classList.add("kai-mode-btn--active");
+      activeMode = btn.getAttribute("data-mode");
+    });
+  });
+
+  function search(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    return INDEX.filter((item) =>
+      item.title.toLowerCase().includes(q) ||
+      item.category.toLowerCase().includes(q) ||
+      item.type.toLowerCase().includes(q) ||
+      item.tags.some((t) => t.includes(q))
+    ).slice(0, 6);
+  }
+
+  function ask() {
+    const input = document.getElementById("kai-assistant-input");
+    const results = document.getElementById("kai-assistant-results");
+    const query = input.value;
+    const matches = search(query);
+    const framing = FRAMING[activeMode] || FRAMING.Logical;
+
+    if (!query.trim()) {
+      results.innerHTML = `<p class="kai-assistant-empty">Ask KAI something above -- try a topic, category, or content type.</p>`;
+    } else if (!matches.length) {
+      results.innerHTML = `<p class="kai-assistant-empty">Nothing real matched "${query}" yet -- KAI never invents an answer it doesn't have.</p>`;
+    } else {
+      results.innerHTML = `<p class="kai-assistant-framing">${framing}</p><div class="kai-assistant-grid">${matches.map((item) => `
+        <a class="kai-assistant-result" href="${item.href}"><span>${item.type}</span>${item.title}</a>`).join("")}</div>`;
+    }
+    results.hidden = false;
+  }
+
+  document.getElementById("kai-assistant-submit")?.addEventListener("click", ask);
+  document.getElementById("kai-assistant-input")?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") ask();
+  });
+</script>
+
+<style>
+.kai-assistant {
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.kai-assistant-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.kai-assistant-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kai-assistant-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: white;
+  font-size: 18px;
+}
+
+.kai-assistant-identity strong {
+  display: block;
+  color: var(--text-main);
+  font-size: 15px;
+}
+
+.kai-assistant-identity span {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.kai-assistant-note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.kai-assistant-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.kai-mode-btn {
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.kai-mode-btn:hover,
+.kai-mode-btn:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.kai-mode-btn--active {
+  border-color: var(--border-bright);
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--primary);
+}
+
+.kai-assistant-input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.kai-assistant-input-row input {
+  flex: 1;
+  padding: 11px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(2, 6, 23, 0.5);
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+.kai-assistant-input-row input:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.kai-assistant-results {
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.kai-assistant-framing {
+  margin: 0 0 10px;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-style: italic;
+}
+
+.kai-assistant-empty {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.kai-assistant-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.kai-assistant-result {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(2, 6, 23, 0.4);
+  color: var(--text-main);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.kai-assistant-result:hover,
+.kai-assistant-result:focus-visible {
+  border-color: var(--border-bright);
+}
+
+.kai-assistant-result span {
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+@media (max-width: 700px) {
+  .kai-assistant-input-row {
+    flex-direction: column;
+  }
+  .kai-assistant-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

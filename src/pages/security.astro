@@ -1,0 +1,335 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import kaiOsData from "../data/generated/kai-os-public-data.json";
+
+const { security, generated_at, note } = kaiOsData;
+
+const generatedDate = new Date(generated_at).toLocaleDateString("en-US", {
+  year: "numeric", month: "long", day: "numeric",
+});
+
+// Category names, not capability internals -- what's declared in the
+// security model's closed vocabulary but not granted to any agent.
+// "Trading" is listed separately because no trading capability exists
+// in the model at all, which is a stronger statement than "ungranted."
+const NOT_ACTIVATED = [
+  "Filesystem write / delete",
+  "Network access",
+  "Credential access",
+  "Content publishing",
+  "Process execution",
+  "Any future capability, before its own evidence review",
+];
+
+// Distinct from NOT_ACTIVATED above: these aren't "declared but
+// ungranted" capabilities waiting on review -- no capability for either
+// exists in the security model's vocabulary at all today. Stated
+// separately because it's a stronger, more precise claim than
+// "ungranted," and precision is the point of this page.
+const NO_CAPABILITY_EXISTS = ["Trading / financial transactions", "Analytics automation"];
+
+const PRINCIPLES = [
+  "Default deny",
+  "Revocable",
+  "Kill-switch protected",
+  "Rate limited",
+  "Audited",
+  "Fail closed",
+];
+
+// Computed from real per-capability data rather than hardcoded, so this
+// stays true automatically as capabilities are activated over time --
+// a hardcoded "both are read-only" sentence went stale the moment a
+// third, write-capable capability (memory.write) was activated.
+const allActiveLowRisk = security.active_capabilities.every((cap: { risk: string }) => cap.risk === "LOW");
+---
+
+<Layout
+  title="Security Architecture | Project KAI"
+  description="Project KAI's real, verified capability-based security model -- default-deny authorization, revocation, kill switches, rate limiting, and audit logging enforced inside KAI OS."
+  canonicalPath="/security"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Security Architecture</p>
+        <h1 class="page-title">A capability-based security model, verified from real code.</h1>
+        <p class="page-lede">
+          Project KAI uses a capability-based security model built around default-deny
+          authorization, centralized policy enforcement, revocation, kill switches, rate
+          limiting, auditability, and fail-closed behavior. <strong>KAI OS is the real
+          enforcement layer</strong> -- every control described here runs inside the KAI OS
+          codebase itself. This page is an evidence and transparency layer on top of that,
+          not a substitute for it. Generated {generatedDate}. {note}
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">Security Posture</div>
+          <h2 class="section-title">What's actually enforced</h2>
+          <p class="section-subtitle">
+            Every item below corresponds to real, tested code -- not a policy statement.
+          </p>
+        </div>
+        <div class="controls-grid">
+          {security.controls.map((control: string) => (
+            <div class="control-item">
+              <span class="control-mark" aria-hidden="true">—</span>
+              <span>{control}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container status-grid">
+        <article class="content-card status-card">
+          <div class="section-badge">Capability Model</div>
+          <h2>{security.total_capabilities_declared} capabilities declared</h2>
+          <p>
+            A closed vocabulary -- an agent can only ever be granted a capability that
+            exists in this set. Declaring a capability is not the same as activating it;
+            most of the {security.total_capabilities_declared} declared here are not
+            granted to anything.
+          </p>
+        </article>
+
+        <article class="content-card status-card">
+          <div class="section-badge">Currently Active</div>
+          <h2>{security.active_capability_count} of {security.total_capabilities_declared} activated</h2>
+          <div class="capability-list">
+            {security.active_capabilities.map((cap: { capability: string; agent: string; risk: string }) => (
+              <div class="capability-row">
+                <span class="capability-name">{cap.capability}</span>
+                <span class="capability-agent">→ {cap.agent}</span>
+                <span class="status-pill status-pill--operational">{cap.risk} risk</span>
+              </div>
+            ))}
+          </div>
+          <p class="status-meta">
+            {allActiveLowRisk
+              ? `All ${security.active_capability_count} are LOW risk and require no credential.`
+              : `${security.active_capability_count} capabilities are currently active.`} Each capability
+            listed here is granted individually to one specific agent, only after its own evidence
+            review -- never merely because it's declared. See each row's risk level above; <code>memory.write</code>
+            is an append-only write to a single internal ledger, not a general filesystem or network capability.
+          </p>
+        </article>
+
+        <article class="content-card status-card">
+          <div class="section-badge">Not Activated</div>
+          <h2>Everything else stays off</h2>
+          <ul class="not-activated-list">
+            {NOT_ACTIVATED.map((item) => <li>{item}</li>)}
+          </ul>
+          <p class="status-meta">
+            {NO_CAPABILITY_EXISTS.join(" and ")} are further than "not activated" --
+            no capability for either exists in the security model at all today.
+          </p>
+        </article>
+
+        <article class="content-card status-card">
+          <div class="section-badge">Test Evidence</div>
+          <h2>{security.security_test_file_count} real test files</h2>
+          <p>Automated test files across the security architecture -- collectively covering the policy engine, kill switches, revocation, rate limiting, audit logging, and every activated capability's real entrypoint path -- counted directly from the KAI OS repository at build time.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="content-card principle-panel">
+          <div class="section-badge">Activation Principle</div>
+          <p class="principle-statement">{security.activation_principle}</p>
+          <div class="principle-tags">
+            {PRINCIPLES.map((p) => <span class="principle-tag">{p}</span>)}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <p class="status-footnote">
+          This page describes real, verified controls -- it does not claim the system is
+          unhackable or immune to failure; no honest engineering claim would. Security
+          enforcement happens inside KAI OS, not on this website. This page will be updated
+          as capabilities change.
+        </p>
+        <div class="status-related-links">
+          <a href="/desktop-operator">See the full command &amp; control pipeline →</a>
+          <a href="/status">See overall system status →</a>
+          <a href="/docs">Explore the documentation index →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 32px;
+  max-width: 820px;
+  margin: 40px auto 0;
+}
+
+.control-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-soft);
+  font-size: 14.5px;
+}
+
+.control-mark {
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.status-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.status-card h2 {
+  margin: 4px 0 0;
+  font-size: 22px;
+}
+
+.status-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.status-meta {
+  color: var(--text-muted) !important;
+  font-size: 13px !important;
+}
+
+.capability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.capability-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.06);
+}
+
+.capability-name {
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  color: var(--text-main);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.capability-agent {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.not-activated-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.principle-panel {
+  text-align: center;
+  padding: 40px;
+}
+
+.principle-statement {
+  max-width: 640px;
+  margin: 16px auto 24px;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.principle-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.principle-tag {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-bright);
+  background: rgba(56, 189, 248, 0.08);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.status-footnote {
+  max-width: 680px;
+  margin: 0 auto;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.status-related-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-top: 20px;
+}
+
+.status-related-links a {
+  color: var(--primary);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.status-related-links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+  .controls-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

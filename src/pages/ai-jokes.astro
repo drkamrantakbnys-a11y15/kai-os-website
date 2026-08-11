@@ -1,0 +1,312 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import CommentSection from "../components/CommentSection.astro";
+import NextDiscovery from "../components/NextDiscovery.astro";
+import ReactionBar from "../components/ReactionBar.astro";
+import BookmarkButton from "../components/BookmarkButton.astro";
+import { JOKES, JOKE_CATEGORIES } from "../data/jokes.js";
+---
+
+<Layout
+  title="AI Jokes | Project KAI"
+  description="A small, curated collection of AI, programming, robot, and future-tech jokes -- entertainment, not factual intelligence."
+  canonicalPath="/ai-jokes"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">AI Jokes</p>
+        <h1 class="page-title">KAI needs a sense of humor.</h1>
+        <p class="page-lede">
+          A small, hand-curated joke collection -- {JOKES.length} jokes across {JOKE_CATEGORIES.length} categories.
+          Generated entertainment, not factual intelligence: nothing here is written live by an AI
+          agent. A future Joke Agent that curates and expands this collection is
+          <span class="status-badge status-planned">Planned</span>, not built.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section featured-joke-section">
+      <div class="container">
+        <div class="content-card featured-joke-card">
+          <div class="section-badge">Joke of the Moment</div>
+          <p class="featured-joke-setup" id="featured-joke-setup">{JOKES[0].setup}</p>
+          <p class="featured-joke-punchline" id="featured-joke-punchline">{JOKES[0].punchline}</p>
+          <div class="featured-joke-actions">
+            <button type="button" class="primary-button" id="random-joke-btn">Random Joke</button>
+            <button type="button" class="secondary-button" id="featured-joke-share" data-share-text={`${JOKES[0].setup} ${JOKES[0].punchline}`}>Copy / Share</button>
+          </div>
+          <ReactionBar itemId="featured-joke" reactions={["Funny", "Groan", "Too Real"]} />
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">Full Collection</div>
+          <h2 class="section-title">Browse by category.</h2>
+          <p class="section-subtitle">
+            <span class="status-badge status-operational">Operational</span>
+            This curated collection is real and live today.
+          </p>
+        </div>
+
+        <div class="joke-filters" id="joke-filters">
+          <button type="button" class="joke-filter joke-filter--active" data-filter="all">All</button>
+          {JOKE_CATEGORIES.map((cat) => (
+            <button type="button" class="joke-filter" data-filter={cat}>{cat}</button>
+          ))}
+        </div>
+
+        <div class="jokes-grid" id="jokes-grid">
+          {JOKES.map((j) => (
+            <article class="content-card joke-card" id={j.id} data-category={j.category}>
+              <span class="joke-category-tag">{j.category}</span>
+              <p class="joke-setup">{j.setup}</p>
+              <p class="joke-punchline">{j.punchline}</p>
+              <div class="fact-card-actions">
+                <button type="button" class="fact-share-btn" data-share-text={`${j.setup} ${j.punchline}`}>Copy / Share</button>
+                <BookmarkButton itemId={j.id} itemType="Joke" title={j.setup} href={`/ai-jokes#${j.id}`} />
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <NextDiscovery currentId="page-ai-jokes" tags={["facts", "discover"]} />
+
+        <CommentSection topic="AI Jokes" prompt="Got a better punchline? Tell us." />
+        <p class="status-footnote">
+          This page displays a static, curated dataset -- not live telemetry, not AI-generated
+          content. See the AI Agent Network for what's planned next.
+        </p>
+        <div class="status-related-links">
+          <a href="/fun-facts">Explore AI Fun Facts →</a>
+          <a href="/agents">See the AI Agent Network →</a>
+          <a href="/command-center">Back to Command Center →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script define:vars={{ jokes: JOKES }}>
+  let lastIndex = 0;
+  const btn = document.getElementById("random-joke-btn");
+  const setupEl = document.getElementById("featured-joke-setup");
+  const punchlineEl = document.getElementById("featured-joke-punchline");
+  const shareBtn = document.getElementById("featured-joke-share");
+
+  btn?.addEventListener("click", () => {
+    let next = lastIndex;
+    if (jokes.length > 1) {
+      while (next === lastIndex) {
+        next = Math.floor(Math.random() * jokes.length);
+      }
+    }
+    lastIndex = next;
+    const j = jokes[next];
+    setupEl.textContent = j.setup;
+    punchlineEl.textContent = j.punchline;
+    shareBtn.setAttribute("data-share-text", `${j.setup} ${j.punchline}`);
+  });
+
+  const filterButtons = document.querySelectorAll(".joke-filter");
+  const jokeCards = document.querySelectorAll("#jokes-grid .joke-card");
+  filterButtons.forEach((filterBtn) => {
+    filterBtn.addEventListener("click", () => {
+      filterButtons.forEach((b) => b.classList.remove("joke-filter--active"));
+      filterBtn.classList.add("joke-filter--active");
+      const filter = filterBtn.getAttribute("data-filter");
+      jokeCards.forEach((card) => {
+        const show = filter === "all" || card.getAttribute("data-category") === filter;
+        card.hidden = !show;
+      });
+    });
+  });
+</script>
+<script src="../scripts/share.js"></script>
+
+<style>
+.featured-joke-section {
+  padding-bottom: 24px;
+}
+
+.featured-joke-card {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+  gap: 16px;
+}
+
+.featured-joke-setup {
+  margin: 0;
+  color: var(--text-main);
+  font-size: clamp(18px, 2.4vw, 22px);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.featured-joke-punchline {
+  margin: 0;
+  color: var(--primary);
+  font-size: clamp(18px, 2.4vw, 22px);
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.featured-joke-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.joke-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.joke-filter {
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.joke-filter:hover,
+.joke-filter:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.joke-filter--active {
+  border-color: var(--border-bright);
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--primary);
+}
+
+.jokes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.joke-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.joke-category-tag {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(129, 140, 248, 0.12);
+  color: var(--violet);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.joke-setup {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.joke-punchline {
+  margin: 0;
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.fact-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fact-share-btn {
+  align-self: flex-start;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.fact-share-btn:hover,
+.fact-share-btn:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.status-footnote {
+  max-width: 640px;
+  margin: 24px auto 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.status-related-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-top: 20px;
+}
+
+.status-related-links a {
+  color: var(--primary);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.status-related-links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1100px) {
+  .jokes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .jokes-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

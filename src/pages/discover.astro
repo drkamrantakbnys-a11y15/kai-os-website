@@ -1,0 +1,348 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import CommentSection from "../components/CommentSection.astro";
+import NextDiscovery from "../components/NextDiscovery.astro";
+import ReactionBar from "../components/ReactionBar.astro";
+import BookmarkButton from "../components/BookmarkButton.astro";
+import { DISCOVERIES, DISCOVERY_THEMES } from "../data/discoveries.js";
+
+const stories = DISCOVERIES.filter((d) => d.format === "story");
+const documentaries = DISCOVERIES.filter((d) => d.format === "documentary");
+---
+
+<Layout
+  title="Discover | Project KAI"
+  description="Curiosity-driven stories and KAI Documentaries -- real, sourced, and honestly labeled."
+  canonicalPath="/discover"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Discover</p>
+        <h1 class="page-title">Things worth knowing, and the machines chasing what's next.</h1>
+        <p class="page-lede">
+          {stories.length} sourced stories and {documentaries.length} KAI Documentaries -- longer,
+          chapter-based explorations assembled only from facts already sourced elsewhere on this site.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">Stories</div>
+          <h2 class="section-title">Short, sourced discoveries.</h2>
+        </div>
+
+        <div class="discover-filters" id="discover-filters">
+          <button type="button" class="news-filter news-filter--active" data-filter="all">All Themes</button>
+          {DISCOVERY_THEMES.map((t) => (
+            <button type="button" class="news-filter" data-filter={t}>{t}</button>
+          ))}
+        </div>
+
+        <div class="discover-grid" id="discover-grid">
+          {stories.map((d) => (
+            <article class="content-card discover-card" id={d.id} data-theme={d.theme}>
+              <span class="news-category-tag">{d.theme}</span>
+              <h3>{d.title}</h3>
+              <p>{d.summary}</p>
+              <a href={d.sourceUrl} target="_blank" rel="noopener noreferrer" class="news-source-link">{d.source} →</a>
+              <div class="kai-take">
+                <span class="kai-take-label">KAI Take -- editorial perspective</span>
+                <p>{d.kaiTake}</p>
+              </div>
+              <button type="button" class="fact-share-btn" data-share-text={`${d.title} -- ${d.source}`}>Copy / Share</button>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">KAI Documentary</div>
+          <h2 class="section-title">Longer, story-driven explorations.</h2>
+          <p class="section-subtitle">Every chapter here links back to a real, sourced fact -- nothing new is asserted.</p>
+        </div>
+
+        <div class="doc-list">
+          {documentaries.map((d) => (
+            <article class="content-card documentary-card" id={d.id}>
+              <span class="status-badge status-development">KAI Documentary</span>
+              <h3>{d.title}</h3>
+              <p class="documentary-hook">{d.hook}</p>
+              <div class="documentary-chapters">
+                {d.chapters.map((ch, i) => (
+                  <div class="documentary-chapter">
+                    <span class="chapter-number">{i + 1}</span>
+                    <div>
+                      <h4>{ch.title}</h4>
+                      <p>{ch.body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div class="documentary-sources">
+                <span class="radar-detail-label">Sources</span>
+                {d.sources.map((s) => (
+                  <a href={s.url} target={s.url.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer">{s.label}</a>
+                ))}
+              </div>
+              <div class="documentary-footer-actions">
+                <ReactionBar itemId={d.id} />
+                <BookmarkButton itemId={d.id} itemType="Documentary" title={d.title} href={`/discover#${d.id}`} />
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <NextDiscovery currentId="page-discover" tags={["future", "news"]} />
+
+        <CommentSection topic="Discover" prompt="What should KAI investigate next?" />
+        <p class="status-footnote">
+          Every fact above is independently sourced -- see each card's source link. No content here
+          is generated live by an AI agent; a future Research Agent is Planned, not built.
+        </p>
+        <div class="status-related-links">
+          <a href="/future-radar">See the Future Radar →</a>
+          <a href="/experiments">See Experiments →</a>
+          <a href="/media">Back to Media Network →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script src="../scripts/share.js"></script>
+<script>
+  const filterButtons = document.querySelectorAll("#discover-filters .news-filter");
+  const cards = document.querySelectorAll("#discover-grid .discover-card");
+  filterButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      filterButtons.forEach((b) => b.classList.remove("news-filter--active"));
+      btn.classList.add("news-filter--active");
+      const filter = btn.getAttribute("data-filter");
+      cards.forEach((card) => {
+        card.hidden = !(filter === "all" || card.getAttribute("data-theme") === filter);
+      });
+    });
+  });
+</script>
+
+<style>
+.discover-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.news-filter {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.news-filter:hover, .news-filter:focus-visible { border-color: var(--border-bright); color: var(--primary); }
+.news-filter--active { border-color: var(--border-bright); background: rgba(56, 189, 248, 0.12); color: var(--primary); }
+
+.discover-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.discover-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.discover-card h3 {
+  margin: 0;
+  font-size: 16.5px;
+}
+
+.discover-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.news-category-tag {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(129, 140, 248, 0.12);
+  color: var(--violet);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.news-source-link {
+  color: var(--primary);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.kai-take {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.kai-take-label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.kai-take p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 12.5px;
+  font-style: italic;
+  line-height: 1.55;
+}
+
+.fact-share-btn {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fact-share-btn:hover { border-color: var(--border-bright); color: var(--primary); }
+
+.doc-list {
+  display: grid;
+  gap: 28px;
+}
+
+.documentary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.documentary-card h3 {
+  margin: 6px 0 0;
+  font-size: 21px;
+}
+
+.documentary-hook {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14.5px;
+  font-style: italic;
+  line-height: 1.7;
+}
+
+.documentary-chapters {
+  display: grid;
+  gap: 16px;
+}
+
+.documentary-chapter {
+  display: flex;
+  gap: 14px;
+}
+
+.chapter-number {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.documentary-chapter h4 {
+  margin: 0 0 4px;
+  font-size: 14.5px;
+  color: var(--text-main);
+}
+
+.documentary-chapter p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.documentary-sources {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.radar-detail-label {
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.documentary-sources a {
+  color: var(--primary);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.documentary-footer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.status-related-links a { color: var(--primary); }
+
+@media (max-width: 1100px) {
+  .discover-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .discover-grid { grid-template-columns: 1fr; }
+}
+</style>

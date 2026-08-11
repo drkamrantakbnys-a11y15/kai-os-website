@@ -1,0 +1,176 @@
+---
+// "Tell KAI what to investigate next" (originally Media Network +
+// Engagement Expansion; upgraded to real persistence in the Live
+// Website Intelligence & Community Sprint). Same honesty pattern as
+// CommentSection.astro: DEMO MODE when no backend is configured
+// (identical to the original, nothing persisted), real inserts into
+// `feature_requests` when it is -- see supabase/schema.sql, whose
+// RLS deliberately lets nobody read requests back through the public
+// API, so submitted emails are never exposed publicly.
+import { isBackendConfigured } from "../lib/supabase.js";
+
+const CATEGORIES = ["CONTENT", "FEATURE", "AI", "YOUTUBE", "COMMUNITY", "DISCOVERY", "LEARNING", "OTHER"];
+---
+
+<section class="feature-request" data-backend-configured={String(isBackendConfigured)}>
+  <div class="comment-head">
+    <h2>Tell KAI what to investigate next</h2>
+    {isBackendConfigured
+      ? <span class="status-badge status-operational">Operational</span>
+      : <span class="status-badge status-development">In Development</span>}
+  </div>
+  <p class="comment-intro">
+    {isBackendConfigured
+      ? "Real submissions -- reviewed by a human. Your email (if provided) is never shown publicly."
+      : "Not connected to a backend yet -- nothing submitted below is saved, sent, or reviewed by anyone. Real, working interface; persistence is a future, separately-decided project."}
+  </p>
+
+  <form class="comment-form" id="feature-request-form">
+    <div class="comment-form-row">
+      <label for="fr-name">Name (optional)</label>
+      <input type="text" id="fr-name" name="name" placeholder="Your name" autocomplete="off" maxlength="80" />
+    </div>
+    <div class="comment-form-row">
+      <label for="fr-email">Email (optional, never shown publicly)</label>
+      <input type="email" id="fr-email" name="email" placeholder="you@example.com" autocomplete="off" maxlength="200" />
+    </div>
+    <div class="comment-form-row">
+      <label for="fr-category">Category</label>
+      <select id="fr-category" name="category">
+        {CATEGORIES.map((c) => <option value={c}>{c}</option>)}
+      </select>
+    </div>
+    <div class="comment-form-row">
+      <label for="fr-idea">What should KAI look into?</label>
+      <textarea id="fr-idea" name="idea" rows="3" placeholder="Describe the idea..." maxlength="2000"></textarea>
+    </div>
+    <div class="comment-form-row">
+      <label for="fr-reason">Why? (optional)</label>
+      <textarea id="fr-reason" name="reason" rows="2" placeholder="What would this help with?" maxlength="1000"></textarea>
+    </div>
+    <div class="comment-form-actions">
+      <button type="submit" class="secondary-button">Submit Idea</button>
+      <span class="comment-form-note" id="fr-note">
+        {isBackendConfigured ? "" : "Not saved anywhere yet -- see note above."}
+      </span>
+    </div>
+  </form>
+</section>
+
+<style>
+.feature-request {
+  margin-top: 32px;
+  padding: 28px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.comment-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.comment-head h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.comment-intro {
+  margin: 0 0 20px;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  line-height: 1.65;
+  max-width: 640px;
+}
+
+.comment-form {
+  display: grid;
+  gap: 12px;
+}
+
+.comment-form-row {
+  display: grid;
+  gap: 6px;
+}
+
+.comment-form-row label {
+  color: var(--text-soft);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.comment-form-row input,
+.comment-form-row select,
+.comment-form-row textarea {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(2, 6, 23, 0.5);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.comment-form-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.comment-form-note {
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-style: italic;
+}
+</style>
+
+<script>
+  import { isBackendConfigured, getClient, safeCall } from "../lib/supabase.js";
+
+  const form = document.getElementById("feature-request-form");
+  const section = document.querySelector(".feature-request");
+  const configured = section?.getAttribute("data-backend-configured") === "true" && isBackendConfigured;
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const note = document.getElementById("fr-note");
+
+    if (!configured) {
+      if (note) note.textContent = "Not submitted -- this form has no backend yet. Nothing was sent or saved.";
+      return;
+    }
+
+    const request = document.getElementById("fr-idea").value.trim();
+    if (!request) {
+      note.textContent = "Describe your idea before submitting.";
+      return;
+    }
+
+    note.textContent = "Submitting...";
+    const client = getClient();
+    const result = await safeCall(() =>
+      client.from("feature_requests").insert({
+        name: document.getElementById("fr-name").value.trim() || null,
+        email: document.getElementById("fr-email").value.trim() || null,
+        category: document.getElementById("fr-category").value,
+        request,
+        reason: document.getElementById("fr-reason").value.trim() || null,
+      })
+    );
+
+    if (result.ok) {
+      note.textContent = "Submitted -- thank you.";
+      form.reset();
+    } else {
+      note.textContent = result.message;
+    }
+  });
+</script>

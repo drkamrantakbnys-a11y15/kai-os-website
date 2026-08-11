@@ -1,0 +1,419 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { isBackendConfigured } from "../lib/supabase.js";
+---
+
+<Layout
+  title="Admin | Project KAI"
+  description="Moderation center for comments, reports, and feature requests -- requires authentication."
+  canonicalPath="/admin"
+  noindex={true}
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Admin</p>
+        <h1 class="page-title">Moderation Center</h1>
+        <p class="page-lede">
+          {isBackendConfigured
+            ? "Requires a real, authenticated admin account. Nothing here is publicly readable -- Row Level Security enforces this at the database level, not just in this page's UI."
+            : "No backend is configured on this deployment -- there is nothing to moderate. See supabase/schema.sql to set one up."}
+        </p>
+      </div>
+    </section>
+
+    {isBackendConfigured && (
+      <section class="page-section">
+        <div class="container">
+          <div id="admin-gate" class="content-card admin-panel">
+            <h3>Sign in</h3>
+            <p class="admin-note">Magic link sign-in -- no password stored by this website.</p>
+            <div class="admin-form-row">
+              <input type="email" id="admin-email" placeholder="you@example.com" />
+              <button type="button" id="admin-signin-btn" class="secondary-button">Send Magic Link</button>
+            </div>
+            <p class="admin-status" id="admin-status"></p>
+          </div>
+
+          <div id="admin-dashboard" class="admin-dashboard" hidden>
+            <div class="admin-stats" id="admin-stats"></div>
+            <div class="admin-tabs">
+              <button type="button" class="admin-tab admin-tab--active" data-tab="comments">Comments</button>
+              <button type="button" class="admin-tab" data-tab="reports">Reports</button>
+              <button type="button" class="admin-tab" data-tab="requests">Feature Requests</button>
+            </div>
+
+            <div class="admin-tab-panel" id="admin-panel-comments"></div>
+            <div class="admin-tab-panel" id="admin-panel-reports" hidden></div>
+            <div class="admin-tab-panel" id="admin-panel-requests" hidden></div>
+          </div>
+        </div>
+      </section>
+    )}
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  import { isBackendConfigured, getClient, safeCall } from "../lib/supabase.js";
+  import { classify } from "../lib/commentClassifier.js";
+
+  if (isBackendConfigured) {
+    const client = getClient();
+    const gate = document.getElementById("admin-gate");
+    const dashboard = document.getElementById("admin-dashboard");
+    const status = document.getElementById("admin-status");
+
+    document.getElementById("admin-signin-btn")?.addEventListener("click", async () => {
+      const email = document.getElementById("admin-email").value.trim();
+      if (!email) return;
+      status.textContent = "Sending...";
+      const result = await safeCall(() => client.auth.signInWithOtp({ email }));
+      status.textContent = result.ok ? "Check your email for a sign-in link." : result.message;
+    });
+
+    async function checkAdminAndInit() {
+      const { data: { session } = {} } = await client.auth.getSession();
+      if (!session) return;
+
+      const adminCheck = await safeCall(() => client.rpc("is_admin"));
+      if (!adminCheck.ok || !adminCheck.data) {
+        gate.innerHTML = `<p class="admin-note">Signed in as ${session.user.email}, but this account is not an admin.</p>`;
+        return;
+      }
+
+      gate.hidden = true;
+      dashboard.hidden = false;
+      loadStats();
+      loadComments();
+      loadReports();
+      loadRequests();
+    }
+
+    async function loadStats() {
+      const el = document.getElementById("admin-stats");
+      const [comments, reports, requests, pageViews] = await Promise.all([
+        safeCall(() => client.from("comments").select("id, status, body")),
+        safeCall(() => client.from("comment_reports").select("id")),
+        safeCall(() => client.from("feature_requests").select("id, status")),
+        safeCall(() => client.from("page_views").select("id")),
+      ]);
+
+      const totalComments = comments.ok ? (comments.data || []).length : "?";
+      const hiddenCount = comments.ok ? (comments.data || []).filter((c) => c.status === "hidden").length : 0;
+      const flaggedCount = comments.ok ? (comments.data || []).filter((c) => classify(c.body).flagged).length : 0;
+      const totalReports = reports.ok ? (reports.data || []).length : "?";
+      const newRequests = requests.ok ? (requests.data || []).filter((r) => r.status === "new").length : "?";
+      const totalPageViews = pageViews.ok ? (pageViews.data || []).length : "?";
+
+      el.innerHTML = `
+        <div class="admin-stat"><strong>${totalComments}</strong><span>Comments</span></div>
+        <div class="admin-stat"><strong>${flaggedCount}</strong><span>Flagged (heuristic)</span></div>
+        <div class="admin-stat"><strong>${hiddenCount}</strong><span>Hidden</span></div>
+        <div class="admin-stat"><strong>${totalReports}</strong><span>Reports</span></div>
+        <div class="admin-stat"><strong>${newRequests}</strong><span>New Requests</span></div>
+        <div class="admin-stat"><strong>${totalPageViews}</strong><span>Page Views (all-time)</span></div>
+      `;
+    }
+
+    async function loadComments() {
+      const panel = document.getElementById("admin-panel-comments");
+      const result = await safeCall(() => client.from("comments").select("*").order("created_at", { ascending: false }).limit(50));
+      if (!result.ok) {
+        panel.innerHTML = `<p class="admin-note">${result.message}</p>`;
+        return;
+      }
+      const comments = result.data || [];
+      panel.innerHTML = comments.length
+        ? comments.map((c) => {
+            const cls = classify(c.body);
+            return `
+              <div class="admin-row" data-id="${c.id}">
+                <div class="admin-row-head">
+                  <strong>${c.name || "Anonymous"}</strong>
+                  <span class="admin-badge">${c.topic}</span>
+                  <span class="admin-badge">${c.status}</span>
+                  <span class="admin-badge">${cls.category}</span>
+                  <span class="admin-badge">${cls.sentiment}</span>
+                  <span class="admin-badge">${cls.topic}</span>
+                  ${cls.flagged ? `<span class="admin-badge admin-badge--flag">Flagged: ${cls.flagReason}</span>` : ""}
+                  ${cls.toxicityScore > 0 ? `<span class="admin-badge admin-badge--flag">Toxicity ${(cls.toxicityScore * 100).toFixed(0)}% (heuristic)</span>` : ""}
+                  ${cls.spamProbability > 0 ? `<span class="admin-badge admin-badge--flag">Spam ${(cls.spamProbability * 100).toFixed(0)}% (heuristic)</span>` : ""}
+                  ${c.report_count > 0 ? `<span class="admin-badge admin-badge--flag">${c.report_count} report(s)</span>` : ""}
+                </div>
+                <p class="admin-row-body">${c.body}</p>
+                <p class="admin-row-meta">${cls.replyNeeded ? `Reply suggested -- tone: ${cls.suggestedTone}` : "No reply needed"} (deterministic heuristic, not AI-generated)</p>
+                <div class="admin-row-actions">
+                  <button type="button" class="admin-action" data-action="pin">Pin</button>
+                  <button type="button" class="admin-action" data-action="hide">Hide</button>
+                  <button type="button" class="admin-action" data-action="visible">Restore</button>
+                  <button type="button" class="admin-action admin-action--danger" data-action="delete">Delete</button>
+                </div>
+              </div>`;
+          }).join("")
+        : `<p class="admin-note">No comments yet.</p>`;
+
+      panel.querySelectorAll(".admin-action").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const row = btn.closest(".admin-row");
+          const id = row.getAttribute("data-id");
+          const action = btn.getAttribute("data-action");
+          if (action === "delete") {
+            await safeCall(() => client.from("comments").delete().eq("id", id));
+          } else {
+            await safeCall(() => client.from("comments").update({ status: action }).eq("id", id));
+          }
+          loadComments();
+        });
+      });
+    }
+
+    async function loadReports() {
+      const panel = document.getElementById("admin-panel-reports");
+      const result = await safeCall(() => client.from("comment_reports").select("*, comments(body, name)").order("created_at", { ascending: false }).limit(50));
+      if (!result.ok) {
+        panel.innerHTML = `<p class="admin-note">${result.message}</p>`;
+        return;
+      }
+      const reports = result.data || [];
+      panel.innerHTML = reports.length
+        ? reports.map((r) => `
+            <div class="admin-row">
+              <div class="admin-row-head"><strong>Report</strong><span class="admin-badge">${r.reason || "no reason given"}</span></div>
+              <p class="admin-row-body">${r.comments?.body || "(comment deleted)"}</p>
+            </div>`).join("")
+        : `<p class="admin-note">No reports.</p>`;
+    }
+
+    async function loadRequests() {
+      const panel = document.getElementById("admin-panel-requests");
+      const result = await safeCall(() => client.from("feature_requests").select("*").order("created_at", { ascending: false }).limit(50));
+      if (!result.ok) {
+        panel.innerHTML = `<p class="admin-note">${result.message}</p>`;
+        return;
+      }
+      const requests = result.data || [];
+      panel.innerHTML = requests.length
+        ? requests.map((r) => `
+            <div class="admin-row" data-id="${r.id}">
+              <div class="admin-row-head">
+                <strong>${r.category}</strong>
+                <span class="admin-badge">${r.priority}</span>
+                <span class="admin-badge">${r.status}</span>
+              </div>
+              <p class="admin-row-body">${r.request}</p>
+              <div class="admin-row-actions">
+                <button type="button" class="admin-action" data-status="reviewed">Mark Reviewed</button>
+                <button type="button" class="admin-action" data-status="planned">Mark Planned</button>
+                <button type="button" class="admin-action admin-action--danger" data-status="declined">Decline</button>
+              </div>
+            </div>`).join("")
+        : `<p class="admin-note">No feature requests yet.</p>`;
+
+      panel.querySelectorAll(".admin-action").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const row = btn.closest(".admin-row");
+          const id = row.getAttribute("data-id");
+          await safeCall(() => client.from("feature_requests").update({ status: btn.getAttribute("data-status") }).eq("id", id));
+          loadRequests();
+        });
+      });
+    }
+
+    document.querySelectorAll(".admin-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".admin-tab").forEach((t) => t.classList.remove("admin-tab--active"));
+        tab.classList.add("admin-tab--active");
+        const target = tab.getAttribute("data-tab");
+        ["comments", "reports", "requests"].forEach((name) => {
+          document.getElementById(`admin-panel-${name}`).hidden = name !== target;
+        });
+      });
+    });
+
+    checkAdminAndInit();
+    client.auth.onAuthStateChange(() => checkAdminAndInit());
+  }
+</script>
+
+<style>
+.admin-panel {
+  max-width: 480px;
+  margin: 0 auto 32px;
+  gap: 14px;
+}
+
+.admin-panel h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.admin-note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.admin-form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-form-row input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(2, 6, 23, 0.5);
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+.admin-status {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-style: italic;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.admin-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.5);
+  text-align: center;
+}
+
+.admin-stat strong {
+  color: var(--primary);
+  font-size: 20px;
+}
+
+.admin-stat span {
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  justify-content: center;
+}
+
+.admin-tab {
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-tab--active {
+  border-color: var(--border-bright);
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--primary);
+}
+
+.admin-row {
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.5);
+  margin-bottom: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.admin-row-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-row-head strong {
+  color: var(--text-main);
+  font-size: 13.5px;
+}
+
+.admin-badge {
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.admin-badge--flag {
+  border-color: rgba(248, 113, 113, 0.4);
+  color: #f87171;
+}
+
+.admin-row-body {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.admin-row-meta {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-style: italic;
+}
+
+.admin-row-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-action {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-action:hover {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.admin-action--danger:hover {
+  border-color: rgba(248, 113, 113, 0.5);
+  color: #f87171;
+}
+</style>

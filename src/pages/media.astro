@@ -1,0 +1,548 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { CHANNELS } from "../data/channels.js";
+import { ROUTING_EXAMPLES } from "../data/contentRouter.js";
+import WhatShouldIExplore from "../components/WhatShouldIExplore.astro";
+import FeatureRequest from "../components/FeatureRequest.astro";
+import TrendingPicks from "../components/TrendingPicks.astro";
+import KaiAssistant from "../components/KaiAssistant.astro";
+import CommentSection from "../components/CommentSection.astro";
+---
+
+<Layout
+  title="KAI Media Network | Project KAI"
+  description="The front door to Project KAI's media ecosystem -- two real YouTube channels, a deterministic content router, and the website that connects them."
+  canonicalPath="/media"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero media-hero">
+      <div class="container">
+        <p class="page-kicker">KAI Media Network</p>
+        <h1 class="page-title">Discover AI, technology, science, ideas, tools and the future.</h1>
+        <p class="page-lede">
+          Two real YouTube channels and this website, working as one ecosystem. Nothing below is a
+          fabricated metric -- channel identity is real; anything with no live data yet says so.
+        </p>
+        <div class="media-hero-ctas">
+          <a href={CHANNELS[0].url} target="_blank" rel="noopener noreferrer" class="primary-button">Watch</a>
+          <a href="/discover" class="secondary-button">Explore</a>
+          <a href={CHANNELS[1].url} target="_blank" rel="noopener noreferrer" class="secondary-button">Learn</a>
+          <a href="/future-radar" class="secondary-button">Discover the Future</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">Explore by Category</div>
+          <h2 class="section-title">Every real corner of the network.</h2>
+        </div>
+        <div class="media-category-grid">
+          {[
+            { label: "AI", href: "/discover", note: "Discovery stories and documentaries" },
+            { label: "Technology", href: "/discover", note: "Discovery stories and documentaries" },
+            { label: "Science", href: "/discover", note: "Discovery stories and documentaries" },
+            { label: "Discovery", href: "/discover", note: "The full Discover collection" },
+            { label: "Gadgets & Apps", href: "/reviews", note: "Honestly-labeled reviews" },
+            { label: "Future", href: "/future-radar", note: "KAI Estimate-labeled radar" },
+            { label: "Learning", href: "/learn", note: "Structured AI learning paths" },
+            { label: "Reviews", href: "/reviews", note: "Apps, gadgets, AI tools" },
+            { label: "Experiments", href: "/experiments", note: "Proposed and run experiments" },
+            { label: "News", href: "/ai-news", note: "Curated, sourced AI news" },
+          ].map((cat) => (
+            <a href={cat.href} class="content-card media-category-card">
+              <h3>{cat.label}</h3>
+              <p>{cat.note}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">Ask KAI</div>
+          <h2 class="section-title">The Project KAI Community Assistant.</h2>
+        </div>
+        <KaiAssistant />
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <TrendingPicks />
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">The Two Channels</div>
+          <h2 class="section-title">Not competitors -- two arms of one ecosystem.</h2>
+          <p class="section-subtitle">
+            ProjectKAIAI is the primary discovery channel. Project Kai AI Lessons is the secondary
+            educational channel. This website is the hub that connects them.
+          </p>
+        </div>
+
+        <div class="channel-grid">
+          {CHANNELS.map((ch) => (
+            <article class="content-card channel-card">
+              <div class="channel-card-head">
+                <div>
+                  <span class="channel-role">{ch.role}</span>
+                  <h3>{ch.name}</h3>
+                </div>
+                <span class={`status-badge ${ch.tier}`}>{ch.tagline}</span>
+              </div>
+              <p class="channel-status-detail">{ch.statusLabel}</p>
+              <p>{ch.description}</p>
+              <p class="channel-belongs"><strong>What belongs here:</strong> {ch.whatBelongsHere}</p>
+
+              <div class="channel-pillars">
+                <span class="channel-pillars-label">Content pillars</span>
+                <div class="channel-pillar-tags">
+                  {ch.contentPillars.slice(0, 8).map((p) => <span class="channel-pillar-tag">{p}</span>)}
+                </div>
+              </div>
+
+              <div class="channel-pillars">
+                <span class="channel-pillars-label">Website categories</span>
+                <div class="channel-pillar-tags">
+                  {ch.websiteCategories.map((c) => <span class="channel-pillar-tag channel-pillar-tag--alt">{c}</span>)}
+                </div>
+              </div>
+
+              <a href={ch.url} target="_blank" rel="noopener noreferrer" class="cc-evidence-link">Visit {ch.name} on YouTube →</a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">Content Router</div>
+          <h2 class="section-title">Where does this story belong?</h2>
+          <p class="section-subtitle">
+            A deterministic rule table, not an AI classifier -- every recommendation states its own reason.
+          </p>
+        </div>
+
+        <div class="router-examples">
+          {ROUTING_EXAMPLES.map((ex) => (
+            <div class="router-row">
+              <span class="router-story">{ex.story}</span>
+              <span class="router-arrow">→</span>
+              <span class="router-channel">{ex.result.recommended_channel}</span>
+            </div>
+          ))}
+        </div>
+
+        <div class="content-card router-demo">
+          <h3>Try it yourself</h3>
+          <p class="router-demo-note">Pick a category -- the same deterministic function above runs live in your browser.</p>
+          <div class="router-demo-controls" id="router-demo-controls">
+            <button type="button" class="router-demo-btn" data-category="TUTORIALS">AI Tutorial</button>
+            <button type="button" class="router-demo-btn" data-category="GADGETS">Gadget Review</button>
+            <button type="button" class="router-demo-btn" data-category="NEWS">Breaking News</button>
+            <button type="button" class="router-demo-btn" data-category="DOCUMENTARIES">Documentary</button>
+            <button type="button" class="router-demo-btn" data-category="FUTURE">Future Prediction</button>
+            <button type="button" class="router-demo-btn" data-category="TECHNICAL EXPLANATION">"How does RAG work?"</button>
+            <button type="button" class="router-demo-btn" data-category="FACTS">Black Hole Facts</button>
+          </div>
+          <div class="router-demo-result" id="router-demo-result" hidden>
+            <p><strong>Recommended:</strong> <span id="router-result-channel"></span> <span id="router-result-confidence" class="status-badge"></span></p>
+            <p class="router-demo-reason" id="router-result-reason"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">The Ecosystem Loop</div>
+          <h2 class="section-title">Discover on one channel. Learn on the other.</h2>
+        </div>
+        <div class="loop-diagram">
+          <div class="loop-node">ProjectKAIAI <span>Discover</span></div>
+          <span class="loop-arrow">→</span>
+          <div class="loop-node loop-node--center">This Website <span>The Hub</span></div>
+          <span class="loop-arrow">→</span>
+          <div class="loop-node">Project Kai AI Lessons <span>Learn</span></div>
+        </div>
+        <p class="loop-example">
+          Example: ProjectKAIAI publishes <em>"5 AI tools that feel like science fiction."</em>
+          A viewer wants to learn how to use them → the website points to Project Kai AI Lessons for the tutorial.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">What Should I Explore?</div>
+          <h2 class="section-title">Tell us what you're in the mood for.</h2>
+          <p class="section-subtitle">Computed from the real content index -- no external recommendation API.</p>
+        </div>
+        <WhatShouldIExplore />
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <FeatureRequest />
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <CommentSection topic="Media Network" prompt="What should Project KAI cover next?" />
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <p class="status-footnote">
+          No subscriber counts, view counts, or engagement metrics are shown here -- none are
+          verified and available today. See <a href="/agents">the Agent Network</a> for what's
+          planned to change that, and <a href="/analytics">Analytics</a> for the honest current state.
+        </p>
+        <div class="status-related-links">
+          <a href="/discover">Explore Discoveries →</a>
+          <a href="/future-radar">See the Future Radar →</a>
+          <a href="/command-center">Back to Command Center →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script define:vars={{}}>
+  const CATEGORY_ROUTING = {
+    TUTORIALS: { channel: "Project Kai AI Lessons", reason: "Tutorials teach how to use something -- that's the educational channel's core pillar.", confidence: "HIGH" },
+    GADGETS: { channel: "ProjectKAIAI", reason: "Gadget reviews are a stated ProjectKAIAI content pillar.", confidence: "HIGH" },
+    NEWS: { channel: "Project Kai AI Lessons", reason: "AI news and explainers are an educational-channel pillar (AI updates, AI news).", confidence: "HIGH" },
+    DOCUMENTARIES: { channel: "ProjectKAIAI", reason: "Documentary-style storytelling is a stated ProjectKAIAI content pillar.", confidence: "HIGH" },
+    FUTURE: { channel: "ProjectKAIAI", reason: "Future-technology and “what if” content is a stated ProjectKAIAI pillar.", confidence: "HIGH" },
+    "TECHNICAL EXPLANATION": { channel: "Project Kai AI Lessons", reason: "Technical explanations are a stated educational-channel pillar.", confidence: "HIGH" },
+    FACTS: { channel: "ProjectKAIAI", reason: "Short discovery facts are a stated ProjectKAIAI content pillar.", confidence: "HIGH" },
+  };
+
+  document.querySelectorAll(".router-demo-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const cat = btn.getAttribute("data-category");
+      const result = CATEGORY_ROUTING[cat];
+      if (!result) return;
+      document.getElementById("router-result-channel").textContent = result.channel;
+      const confEl = document.getElementById("router-result-confidence");
+      confEl.textContent = result.confidence;
+      confEl.className = "status-badge status-operational";
+      document.getElementById("router-result-reason").textContent = result.reason;
+      document.getElementById("router-demo-result").hidden = false;
+    });
+  });
+</script>
+
+<style>
+.media-category-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.media-category-card {
+  display: block;
+  text-align: center;
+  padding: 18px 14px;
+}
+
+.media-category-card h3 {
+  margin: 0 0 6px;
+  font-size: 14.5px;
+  color: var(--text-main);
+}
+
+.media-category-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .media-category-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .media-category-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.media-hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.channel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.channel-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.channel-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.channel-card-head h3 {
+  margin: 4px 0 0;
+  font-size: 19px;
+}
+
+.channel-role {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.channel-status-detail {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-style: italic;
+}
+
+.channel-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.channel-belongs {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--border);
+}
+
+.channel-pillars {
+  display: grid;
+  gap: 8px;
+}
+
+.channel-pillars-label {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.channel-pillar-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.channel-pillar-tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.channel-pillar-tag--alt {
+  background: rgba(129, 140, 248, 0.1);
+  border-color: rgba(129, 140, 248, 0.3);
+  color: var(--violet);
+}
+
+.router-examples {
+  display: grid;
+  gap: 8px;
+  max-width: 640px;
+  margin: 0 auto 32px;
+}
+
+.router-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--border);
+  font-size: 13.5px;
+}
+
+.router-story {
+  flex: 1;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.router-arrow {
+  color: var(--text-muted);
+}
+
+.router-channel {
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.router-demo {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+  gap: 14px;
+}
+
+.router-demo-note {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.router-demo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.router-demo-btn {
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.router-demo-btn:hover,
+.router-demo-btn:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.router-demo-result {
+  margin-top: 8px;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  text-align: left;
+}
+
+.router-demo-result p {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+  color: var(--text-soft);
+}
+
+.router-demo-reason {
+  color: var(--text-muted) !important;
+  font-style: italic;
+}
+
+.loop-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.loop-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 18px 22px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.6);
+  color: var(--text-main);
+  font-weight: 800;
+  font-size: 14px;
+  text-align: center;
+}
+
+.loop-node span {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.loop-node--center {
+  border-color: var(--border-bright);
+  box-shadow: var(--shadow-glow);
+}
+
+.loop-arrow {
+  color: var(--text-muted);
+  font-size: 20px;
+}
+
+.loop-example {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+.status-related-links a {
+  color: var(--primary);
+}
+
+@media (max-width: 900px) {
+  .channel-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .loop-diagram {
+    flex-direction: column;
+  }
+  .loop-arrow {
+    transform: rotate(90deg);
+  }
+}
+</style>

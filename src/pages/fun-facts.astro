@@ -1,0 +1,356 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import CommentSection from "../components/CommentSection.astro";
+import NextDiscovery from "../components/NextDiscovery.astro";
+import ReactionBar from "../components/ReactionBar.astro";
+import BookmarkButton from "../components/BookmarkButton.astro";
+import { FACTS, FACT_CATEGORIES } from "../data/facts.js";
+---
+
+<Layout
+  title="AI Fun Facts | Project KAI"
+  description="Short, verified facts about AI history, machine learning, and computing -- curated by hand, with real sources, not fabricated or generated live."
+  canonicalPath="/fun-facts"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">AI Fun Facts</p>
+        <h1 class="page-title">Short, real facts about AI -- with sources.</h1>
+        <p class="page-lede">
+          A small, hand-curated collection today -- {FACTS.length} facts across {FACT_CATEGORIES.length} categories.
+          Every fact links to a real, verifiable source. Nothing here is generated live by an AI
+          agent yet; a future Fun Facts Agent that sources and verifies new facts automatically is
+          <span class="status-badge status-planned">Planned</span>, not built.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section featured-fact-section">
+      <div class="container">
+        <div class="content-card featured-fact-card">
+          <div class="section-badge">Featured Fact</div>
+          <p class="featured-fact-text" id="featured-fact-text">{FACTS[0].fact}</p>
+          <div class="featured-fact-meta">
+            <span id="featured-fact-category">{FACTS[0].category}</span>
+            <a id="featured-fact-source" href={FACTS[0].sourceUrl} target="_blank" rel="noopener noreferrer">{FACTS[0].source}</a>
+          </div>
+          <div class="featured-fact-actions">
+            <button type="button" class="primary-button" id="another-fact-btn">Another Fact</button>
+            <button type="button" class="secondary-button" id="featured-fact-share" data-share-text={FACTS[0].fact}>Share</button>
+          </div>
+          <ReactionBar itemId="featured-fact" />
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section fact-filter-section">
+      <div class="container">
+        <div class="fact-filters" id="fact-filters">
+          <button type="button" class="fact-filter fact-filter--active" data-filter="all">All</button>
+          {FACT_CATEGORIES.map((cat) => (
+            <button type="button" class="fact-filter" data-filter={cat}>{cat}</button>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">Full Collection</div>
+          <h2 class="section-title">Every fact, with its source.</h2>
+          <p class="section-subtitle">
+            <span class="status-badge status-operational">Operational</span>
+            This curated collection is real and live today -- what's Planned is automating how it grows.
+          </p>
+        </div>
+
+        <div class="facts-grid">
+          {FACTS.map((f) => (
+            <article class="content-card fact-card" id={f.id} data-category={f.category}>
+              <span class="fact-category-tag">{f.category}</span>
+              <p class="fact-text">{f.fact}</p>
+              <div class="fact-footer">
+                <a href={f.sourceUrl} target="_blank" rel="noopener noreferrer" class="fact-source-link">{f.source}</a>
+                <span class="fact-verified">Verified {f.verifiedDate}</span>
+              </div>
+              <div class="fact-card-actions">
+                <button type="button" class="fact-share-btn" data-share-text={`${f.fact} (${f.source})`}>Copy / Share</button>
+                <BookmarkButton itemId={f.id} itemType="Fact" title={f.fact.length > 60 ? f.fact.slice(0, 57) + "..." : f.fact} href={`/fun-facts#${f.id}`} />
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <CommentSection topic="AI Fun Facts" />
+        <p class="status-footnote">
+          This page displays a static, curated dataset -- not live telemetry, not AI-generated
+          content. See the AI Agent Network for what's planned next.
+        </p>
+        <div class="status-related-links">
+          <a href="/ai-jokes">Explore AI Jokes →</a>
+          <a href="/agents">See the AI Agent Network →</a>
+          <a href="/command-center">Back to Command Center →</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <NextDiscovery currentId="page-fun-facts" tags={["discover", "future"]} />
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script define:vars={{ facts: FACTS }}>
+  let lastIndex = 0;
+  const btn = document.getElementById("another-fact-btn");
+  const textEl = document.getElementById("featured-fact-text");
+  const categoryEl = document.getElementById("featured-fact-category");
+  const sourceEl = document.getElementById("featured-fact-source");
+  const shareBtn = document.getElementById("featured-fact-share");
+
+  btn?.addEventListener("click", () => {
+    let next = lastIndex;
+    if (facts.length > 1) {
+      while (next === lastIndex) {
+        next = Math.floor(Math.random() * facts.length);
+      }
+    }
+    lastIndex = next;
+    const f = facts[next];
+    textEl.textContent = f.fact;
+    categoryEl.textContent = f.category;
+    sourceEl.textContent = f.source;
+    sourceEl.href = f.sourceUrl;
+    shareBtn.setAttribute("data-share-text", f.fact);
+  });
+
+  const filterButtons = document.querySelectorAll(".fact-filter");
+  const factCards = document.querySelectorAll(".facts-grid .fact-card");
+  filterButtons.forEach((filterBtn) => {
+    filterBtn.addEventListener("click", () => {
+      filterButtons.forEach((b) => b.classList.remove("fact-filter--active"));
+      filterBtn.classList.add("fact-filter--active");
+      const filter = filterBtn.getAttribute("data-filter");
+      factCards.forEach((card) => {
+        card.hidden = !(filter === "all" || card.getAttribute("data-category") === filter);
+      });
+    });
+  });
+</script>
+<script src="../scripts/share.js"></script>
+
+<style>
+.featured-fact-section {
+  padding-bottom: 24px;
+}
+
+.featured-fact-card {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+  gap: 18px;
+}
+
+.featured-fact-text {
+  margin: 0;
+  color: var(--text-main);
+  font-size: clamp(19px, 2.6vw, 24px);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.featured-fact-meta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.featured-fact-meta a {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.featured-fact-meta a:hover {
+  text-decoration: underline;
+}
+
+.featured-fact-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.fact-filter-section {
+  padding-top: 0;
+  padding-bottom: 12px;
+}
+
+.fact-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.fact-filter {
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.fact-filter:hover,
+.fact-filter:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.fact-filter--active {
+  border-color: var(--border-bright);
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--primary);
+}
+
+.facts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.fact-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fact-category-tag {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.fact-text {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.65;
+  flex-grow: 1;
+}
+
+.fact-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.fact-source-link {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.fact-source-link:hover {
+  text-decoration: underline;
+}
+
+.fact-verified {
+  color: var(--text-muted);
+}
+
+.fact-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fact-share-btn {
+  align-self: flex-start;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.fact-share-btn:hover,
+.fact-share-btn:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.status-footnote {
+  max-width: 640px;
+  margin: 24px auto 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.status-related-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-top: 20px;
+}
+
+.status-related-links a {
+  color: var(--primary);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.status-related-links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1100px) {
+  .facts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .facts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

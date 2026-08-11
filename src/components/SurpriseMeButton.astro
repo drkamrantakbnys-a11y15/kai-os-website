@@ -1,0 +1,51 @@
+---
+// "Surprise Me" (Media Network + Engagement Expansion, Section 21) --
+// a signature, global discovery CTA. The content index is small
+// (dozens of items, not thousands) so inlining it via define:vars is
+// simpler and faster than a client-side fetch, consistent with this
+// site's "small vanilla JS, no unnecessary dependency" convention.
+import { CONTENT_INDEX } from "../data/contentIndex.js";
+
+const hrefs = CONTENT_INDEX.map((item) => item.href);
+---
+
+<button type="button" class="surprise-me-btn" id="surprise-me-btn">🎲 Surprise Me</button>
+
+<script define:vars={{ hrefs }}>
+  const btn = document.getElementById("surprise-me-btn");
+  btn?.addEventListener("click", () => {
+    if (!hrefs.length) return;
+    const current = window.location.pathname;
+    let next = current;
+    let attempts = 0;
+    while (next.split("#")[0] === current && attempts < 10) {
+      next = hrefs[Math.floor(Math.random() * hrefs.length)];
+      attempts++;
+    }
+    window.location.href = next;
+  });
+</script>
+
+<style>
+.surprise-me-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.6);
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.surprise-me-btn:hover,
+.surprise-me-btn:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+</style>

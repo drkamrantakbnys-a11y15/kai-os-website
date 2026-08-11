@@ -1,26 +1,52 @@
+---
+import SurpriseMeButton from "./SurpriseMeButton.astro";
+---
 <footer class="footer">
   <div class="container footer-grid">
 
     <div class="footer-brand">
       <a href="/" class="brand">
         <span class="brand-mark">◉</span>
-        <span>Project KAI / KAI OS</span>
+        <span>Project KAI</span>
       </a>
 
       <p>
-        Project KAI is the public home of KAI OS, a modular AI operating system for automation, research,
-        content creation, business systems, and long-term intelligent workflows.
+        Project KAI is an AI, technology, and discovery media platform -- news, future radar,
+        experiments, reviews, and education -- powered by KAI OS, its modular AI operating system
+        for automation, research, and content creation.
       </p>
+
+      <div class="footer-surprise">
+        <SurpriseMeButton />
+      </div>
     </div>
 
     <div class="footer-column">
       <h4>Platform</h4>
       <a href="/">Home</a>
+      <a href="/command-center">Command Center</a>
       <a href="/about">About</a>
       <a href="/#how-it-works">How It Works</a>
       <a href="/agents">Agents</a>
+      <a href="/agent-builder">Agent Builder</a>
+      <a href="/analytics">Analytics</a>
+      <a href="/search">Search</a>
       <a href="/#trust">Trust</a>
       <a href="/#roadmap">Roadmap</a>
+    </div>
+
+    <div class="footer-column">
+      <h4>Media Network</h4>
+      <a href="/media">Media Network Hub</a>
+      <a href="/learn">Learn</a>
+      <a href="/discover">Discover</a>
+      <a href="/future-radar">Future Radar</a>
+      <a href="/ai-news">AI News</a>
+      <a href="/experiments">Experiments</a>
+      <a href="/reviews">Reviews</a>
+      <a href="/fun-facts">AI Fun Facts</a>
+      <a href="/ai-jokes">AI Jokes</a>
+      <a href="/saved">Saved</a>
     </div>
 
     <div class="footer-column">
@@ -30,6 +56,8 @@
       <a href="/#features">Features</a>
       <a href="/docs">Documentation</a>
       <a href="/status">System Status</a>
+      <a href="/security">Security</a>
+      <a href="/desktop-operator">Desktop Operator</a>
       <a href="/changelog">Changelog</a>
       <a href="/knowledge">Knowledge Brain</a>
       <a href="/contact">Contact</a>
@@ -44,7 +72,7 @@
   </div>
 
   <div class="container footer-bottom">
-    <p>© 2026 Project KAI / KAI OS. Built by Kamran Tak.</p>
+    <p>© 2026 Project KAI. Built by Kamran Tak.</p>
   </div>
 </footer>
 
@@ -57,8 +85,12 @@
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr;
-  gap: 48px;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+  gap: 40px;
+}
+
+.footer-surprise {
+  margin-top: 24px;
 }
 
 .brand {

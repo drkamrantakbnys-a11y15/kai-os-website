@@ -1,0 +1,357 @@
+---
+// Reusable comment UI (originally Website Next Phase Step 4; upgraded
+// to real persistence in the Live Website Intelligence & Community
+// Sprint). Two real, honestly-labeled states, decided at build time by
+// whether PUBLIC_SUPABASE_URL/PUBLIC_SUPABASE_ANON_KEY are set:
+//
+//   DEMO MODE (no backend configured): identical to the original
+//   behavior -- nothing typed here is stored, sent, or persisted,
+//   status badge says "In Development."
+//
+//   OPERATIONAL (backend configured): real comments, real timestamps,
+//   real replies, real reports -- backed by supabase/schema.sql. A
+//   failed request shows a real error, never a fake "posted" message.
+import { isBackendConfigured } from "../lib/supabase.js";
+
+interface Props {
+  topic: string;
+  prompt?: string;
+}
+const { topic, prompt } = Astro.props;
+const formId = `comment-form-${topic.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+---
+
+<section class="comment-section" data-comment-topic={topic} data-backend-configured={String(isBackendConfigured)}>
+  <div class="comment-head">
+    <h2>Discussion</h2>
+    {isBackendConfigured
+      ? <span class="status-badge status-operational">Operational</span>
+      : <span class="status-badge status-development">In Development</span>}
+  </div>
+  <p class="comment-intro">
+    {isBackendConfigured
+      ? "Real comments -- posted here are visible to everyone. Be kind; reports go to a human moderator, not an automatic filter."
+      : "Comments are not connected to a backend yet -- nothing you type below is saved, sent, or visible to anyone else. This is the real, working interface design; persistence is a future, separately-decided backend project."}
+  </p>
+  {prompt && <p class="comment-prompt">{prompt}</p>}
+
+  <form class="comment-form" id={formId}>
+    <div class="comment-form-row">
+      <label for={`${formId}-name`}>Name</label>
+      <input type="text" id={`${formId}-name`} name="name" placeholder="Your name (optional)" autocomplete="off" maxlength="80" />
+    </div>
+    <div class="comment-form-row">
+      <label for={`${formId}-body`}>Comment</label>
+      <textarea id={`${formId}-body`} name="body" rows="3" placeholder="Share a thought..." maxlength="2000"></textarea>
+    </div>
+    <div class="comment-form-actions">
+      <button type="submit" class="secondary-button comment-submit">Post Comment</button>
+      <span class="comment-form-note">
+        {isBackendConfigured ? "" : "Not saved anywhere yet -- see note above."}
+      </span>
+    </div>
+  </form>
+
+  <div class="comment-list" aria-live="polite">
+    <div class="comment-empty-state">
+      <p>
+        {isBackendConfigured
+          ? "Loading comments..."
+          : "No comments yet -- there's nowhere for them to live. This space is ready for a real comment (name, body, reply, like, report) the moment a backend is connected."}
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+.comment-section {
+  margin-top: 32px;
+  padding: 28px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.comment-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.comment-head h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.comment-intro {
+  margin: 0 0 20px;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  line-height: 1.65;
+  max-width: 640px;
+}
+
+.comment-prompt {
+  margin: 0 0 20px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--primary);
+  color: var(--text-main);
+  font-size: 13.5px;
+  font-weight: 700;
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.comment-form {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.comment-form-row {
+  display: grid;
+  gap: 6px;
+}
+
+.comment-form-row label {
+  color: var(--text-soft);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.comment-form-row input,
+.comment-form-row textarea {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(2, 6, 23, 0.5);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.comment-form-row input:focus-visible,
+.comment-form-row textarea:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.comment-form-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.comment-form-note {
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-style: italic;
+}
+
+.comment-empty-state {
+  padding: 18px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.comment-empty-state p {
+  margin: 0;
+}
+
+.comment-item {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(2, 6, 23, 0.4);
+  margin-bottom: 10px;
+}
+
+.comment-item--pinned {
+  border-color: rgba(56, 189, 248, 0.4);
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.comment-item-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.comment-item-name {
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.comment-item-time {
+  color: var(--text-muted);
+  font-size: 11.5px;
+}
+
+.comment-item-pin {
+  color: var(--primary);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.comment-item-body {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.comment-item-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.comment-item-action {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.comment-item-action:hover {
+  color: var(--primary);
+}
+</style>
+
+<script>
+  import { isBackendConfigured, getClient, safeCall } from "../lib/supabase.js";
+  import { getSessionId } from "../lib/session.js";
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function timeAgo(iso) {
+    const diffMs = Date.now() - new Date(iso).getTime();
+    const mins = Math.floor(diffMs / 60000);
+    if (mins < 1) return "just now";
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  }
+
+  async function renderComments(section) {
+    const topic = section.getAttribute("data-comment-topic");
+    const list = section.querySelector(".comment-list");
+    const client = getClient();
+
+    const result = await safeCall(() =>
+      client.from("comments").select("*").eq("topic", topic).order("status", { ascending: false }).order("created_at", { ascending: false })
+    );
+
+    if (!result.ok) {
+      list.innerHTML = `<div class="comment-empty-state"><p>${result.message}</p></div>`;
+      return;
+    }
+
+    const comments = result.data || [];
+    if (!comments.length) {
+      list.innerHTML = `<div class="comment-empty-state"><p>No comments yet -- be the first to share a thought.</p></div>`;
+      return;
+    }
+
+    list.innerHTML = comments.map((c) => `
+      <div class="comment-item ${c.status === "pinned" ? "comment-item--pinned" : ""}" data-comment-id="${c.id}">
+        <div class="comment-item-head">
+          <span class="comment-item-name">${escapeHtml(c.name || "Anonymous")}</span>
+          <span class="comment-item-time">${timeAgo(c.created_at)}</span>
+          ${c.status === "pinned" ? '<span class="comment-item-pin">Pinned</span>' : ""}
+        </div>
+        <p class="comment-item-body">${escapeHtml(c.body)}</p>
+        <div class="comment-item-actions">
+          <button type="button" class="comment-item-action" data-report="${c.id}">Report</button>
+        </div>
+      </div>
+    `).join("");
+
+    list.querySelectorAll("[data-report]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const commentId = btn.getAttribute("data-report");
+        btn.textContent = "Reporting...";
+        const res = await safeCall(() => client.from("comment_reports").insert({ comment_id: commentId }));
+        btn.textContent = res.ok ? "Reported" : res.message;
+        btn.disabled = true;
+      });
+    });
+  }
+
+  document.querySelectorAll(".comment-section").forEach((section) => {
+    const configured = section.getAttribute("data-backend-configured") === "true";
+
+    if (configured && isBackendConfigured) {
+      renderComments(section);
+    }
+
+    const form = section.querySelector(".comment-form");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const note = form.querySelector(".comment-form-note");
+      const nameInput = form.querySelector('input[name="name"]');
+      const bodyInput = form.querySelector('textarea[name="body"]');
+
+      if (!configured || !isBackendConfigured) {
+        if (note) note.textContent = "Not posted -- comments have no backend yet. Nothing was sent or saved.";
+        return;
+      }
+
+      const body = bodyInput.value.trim();
+      if (!body) {
+        note.textContent = "Write something before posting.";
+        return;
+      }
+
+      const client = getClient();
+      let user = null;
+      try {
+        const authResult = await client.auth.getUser();
+        user = authResult?.data?.user || null;
+      } catch {
+        // Not signed in, or auth unavailable -- comment posts as anonymous.
+      }
+      const topic = section.getAttribute("data-comment-topic");
+
+      note.textContent = "Posting...";
+      const result = await safeCall(() =>
+        client.from("comments").insert({
+          topic,
+          name: nameInput.value.trim() || "Anonymous",
+          body,
+          user_id: user ? user.id : null,
+        })
+      );
+
+      if (result.ok) {
+        note.textContent = "Posted.";
+        bodyInput.value = "";
+        renderComments(section);
+      } else {
+        note.textContent = result.message;
+      }
+    });
+  });
+</script>

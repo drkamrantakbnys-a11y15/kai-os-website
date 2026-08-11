@@ -1,0 +1,124 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import CommentSection from "../components/CommentSection.astro";
+import NextDiscovery from "../components/NextDiscovery.astro";
+import ReactionBar from "../components/ReactionBar.astro";
+import BookmarkButton from "../components/BookmarkButton.astro";
+import { EXPERIMENTS, EXPERIMENT_CATEGORIES } from "../data/experiments.js";
+---
+
+<Layout
+  title="Experiments | Project KAI"
+  description="Questions Project KAI is testing -- honestly labeled by whether they've actually been run."
+  canonicalPath="/experiments"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Experiments</p>
+        <h1 class="page-title">Questions we're testing -- honestly.</h1>
+        <p class="page-lede">
+          Every experiment below is labeled <span class="status-badge status-planned">Proposed</span> --
+          none has actually been run yet. When one runs for real, its result replaces the placeholder, never the other way around.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="discover-filters" id="exp-filters">
+          <button type="button" class="news-filter news-filter--active" data-filter="all">All</button>
+          {EXPERIMENT_CATEGORIES.map((cat) => (
+            <button type="button" class="news-filter" data-filter={cat}>{cat}</button>
+          ))}
+        </div>
+
+        <div class="exp-list" id="exp-list">
+          {EXPERIMENTS.map((e) => (
+            <article class="content-card exp-card" id={e.id} data-category={e.category}>
+              <div class="exp-head">
+                <span class="news-category-tag">{e.category}</span>
+                <span class="status-badge status-planned">{e.status}</span>
+              </div>
+              <h3>{e.title}</h3>
+              <dl class="exp-fields">
+                <div><dt>Question</dt><dd>{e.question}</dd></div>
+                <div><dt>Hypothesis</dt><dd>{e.hypothesis}</dd></div>
+                <div><dt>Method</dt><dd>{e.method}</dd></div>
+                <div><dt>Result</dt><dd>{e.result}</dd></div>
+                <div><dt>Limitations</dt><dd>{e.limitations}</dd></div>
+              </dl>
+              <div class="exp-card-actions">
+                <ReactionBar itemId={e.id} reactions={["Curious", "Skeptical", "Want This"]} />
+                <BookmarkButton itemId={e.id} itemType="Experiment" title={e.title} href={`/experiments#${e.id}`} />
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <NextDiscovery currentId="page-experiments" tags={["reviews", "discover"]} />
+
+        <CommentSection topic="Experiments" prompt="Which of these experiments would you want run first?" />
+
+        <p class="status-footnote">
+          No experiment above has been performed -- every "Result" field says so honestly. This
+          page exists to make the evaluation plan explicit before any system it depends on is built.
+        </p>
+        <div class="status-related-links">
+          <a href="/reviews">See App & Gadget Reviews →</a>
+          <a href="/agents">See the Agent Network →</a>
+          <a href="/media">Back to Media Network →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  const filterButtons = document.querySelectorAll("#exp-filters .news-filter");
+  const cards = document.querySelectorAll("#exp-list .exp-card");
+  filterButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      filterButtons.forEach((b) => b.classList.remove("news-filter--active"));
+      btn.classList.add("news-filter--active");
+      const filter = btn.getAttribute("data-filter");
+      cards.forEach((card) => {
+        card.hidden = !(filter === "all" || card.getAttribute("data-category") === filter);
+      });
+    });
+  });
+</script>
+
+<style>
+.discover-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 28px; }
+.news-filter { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--text-soft); font-size: 12.5px; font-weight: 700; cursor: pointer; transition: 0.2s ease; }
+.news-filter:hover, .news-filter:focus-visible { border-color: var(--border-bright); color: var(--primary); }
+.news-filter--active { border-color: var(--border-bright); background: rgba(56, 189, 248, 0.12); color: var(--primary); }
+
+.exp-list { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 40px; }
+.exp-card { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.exp-head { display: flex; align-items: center; justify-content: space-between; }
+.news-category-tag { padding: 4px 10px; border-radius: 999px; background: rgba(129, 140, 248, 0.12); color: var(--violet); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.exp-card h3 { margin: 0; font-size: 17px; }
+
+.exp-fields { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 0; }
+.exp-fields div { min-width: 0; padding: 10px 12px; border-radius: 8px; background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border); }
+.exp-fields dt { margin: 0 0 4px; color: var(--text-muted); font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+.exp-fields dd { margin: 0; color: var(--text-soft); font-size: 13px; line-height: 1.6; }
+
+.exp-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.status-related-links a { color: var(--primary); }
+</style>

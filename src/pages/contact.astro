@@ -5,8 +5,8 @@ import Footer from "../components/Footer.astro";
 ---
 
 <Layout
-  title="Contact Project KAI | KAI OS Collaboration"
-  description="Contact Project KAI for collaboration, research, launch, and practical KAI OS workflow inquiries."
+  title="Contact Project KAI"
+  description="Contact Project KAI for collaboration, research, launch, and practical AI workflow inquiries."
   canonicalPath="/contact"
 >
   <Header />
@@ -25,9 +25,21 @@ import Footer from "../components/Footer.astro";
     <section class="page-section">
       <div class="container content-grid">
         <article class="content-card wide-card">
-          <h2>Contact Path</h2>
-          <p>
-            Use your preferred direct contact channel for now. A backend form, CRM, newsletter signup, and analytics stack are intentionally not connected yet.
+          <h2>Direct Contact</h2>
+          <div class="contact-methods">
+            <a class="contact-method" href="mailto:drkamrantakbnys@gmail.com">
+              <span class="contact-method-label">Email</span>
+              <span class="contact-method-value">drkamrantakbnys@gmail.com</span>
+            </a>
+            <a class="contact-method" href="tel:+919414319787">
+              <span class="contact-method-label">Phone</span>
+              <span class="contact-method-value">+91 94143 19787</span>
+            </a>
+          </div>
+          <p class="contact-note">
+            No backend form, CRM, newsletter signup, or analytics stack is connected yet -- this is a direct
+            line, not a ticketing system. A dedicated Project KAI address and number will replace these as
+            the company stands up its own infrastructure; this page will be updated when that happens.
           </p>
         </article>
 
@@ -43,3 +55,46 @@ import Footer from "../components/Footer.astro";
 
   <Footer />
 </Layout>
+
+<style>
+.contact-methods {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.contact-method {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px;
+  border-radius: 8px;
+  background: rgba(148, 163, 184, 0.06);
+  border: 1px solid var(--border);
+  transition: 0.2s ease;
+}
+
+.contact-method:hover {
+  border-color: var(--border-bright);
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.contact-method-label {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.contact-method-value {
+  color: var(--text-main);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.contact-note {
+  color: var(--text-muted) !important;
+  font-size: 13.5px !important;
+}
+</style>

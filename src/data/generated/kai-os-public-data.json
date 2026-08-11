@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-09T09:57:15.066531+00:00",
+  "generated_at": "2026-08-11T20:16:15.123988+00:00",
   "note": "Generated from the KAI OS repository during the latest website data-sync run. Not live.",
   "agents": {
     "total_capabilities": 13,
@@ -24,20 +24,82 @@
     "source": "KAI OS desktop operator subsystem"
   },
   "engineering": {
-    "total_test_files": 687,
+    "total_test_files": 746,
     "source": "KAI OS automated test suite"
   },
   "production": {
-    "queue_total": 25,
+    "queue_total": 18,
     "queue_status_counts": {
-      "produced_awaiting_review": 12,
-      "queued": 13
+      "produced_awaiting_review": 6,
+      "queued": 12
     },
-    "completed_total": 5
+    "completed_total": 12
   },
+  "security": {
+    "total_capabilities_declared": 11,
+    "active_capabilities": [
+      {
+        "capability": "knowledge.search",
+        "agent": "knowledge_brain",
+        "risk": "LOW"
+      },
+      {
+        "capability": "memory.search",
+        "agent": "developer_memory",
+        "risk": "LOW"
+      },
+      {
+        "capability": "memory.write",
+        "agent": "developer_memory",
+        "risk": "LOW"
+      }
+    ],
+    "active_capability_count": 3,
+    "security_test_file_count": 17,
+    "controls": [
+      "Default-deny capability authorization",
+      "Centralized security policy, independently re-verified per request",
+      "Single controlled-execution chokepoint",
+      "Revocation",
+      "Global kill switch",
+      "Agent-level kill switch",
+      "Capability-level kill switch",
+      "Rate limiting",
+      "Audit events with secret redaction",
+      "Fail-closed policy-error handling",
+      "Validation-failure handling"
+    ],
+    "activation_principle": "Capabilities are activated individually, for one specific agent, only after an explicit evidence review -- never merely because a capability is declared.",
+    "source": "KAI OS orchestration/security package (SecurityPolicy, ControlledExecutor, activated_policy.py)"
+  },
+  "trading": {
+    "scheduler_status": {
+      "total_jobs": 0,
+      "by_last_status": {}
+    },
+    "paper_trading_status": "UNAVAILABLE",
+    "strategies_by_state": {
+      "DEBATED": 3
+    },
+    "source": "KAI OS scheduler_jobs.json / paper_trading_sessions.json / strategy_promotion_state (real on-disk state, not a live kernel read)"
+  },
+  "channels": [
+    {
+      "id": "UCgEKqjS1eM4Q8KUxloKVNKA",
+      "name": "ProjectKAIAI",
+      "role": "PRIMARY",
+      "focus": "Discovery, technology, science, and the future"
+    },
+    {
+      "id": "UC75pRQ4fzmpNDXUSaI9BNKQ",
+      "name": "Project Kai AI Lessons",
+      "role": "SECONDARY",
+      "focus": "Practical AI education and tutorials"
+    }
+  ],
   "knowledge_brain": {
-    "total_reports": 98,
-    "root_reports": 53,
+    "total_reports": 107,
+    "root_reports": 62,
     "topic_reports": 45,
     "mechanism": "Word-overlap keyword search (lowercase alphanumeric tokens, ranked by intersection count). Not semantic search -- no embeddings, no vector index.",
     "persisted_index": false,

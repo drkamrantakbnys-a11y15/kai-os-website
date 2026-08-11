@@ -49,6 +49,7 @@ body {
     Arial,
     sans-serif;
   overflow-x: hidden;
+  overflow-wrap: break-word;
 }
 
 a {
@@ -375,6 +376,87 @@ section {
   background: rgba(148, 163, 184, 0.1);
   border: 1px dashed rgba(148, 163, 184, 0.34);
   color: var(--text-soft);
+}
+
+/* --------------------------------------------------------------------
+   Four-tier status system (Website Next Phase, Step 1).
+
+   Deliberately separate from .status-pill above, not a repaint of it --
+   .status-pill's variants (--operational, --in-development, --planned,
+   --coming-soon, etc.) are already load-bearing on real, shipped pages
+   (/status, /agents, /security, /desktop-operator, /docs) with their
+   own established meanings. Overloading "in-development" (existing:
+   blue) to mean this system's "Experimental" tier, or reusing
+   "partially-implemented" (existing: yellow) to mean this system's
+   "In Development" tier, would silently change what those pages
+   already say without touching a word of their content.
+
+   This system exists for the new Command-Center-era pages (Command
+   Center, Memory, Facts, Jokes, Future Radar, News, Experiments, Agent
+   Builder, Community, Roadmap, Activity) and any future page that
+   wants exactly these four concepts:
+     OPERATIONAL   -- actually working today
+     DEVELOPMENT   -- being actively built/tested
+     EXPERIMENTAL  -- prototype/research/early exploration
+     PLANNED       -- future capability, not started
+
+   Usage: <span class="status-badge status-operational">Operational</span>
+   -------------------------------------------------------------------- */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  width: max-content;
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.status-badge::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-operational {
+  background: rgba(74, 222, 128, 0.13);
+  border: 1px solid rgba(74, 222, 128, 0.38);
+  color: #4ade80;
+}
+
+.status-development {
+  background: rgba(250, 204, 21, 0.13);
+  border: 1px solid rgba(250, 204, 21, 0.38);
+  color: #facc15;
+}
+
+.status-experimental {
+  background: rgba(129, 140, 248, 0.14);
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  color: var(--violet);
+}
+
+.status-planned {
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px dashed rgba(148, 163, 184, 0.36);
+  color: var(--text-muted);
+}
+
+.status-planned::before {
+  background: transparent;
+  border: 1.5px solid currentColor;
+  width: 5px;
+  height: 5px;
 }
 
 @media (max-width: 1100px) {

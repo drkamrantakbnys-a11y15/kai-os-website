@@ -1,0 +1,325 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import kaiOsData from "../data/generated/kai-os-public-data.json";
+
+const { desktop_operator, security, generated_at, note } = kaiOsData;
+
+const generatedDate = new Date(generated_at).toLocaleDateString("en-US", {
+  year: "numeric", month: "long", day: "numeric",
+});
+
+// Two distinct real systems, deliberately not conflated:
+// 1. The security mediation pipeline (orchestration/security) -- REAL and
+//    OPERATIONAL today, governing every one of the 3 active capabilities.
+// 2. The desktop_operator package -- a real, extensively-tested command/
+//    control SCAFFOLD for future controlled desktop interaction, whose
+//    own module docstring says it does not yet observe or control
+//    anything live. The stage labels below are shared because both
+//    systems are built around the same architectural principle, not
+//    because both are equally live.
+const PIPELINE = [
+  {
+    stage: "Intent",
+    description: "An agent or a human operator states what it wants to do -- a specific capability, on a specific target, for a stated reason.",
+    status: "planning-only-today",
+  },
+  {
+    stage: "Planning",
+    description: "For desktop-level tasks: a synthetic task planner breaks the request into steps before anything is attempted. Real scaffold, not live.",
+    status: "in-development",
+  },
+  {
+    stage: "Security Policy",
+    description: "The request is checked against a default-deny SecurityPolicy -- an agent can only act within a capability it has been explicitly, individually granted.",
+    status: "operational",
+  },
+  {
+    stage: "Capability Check",
+    description: "The exact capability requested is independently re-evaluated against the policy on every single call -- never cached, never trusted from a prior check.",
+    status: "operational",
+  },
+  {
+    stage: "Approval",
+    description: "LOW-risk capabilities proceed without a human in the loop; anything classified higher-risk requires an explicit human approval gate before execution.",
+    status: "operational",
+  },
+  {
+    stage: "Controlled Execution",
+    description: "Only one code path is allowed to actually call an agent's execute() method -- the ControlledExecutor. Nothing else in the system is permitted to bypass it.",
+    status: "operational",
+  },
+  {
+    stage: "Validation",
+    description: "Content-safety scanning and filesystem-boundary checks run against the actual result before it's accepted -- rejecting the record if a check fails, not just logging a warning.",
+    status: "operational",
+  },
+  {
+    stage: "Audit",
+    description: "Every outcome -- allowed, denied, rate-limited, kill-switched, or failed -- is written to an append-only audit log with secrets redacted, whether or not the action itself succeeded.",
+    status: "operational",
+  },
+];
+
+const STATUS_LABEL: Record<string, string> = {
+  "operational": "Operational",
+  "in-development": "In Development",
+  "planning-only-today": "Design Stage",
+};
+
+function pillClass(status: string) {
+  if (status === "operational") return "status-pill--operational";
+  if (status === "in-development") return "status-pill--in-development";
+  return "status-pill--planned";
+}
+---
+
+<Layout
+  title="Desktop Operator & Command Control | Project KAI"
+  description="How KAI OS mediates every privileged action -- from intent to audit -- and the real, current status of the Desktop Operator subsystem specifically."
+  canonicalPath="/desktop-operator"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Command &amp; Control</p>
+        <h1 class="page-title">Every privileged action flows through one gate. Nothing skips it.</h1>
+        <p class="page-lede">
+          Two related things live under this name, and they are at very different stages: a real, <strong>operational</strong>
+          security mediation pipeline that already governs every active
+          KAI OS capability, and <strong>Desktop Operator</strong> -- a real, extensively-tested, but
+          not-yet-activated scaffold for future controlled desktop interaction. This page keeps them
+          clearly separate rather than letting one borrow the other's credibility. Generated {generatedDate}. {note}
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">The Pipeline</div>
+          <h2 class="section-title">Intent to audit, in eight stages.</h2>
+          <p class="section-subtitle">
+            Every stage below is real architecture, not a diagram invented for this page. Status
+            reflects what's actually true of that specific stage today -- not the pipeline as a whole.
+          </p>
+        </div>
+
+        <div class="pipeline-list">
+          {PIPELINE.map((step, i) => (
+            <div class="pipeline-step">
+              <div class="pipeline-step-index">{String(i + 1).padStart(2, "0")}</div>
+              <div class="pipeline-step-body">
+                <div class="pipeline-step-head">
+                  <h3>{step.stage}</h3>
+                  <span class={`status-pill ${pillClass(step.status)}`}>{STATUS_LABEL[step.status]}</span>
+                </div>
+                <p>{step.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container status-grid">
+        <article class="content-card status-card">
+          <div class="section-badge">Security Pipeline (stages 3–8)</div>
+          <h2>Live today</h2>
+          <p>
+            The default-deny policy, capability check, approval gate, controlled execution chokepoint,
+            content-safety validation, and audit logging are real, tested, and actively enforced --
+            right now, for every one of the {security.active_capability_count} active capabilities.
+            This is not a simulation and not a future plan.
+          </p>
+          <p class="status-meta"><a href="/security">See the full security architecture →</a></p>
+        </article>
+
+        <article class="content-card status-card">
+          <div class="section-badge">Desktop Operator (stages 1–2, and beyond)</div>
+          <h2>{desktop_operator.status}</h2>
+          <p>{desktop_operator.status_detail}</p>
+          <p class="status-note">{desktop_operator.human_control}</p>
+          <p class="status-meta">{desktop_operator.test_file_count} real automated tests cover this subsystem -- extensive test coverage for a system that does not yet act on anything live.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="content-card wide-card">
+          <h2>What "extensively tested but not live" actually means</h2>
+          <p>
+            Desktop Operator has real code for task planning, controlled adapters, execution simulation,
+            screenshot-based observation, and a human review queue -- each with its own dedicated test
+            suite. None of it is wired to observe or control a real desktop today. That's a deliberate
+            build order: the approval gating, kill switches, and audit trail were built <em>before</em> any
+            live automation, not added afterward. The package's own module documentation states this
+            directly, not as a caveat buried in a report -- it's the first thing it says.
+          </p>
+          <p class="status-footnote-inline">
+            Nothing on this page claims Desktop Operator currently observes, clicks, types into, or
+            otherwise controls this machine or any other. When that changes, it will change here first.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <p class="status-footnote">
+          This page will be updated the moment any part of Desktop Operator moves from "In Development"
+          to live -- not retroactively, not in a batch with unrelated changes.
+        </p>
+        <div class="status-related-links">
+          <a href="/security">See the full security architecture →</a>
+          <a href="/status">See overall system status →</a>
+          <a href="/docs">Explore the documentation index →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.pipeline-list {
+  display: grid;
+  gap: 14px;
+  max-width: 820px;
+  margin: 40px auto 0;
+}
+
+.pipeline-step {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 18px;
+  padding: 20px;
+  border-radius: 8px;
+  background: rgba(148, 163, 184, 0.05);
+  border: 1px solid var(--border);
+}
+
+.pipeline-step-index {
+  color: var(--primary);
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.pipeline-step-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.pipeline-step-head h3 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--text-main);
+}
+
+.pipeline-step-body p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.status-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.status-card h2 {
+  margin: 4px 0 0;
+  font-size: 22px;
+}
+
+.status-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.status-note {
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.08);
+  border-left: 2px solid var(--text-muted);
+  color: var(--text-muted) !important;
+  font-size: 13px !important;
+}
+
+.status-meta {
+  color: var(--text-muted) !important;
+  font-size: 13px !important;
+}
+
+.status-footnote-inline {
+  margin-top: 16px !important;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted) !important;
+  font-size: 13.5px !important;
+  font-weight: 700;
+}
+
+.status-footnote {
+  max-width: 640px;
+  margin: 0 auto;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.status-related-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-top: 20px;
+}
+
+.status-related-links a {
+  color: var(--primary);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.status-related-links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pipeline-step {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .pipeline-step-index {
+    font-size: 16px;
+  }
+}
+</style>

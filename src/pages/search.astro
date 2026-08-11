@@ -1,0 +1,234 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { CONTENT_INDEX } from "../data/contentIndex.js";
+import TrendingPicks from "../components/TrendingPicks.astro";
+
+const TYPES = [...new Set(CONTENT_INDEX.map((i) => i.type))].sort();
+---
+
+<Layout
+  title="Search | Project KAI"
+  description="Client-side search across facts, jokes, news, future radar, discoveries, experiments, and reviews."
+  canonicalPath="/search"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Search</p>
+        <h1 class="page-title">Search across the whole Media Network.</h1>
+        <p class="page-lede">
+          Client-side search over {CONTENT_INDEX.length} real items -- facts, jokes, news, future
+          radar, discoveries, experiments, reviews, and learning paths. No backend, no external search API.
+        </p>
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="Search for a topic, category, or type..." aria-label="Search" autofocus />
+        </div>
+        <div class="search-controls">
+          <select id="search-type-filter" aria-label="Filter by type">
+            <option value="all">All types</option>
+            {TYPES.map((t) => <option value={t}>{t}</option>)}
+          </select>
+          <select id="search-sort" aria-label="Sort results">
+            <option value="relevance">Sort: Relevance</option>
+            <option value="az">Sort: A-Z</option>
+            <option value="newest">Sort: Newest</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="search-results" id="search-results">
+          <p class="search-empty">Start typing to search.</p>
+        </div>
+        <div id="search-empty-recommendations">
+          <TrendingPicks />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script define:vars={{ INDEX: CONTENT_INDEX }}>
+  const input = document.getElementById("search-input");
+  const results = document.getElementById("search-results");
+  const typeFilter = document.getElementById("search-type-filter");
+  const sortSelect = document.getElementById("search-sort");
+
+  function search(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    return INDEX
+      .map((item) => {
+        const titleMatch = item.title.toLowerCase().includes(q);
+        const tagMatch = item.tags.some((t) => t.includes(q));
+        const categoryMatch = item.category.toLowerCase().includes(q);
+        const typeMatch = item.type.toLowerCase().includes(q);
+        if (!titleMatch && !tagMatch && !categoryMatch && !typeMatch) return null;
+        // Simple, explainable relevance: title match ranks highest.
+        const score = (titleMatch ? 3 : 0) + (tagMatch ? 2 : 0) + (categoryMatch ? 1 : 0) + (typeMatch ? 1 : 0);
+        return { ...item, score };
+      })
+      .filter(Boolean);
+  }
+
+  function applyFiltersAndSort(items) {
+    let filtered = items;
+    const type = typeFilter.value;
+    if (type !== "all") {
+      filtered = filtered.filter((item) => item.type === type);
+    }
+    const sort = sortSelect.value;
+    if (sort === "az") {
+      filtered = [...filtered].sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sort === "newest") {
+      // Items without a real date sort to the end -- never treated as
+      // "newest" or "oldest" by a fabricated placeholder date.
+      filtered = [...filtered].sort((a, b) => {
+        if (!a.date && !b.date) return 0;
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return b.date.localeCompare(a.date);
+      });
+    } else {
+      filtered = [...filtered].sort((a, b) => b.score - a.score);
+    }
+    return filtered;
+  }
+
+  function render(query) {
+    const recommendations = document.getElementById("search-empty-recommendations");
+    if (!query.trim()) {
+      results.innerHTML = `<p class="search-empty">Start typing to search -- or explore a KAI Editorial Pick below.</p>`;
+      if (recommendations) recommendations.hidden = false;
+      return;
+    }
+    if (recommendations) recommendations.hidden = true;
+    const items = applyFiltersAndSort(search(query));
+    if (!items.length) {
+      results.innerHTML = `<p class="search-empty">No matches for "${query}".</p>`;
+      return;
+    }
+    results.innerHTML = `<div class="search-grid">${items.map((item) => `
+      <a class="content-card search-result-card" href="${item.href}">
+        <span class="news-category-tag">${item.type}</span>
+        <h3>${item.title}</h3>
+        <p>${item.category}</p>
+      </a>`).join("")}</div>`;
+  }
+
+  function rerender() {
+    render(input.value);
+  }
+
+  input?.addEventListener("input", rerender);
+  typeFilter?.addEventListener("change", rerender);
+  sortSelect?.addEventListener("change", rerender);
+
+  // Support ?q= deep links.
+  const params = new URLSearchParams(window.location.search);
+  const initial = params.get("q");
+  if (initial) {
+    input.value = initial;
+    render(initial);
+  }
+</script>
+
+<style>
+.search-box {
+  max-width: 560px;
+  margin: 32px auto 0;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.6);
+  color: var(--text-main);
+  font-size: 15px;
+}
+
+.search-box input:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.search-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.search-controls select {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.6);
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.search-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.search-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.search-result-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-result-card h3 {
+  margin: 0;
+  font-size: 15.5px;
+  color: var(--text-main);
+}
+
+.search-result-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.news-category-tag {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(129, 140, 248, 0.12);
+  color: var(--violet);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .search-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .search-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

@@ -1,0 +1,91 @@
+---
+// "Next Discovery" (Media Network + Engagement Expansion, Section 47).
+// Computed at build time from the real content index -- not a client
+// guess, not random. Picks up to 3 items sharing a tag with the
+// current item, excluding the current item itself.
+import { CONTENT_INDEX } from "../data/contentIndex.js";
+
+interface Props {
+  currentId: string;
+  tags?: string[];
+  count?: number;
+}
+const { currentId, tags = [], count = 3 } = Astro.props;
+
+function pick() {
+  const pool = CONTENT_INDEX.filter((item) => item.id !== currentId);
+  const matched = tags.length
+    ? pool.filter((item) => item.tags.some((t) => tags.includes(t)))
+    : [];
+  const rest = pool.filter((item) => !matched.includes(item));
+  return [...matched, ...rest].slice(0, count);
+}
+
+const items = pick();
+---
+
+{items.length > 0 && (
+  <div class="next-discovery">
+    <span class="section-badge">Next Discovery</span>
+    <div class="next-discovery-grid">
+      {items.map((item) => (
+        <a href={item.href} class="next-discovery-item">
+          <span class="next-discovery-type">{item.type}</span>
+          <span class="next-discovery-title">{item.title}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+)}
+
+<style>
+.next-discovery {
+  display: grid;
+  gap: 14px;
+  margin: 40px 0;
+}
+
+.next-discovery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.next-discovery-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.5);
+  transition: 0.2s ease;
+}
+
+.next-discovery-item:hover,
+.next-discovery-item:focus-visible {
+  border-color: var(--border-bright);
+  transform: translateY(-2px);
+}
+
+.next-discovery-type {
+  color: var(--primary);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.next-discovery-title {
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .next-discovery-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

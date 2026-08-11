@@ -1,0 +1,127 @@
+---
+// "What Should I Watch/Explore?" (Media Network + Engagement
+// Expansion, Section 22). Precomputed at build time from the real
+// content index -- no external recommendation API, matching the
+// prompt's own instruction.
+import { EXPLORE_INTENTS, exploreByIntent } from "../data/contentIndex.js";
+
+const RESULTS = Object.fromEntries(
+  EXPLORE_INTENTS.map((intent) => [intent.label, exploreByIntent(intent.label).slice(0, 4)])
+);
+---
+
+<div class="explore-widget">
+  <div class="explore-intents">
+    {EXPLORE_INTENTS.map((intent) => (
+      <button type="button" class="explore-intent-btn" data-intent={intent.label}>{intent.label}</button>
+    ))}
+  </div>
+  <div class="explore-results" id="explore-results" hidden></div>
+</div>
+
+<script define:vars={{ RESULTS }}>
+  const results = RESULTS;
+  const panel = document.getElementById("explore-results");
+  document.querySelectorAll(".explore-intent-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".explore-intent-btn").forEach((b) => b.classList.remove("explore-intent-btn--active"));
+      btn.classList.add("explore-intent-btn--active");
+      const items = results[btn.getAttribute("data-intent")] || [];
+      if (!panel) return;
+      panel.innerHTML = items.length
+        ? items.map((item) => `<a class="explore-result-item" href="${item.href}"><span class="explore-result-type">${item.type}</span><span>${item.title}</span></a>`).join("")
+        : `<p class="explore-empty">Nothing matched yet -- more content is added regularly.</p>`;
+      panel.hidden = false;
+    });
+  });
+</script>
+
+<style>
+.explore-widget {
+  display: grid;
+  gap: 18px;
+}
+
+.explore-intents {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.explore-intent-btn {
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.explore-intent-btn:hover,
+.explore-intent-btn:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.explore-intent-btn--active {
+  border-color: var(--border-bright);
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--primary);
+}
+
+.explore-results {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.explore-result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.5);
+  color: var(--text-main);
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.explore-result-item:hover,
+.explore-result-item:focus-visible {
+  border-color: var(--border-bright);
+  transform: translateY(-2px);
+}
+
+.explore-result-type {
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.explore-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .explore-results {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .explore-results {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

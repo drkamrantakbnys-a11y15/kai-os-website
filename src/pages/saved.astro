@@ -1,0 +1,102 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout
+  title="Saved | Project KAI"
+  description="Content you've bookmarked -- stored on this device, and mirrored to your account if you're signed in."
+  canonicalPath="/saved"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Saved</p>
+        <h1 class="page-title">What you've bookmarked.</h1>
+        <p class="page-lede">
+          Stored on this device via your browser -- and mirrored to your account automatically if
+          you're signed in on a fully configured deployment. Nothing here is shared with anyone else.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div id="saved-list" class="saved-grid">
+          <p class="saved-empty">Loading...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  import { getLocalBookmarks } from "../lib/bookmarks.js";
+
+  const list = document.getElementById("saved-list");
+  const items = getLocalBookmarks();
+
+  if (!items.length) {
+    list.innerHTML = `<p class="saved-empty">Nothing saved yet -- look for the "Save" button on any Discover, Future Radar, News, or Review card.</p>`;
+  } else {
+    list.innerHTML = items.map((item) => `
+      <a class="content-card saved-card" href="${item.href}">
+        <span class="saved-type">${item.type}</span>
+        <span class="saved-title">${item.title}</span>
+      </a>
+    `).join("");
+  }
+</script>
+
+<style>
+.saved-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.saved-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.saved-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.saved-type {
+  color: var(--primary);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.saved-title {
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .saved-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .saved-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

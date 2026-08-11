@@ -1,0 +1,334 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import CommentSection from "../components/CommentSection.astro";
+import NextDiscovery from "../components/NextDiscovery.astro";
+import ReactionBar from "../components/ReactionBar.astro";
+import BookmarkButton from "../components/BookmarkButton.astro";
+import { NEWS, NEWS_CATEGORIES } from "../data/news.js";
+
+const STATUS_LABEL = { RECENT: "Recent", ARCHIVED: "Archived" };
+const STATUS_TIER = { RECENT: "status-operational", ARCHIVED: "status-planned" };
+const sorted = [...NEWS].sort((a, b) => (a.publicationDate < b.publicationDate ? 1 : -1));
+---
+
+<Layout
+  title="AI News Center | Project KAI"
+  description="Curated, sourced AI and technology news -- every item links to a real source. Not a live feed."
+  canonicalPath="/ai-news"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">AI News Center</p>
+        <h1 class="page-title">Real, sourced AI news -- curated, not live.</h1>
+        <p class="page-lede">
+          {NEWS.length} hand-checked stories with real source links, verified via live search on 2026-08-10.
+          There is no Research or News Agent running yet -- see <a href="/agents">the Agent Network</a> --
+          so this list does not update itself.
+          <span class="status-badge status-planned">Awaiting Research Agent</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="news-filters" id="news-filters">
+          <button type="button" class="news-filter news-filter--active" data-filter="all">All</button>
+          {NEWS_CATEGORIES.map((cat) => (
+            <button type="button" class="news-filter" data-filter={cat}>{cat}</button>
+          ))}
+        </div>
+
+        <div class="news-list" id="news-list">
+          {sorted.map((n) => (
+            <article class="content-card news-card" id={n.id} data-category={n.category}>
+              <div class="news-card-head">
+                <span class="news-category-tag">{n.category}</span>
+                <span class={`status-badge ${STATUS_TIER[n.status]}`}>{STATUS_LABEL[n.status]}</span>
+              </div>
+              <h3>{n.title}</h3>
+              <div class="news-fact-block">
+                <span class="news-fact-label">Verified Fact</span>
+                <p class="news-summary">{n.summary}</p>
+              </div>
+              <div class="news-meta">
+                <span>{n.publicationDate}</span>
+                <span>Importance: {n.importance}</span>
+                <span>Source quality: {n.sourceQuality.replace(/_/g, " ")}</span>
+              </div>
+              <a href={n.sourceUrl} target="_blank" rel="noopener noreferrer" class="news-source-link">Source: {n.source} →</a>
+
+              <div class="news-detail-grid">
+                <div>
+                  <span class="radar-detail-label">Why it matters</span>
+                  <p>{n.whyItMatters}</p>
+                </div>
+                <div>
+                  <span class="radar-detail-label">What changes</span>
+                  <p>{n.whatChanges}</p>
+                </div>
+              </div>
+
+              <div class="kai-take">
+                <span class="kai-take-label">KAI Analysis -- editorial perspective, not fact</span>
+                <p>{n.kaiTake}</p>
+              </div>
+              {n.kaiForecast && (
+                <div class="kai-take kai-take--forecast">
+                  <span class="kai-take-label">KAI Forecast -- exploratory, not a guarantee</span>
+                  <p>{n.kaiForecast}</p>
+                </div>
+              )}
+              <div class="news-card-footer-actions">
+                <button type="button" class="fact-share-btn" data-share-text={`${n.title} -- ${n.source}`}>Copy / Share</button>
+                <ReactionBar itemId={n.id} reactions={["Interesting", "Important", "Surprising"]} />
+                <BookmarkButton itemId={n.id} itemType="News" title={n.title} href={`/ai-news#${n.id}`} />
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <NextDiscovery currentId="page-ai-news" tags={["future", "discover"]} />
+
+        <CommentSection topic="AI News" prompt="Which of these stories matters most to you?" />
+
+        <p class="status-footnote">
+          Every item above has a real, checked source link -- nothing is fabricated. No live feed
+          exists yet; the Research and News Agents shown on <a href="/agents">the Agent Network</a>
+          are Planned, not built.
+        </p>
+        <div class="status-related-links">
+          <a href="/future-radar">See the Future Radar →</a>
+          <a href="/discover">Explore Discoveries →</a>
+          <a href="/media">Back to Media Network →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script src="../scripts/share.js"></script>
+<script>
+  const filterButtons = document.querySelectorAll(".news-filter");
+  const cards = document.querySelectorAll("#news-list .news-card");
+  filterButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      filterButtons.forEach((b) => b.classList.remove("news-filter--active"));
+      btn.classList.add("news-filter--active");
+      const filter = btn.getAttribute("data-filter");
+      cards.forEach((card) => {
+        card.hidden = !(filter === "all" || card.getAttribute("data-category") === filter);
+      });
+    });
+  });
+</script>
+
+<style>
+.news-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.news-filter {
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.news-filter:hover,
+.news-filter:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.news-filter--active {
+  border-color: var(--border-bright);
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--primary);
+}
+
+.news-list {
+  display: grid;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.news-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.news-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.news-category-tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(129, 140, 248, 0.12);
+  color: var(--violet);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.news-card h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.news-fact-block {
+  padding: 4px 0 4px 12px;
+  border-left: 3px solid #4ade80;
+}
+
+.news-fact-label {
+  display: block;
+  margin-bottom: 4px;
+  color: #4ade80;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.news-summary {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.news-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid var(--border);
+}
+
+.radar-detail-label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.news-detail-grid p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+@media (max-width: 700px) {
+  .news-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.news-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.news-source-link {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+  align-self: flex-start;
+}
+
+.news-source-link:hover {
+  text-decoration: underline;
+}
+
+.kai-take {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.kai-take--forecast {
+  border-color: rgba(129, 140, 248, 0.4);
+  background: rgba(129, 140, 248, 0.06);
+}
+
+.news-card-footer-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.kai-take-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kai-take p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.fact-share-btn {
+  align-self: flex-start;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.fact-share-btn:hover,
+.fact-share-btn:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.status-related-links a {
+  color: var(--primary);
+}
+</style>

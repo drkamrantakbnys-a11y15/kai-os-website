@@ -1,0 +1,210 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import CommentSection from "../components/CommentSection.astro";
+import NextDiscovery from "../components/NextDiscovery.astro";
+import BookmarkButton from "../components/BookmarkButton.astro";
+import { REVIEWS, REVIEW_CATEGORIES } from "../data/reviews.js";
+
+const STATUS_LABEL = { RESEARCHED: "Researched", NOT_YET_TESTED: "Not Yet Tested", TESTED: "Tested" };
+const STATUS_TIER = { RESEARCHED: "status-development", NOT_YET_TESTED: "status-planned", TESTED: "status-operational" };
+---
+
+<Layout
+  title="App & Gadget Reviews | Project KAI"
+  description="AI apps, tools, and gadgets -- honestly labeled by how deeply they were actually evaluated."
+  canonicalPath="/reviews"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Reviews</p>
+        <h1 class="page-title">AI apps and gadgets -- honestly labeled.</h1>
+        <p class="page-lede">
+          Every review states whether it's based on genuine hands-on testing or research only. No
+          review here claims hands-on testing that didn't happen.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="discover-filters" id="review-filters">
+          <button type="button" class="news-filter news-filter--active" data-filter="all">All</button>
+          {REVIEW_CATEGORIES.map((cat) => (
+            <button type="button" class="news-filter" data-filter={cat}>{cat}</button>
+          ))}
+        </div>
+
+        <div class="review-list" id="review-list">
+          {REVIEWS.map((r) => (
+            <article class="content-card review-card" id={r.id} data-category={r.category}>
+              <div class="exp-head">
+                <span class="news-category-tag">{r.category}</span>
+                <span class={`status-badge ${STATUS_TIER[r.status]}`}>{STATUS_LABEL[r.status]}</span>
+              </div>
+              <h3>{r.name}</h3>
+              <p class="review-what">{r.whatIsIt}</p>
+
+              <div class="review-grid">
+                <div><span class="radar-detail-label">Who it's for</span><p>{r.whoIsItFor}</p></div>
+                <div><span class="radar-detail-label">What it does</span><p>{r.whatDoesItDo}</p></div>
+              </div>
+
+              <div class="review-pros-cons">
+                <div>
+                  <span class="radar-detail-label">Best features</span>
+                  <ul>{r.bestFeatures.map((f) => <li>{f}</li>)}</ul>
+                </div>
+                <div>
+                  <span class="radar-detail-label">Weaknesses</span>
+                  <ul>{r.weaknesses.map((w) => <li>{w}</li>)}</ul>
+                </div>
+              </div>
+
+              <p class="review-real-world"><strong>Real-world use:</strong> {r.realWorldUse}</p>
+              <p class="review-real-world"><strong>Value:</strong> {r.value}</p>
+
+              <div class="review-ratings">
+                {Object.entries(r.ratings).map(([key, val]) => (
+                  <div class="review-rating-item">
+                    <span class="review-rating-label">{key.replace(/([A-Z])/g, " $1")}</span>
+                    <span class={`review-rating-value review-rating-value--${(val || "none").toLowerCase()}`}>{val || "Not rated"}</span>
+                  </div>
+                ))}
+              </div>
+              <p class="review-assessment-type">{r.assessmentType}</p>
+
+              <div class="kai-take">
+                <span class="kai-take-label">KAI Verdict -- editorial perspective</span>
+                <p>{r.kaiVerdict}</p>
+              </div>
+              <BookmarkButton itemId={r.id} itemType="Review" title={r.name} href={`/reviews#${r.id}`} />
+            </article>
+          ))}
+        </div>
+
+        <NextDiscovery currentId="page-reviews" tags={["experiments", "discover"]} />
+
+        <CommentSection topic="Reviews" prompt="Would you use this? Have you tried it yourself?" />
+
+        <p class="status-footnote">
+          "Researched" means genuine public product knowledge without hands-on testing by Project
+          KAI. Nothing here claims testing that didn't happen.
+        </p>
+        <div class="status-related-links">
+          <a href="/experiments">See Experiments →</a>
+          <a href="/discover">Explore Discoveries →</a>
+          <a href="/media">Back to Media Network →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  const filterButtons = document.querySelectorAll("#review-filters .news-filter");
+  const cards = document.querySelectorAll("#review-list .review-card");
+  filterButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      filterButtons.forEach((b) => b.classList.remove("news-filter--active"));
+      btn.classList.add("news-filter--active");
+      const filter = btn.getAttribute("data-filter");
+      cards.forEach((card) => {
+        card.hidden = !(filter === "all" || card.getAttribute("data-category") === filter);
+      });
+    });
+  });
+</script>
+
+<style>
+.discover-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 28px; }
+.news-filter { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--text-soft); font-size: 12.5px; font-weight: 700; cursor: pointer; transition: 0.2s ease; }
+.news-filter:hover, .news-filter:focus-visible { border-color: var(--border-bright); color: var(--primary); }
+.news-filter--active { border-color: var(--border-bright); background: rgba(56, 189, 248, 0.12); color: var(--primary); }
+
+.review-list { display: grid; gap: 24px; margin-bottom: 40px; }
+.review-card { display: flex; flex-direction: column; gap: 14px; }
+.exp-head { display: flex; align-items: center; justify-content: space-between; }
+.news-category-tag { padding: 4px 10px; border-radius: 999px; background: rgba(129, 140, 248, 0.12); color: var(--violet); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.review-card h3 { margin: 0; font-size: 19px; }
+.review-what { margin: 0; color: var(--text-soft); font-size: 13.5px; line-height: 1.65; }
+
+.review-grid, .review-pros-cons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.review-grid > div, .review-pros-cons > div {
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid var(--border);
+}
+
+.radar-detail-label { display: block; margin-bottom: 6px; color: var(--text-muted); font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; }
+.review-grid p { margin: 0; color: var(--text-soft); font-size: 12.5px; line-height: 1.55; }
+.review-pros-cons ul { margin: 0; padding-left: 16px; color: var(--text-soft); font-size: 12.5px; line-height: 1.6; }
+.review-pros-cons li { margin-bottom: 4px; }
+
+.review-real-world { margin: 0; color: var(--text-soft); font-size: 13px; line-height: 1.6; }
+
+.review-ratings {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.review-rating-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.review-rating-label {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.review-rating-value {
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.review-rating-value--high { color: #4ade80; }
+.review-rating-value--medium { color: #facc15; }
+.review-rating-value--low { color: #f87171; }
+.review-rating-value--none { color: var(--text-muted); font-weight: 600; font-style: italic; }
+
+.review-assessment-type {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-style: italic;
+}
+
+.kai-take { padding: 12px 14px; border-radius: 8px; border: 1px dashed var(--border); background: rgba(15, 23, 42, 0.4); }
+.kai-take-label { display: block; margin-bottom: 6px; color: var(--text-muted); font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+.kai-take p { margin: 0; color: var(--text-soft); font-size: 13.5px; line-height: 1.6; font-style: italic; }
+
+.status-related-links a { color: var(--primary); }
+
+@media (max-width: 700px) {
+  .review-grid, .review-pros-cons { grid-template-columns: 1fr; }
+  .review-ratings { grid-template-columns: repeat(2, 1fr); }
+}
+</style>

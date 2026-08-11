@@ -1,0 +1,203 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const STAGES = [
+  { key: "input", label: "Input", desc: "A task, topic, or question -- what the agent is being asked to do." },
+  { key: "research", label: "Research", desc: "Gather relevant information, always noting where it came from." },
+  { key: "analyze", label: "Analyze", desc: "Break the task down, check assumptions, identify what's actually known versus guessed." },
+  { key: "decide", label: "Decide", desc: "Choose an approach, with a stated reason -- never a silent, unexplained choice." },
+  { key: "create", label: "Create", desc: "Produce the actual output -- a draft, a plan, a piece of code." },
+  { key: "review", label: "Review", desc: "A human checks the output before it goes anywhere real." },
+  { key: "publish", label: "Publish", desc: "Only after human approval -- never automatic." },
+];
+
+const EXAMPLES = {
+  input: "\"Research whether AR glasses are close to mainstream.\"",
+  research: "Pulls from real, cited sources -- like the Future Radar's own sourced entries.",
+  analyze: "Notes: no single dated event confirms mainstream adoption yet -- see FUTURE-005.",
+  decide: "Decision: recommend a Future Radar entry with LOW confidence, not a News item.",
+  create: "Drafts the radar entry fields -- category, status, KAI Estimate, sources.",
+  review: "A human checks every source link and every probability label before anything ships.",
+  publish: "Only after approval does the entry ever appear on /future-radar.",
+};
+---
+
+<Layout
+  title="Agent Builder | Project KAI"
+  description="An educational, static walkthrough of how a KAI agent is designed to work -- not a tool for deploying real agents."
+  canonicalPath="/agent-builder"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Agent Builder</p>
+        <h1 class="page-title">How a KAI agent is designed to work.</h1>
+        <p class="page-lede">
+          <span class="status-badge status-experimental">Educational Demo</span>
+          This is a static walkthrough, not a tool for deploying real agents. Click a stage to see
+          a worked example drawn from Project KAI's own real content pipeline.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container">
+        <div class="builder-flow" id="builder-flow">
+          {STAGES.map((stage, i) => (
+            <>
+              <button type="button" class="builder-stage" data-stage={stage.key}>
+                <span class="builder-stage-num">{i + 1}</span>
+                <span class="builder-stage-label">{stage.label}</span>
+              </button>
+              {i < STAGES.length - 1 && <span class="builder-arrow">→</span>}
+            </>
+          ))}
+        </div>
+
+        <div class="content-card builder-detail" id="builder-detail">
+          <h3 id="builder-detail-title">Input</h3>
+          <p id="builder-detail-desc">{STAGES[0].desc}</p>
+          <div class="builder-example">
+            <span class="radar-detail-label">Worked example</span>
+            <p id="builder-detail-example">{EXAMPLES.input}</p>
+          </div>
+        </div>
+
+        <p class="status-footnote">
+          No agent runs when you click a stage -- every example above is a fixed, pre-written
+          illustration of Project KAI's own real Research Agent design (see
+          <a href="/agents">the Agent Network</a> and PROJECT_KAI_MEDIA_NETWORK_ARCHITECTURE.md).
+          Deploying real, user-defined agents is not available today.
+        </p>
+        <div class="status-related-links">
+          <a href="/agents">See the Agent Network →</a>
+          <a href="/command-center">Back to Command Center →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script define:vars={{ STAGES, EXAMPLES }}>
+  const buttons = document.querySelectorAll(".builder-stage");
+  const titleEl = document.getElementById("builder-detail-title");
+  const descEl = document.getElementById("builder-detail-desc");
+  const exampleEl = document.getElementById("builder-detail-example");
+
+  buttons.forEach((btn, i) => {
+    if (i === 0) btn.classList.add("builder-stage--active");
+    btn.addEventListener("click", () => {
+      buttons.forEach((b) => b.classList.remove("builder-stage--active"));
+      btn.classList.add("builder-stage--active");
+      const key = btn.getAttribute("data-stage");
+      const stage = STAGES.find((s) => s.key === key);
+      titleEl.textContent = stage.label;
+      descEl.textContent = stage.desc;
+      exampleEl.textContent = EXAMPLES[key];
+    });
+  });
+</script>
+
+<style>
+.builder-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 32px;
+}
+
+.builder-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.5);
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.builder-stage:hover,
+.builder-stage:focus-visible {
+  border-color: var(--border-bright);
+}
+
+.builder-stage--active {
+  border-color: rgba(56, 189, 248, 0.5);
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--primary);
+}
+
+.builder-stage-num {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.builder-stage-label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.builder-arrow {
+  color: var(--text-muted);
+}
+
+.builder-detail {
+  max-width: 640px;
+  margin: 0 auto 40px;
+  gap: 14px;
+}
+
+.builder-detail h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.builder-detail p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.builder-example {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.radar-detail-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.status-related-links a {
+  color: var(--primary);
+}
+
+@media (max-width: 700px) {
+  .builder-flow {
+    flex-direction: column;
+  }
+  .builder-arrow {
+    transform: rotate(90deg);
+  }
+}
+</style>

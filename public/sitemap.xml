@@ -10,6 +10,33 @@
     <loc>https://projectkai.dev/agents</loc>
   </url>
   <url>
+    <loc>https://projectkai.dev/security</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/desktop-operator</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/command-center</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/fun-facts</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/ai-jokes</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/status</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/changelog</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/docs</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/knowledge</loc>
+  </url>
+  <url>
     <loc>https://projectkai.dev/research</loc>
   </url>
   <url>
@@ -17,6 +44,39 @@
   </url>
   <url>
     <loc>https://projectkai.dev/blog/practical-ai-workflows-for-solo-creators/</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/media</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/learn</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/saved</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/discover</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/future-radar</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/ai-news</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/experiments</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/reviews</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/agent-builder</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/analytics</loc>
+  </url>
+  <url>
+    <loc>https://projectkai.dev/search</loc>
   </url>
   <url>
     <loc>https://projectkai.dev/contact</loc>

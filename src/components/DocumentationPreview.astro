@@ -253,13 +253,19 @@ function statusClass(status: string) {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
 }
 
 .doc-card-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.doc-card-header h3 {
+  min-width: 0;
 }
 
 .doc-card-header h3 {

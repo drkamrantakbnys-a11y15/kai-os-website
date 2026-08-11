@@ -7,6 +7,7 @@ import kaiOsData from "../data/generated/kai-os-public-data.json";
 
 const LAST_UPDATED = AGENTS_LAST_UPDATED;
 const { total_capabilities, capability_status_counts } = kaiOsData.agents;
+const { production } = kaiOsData;
 
 // Slugs with a matching node in AgentEcosystem.astro's real pipeline flow
 // (verified by direct cross-reference against that component's FLOW array).
@@ -21,11 +22,108 @@ function statusClass(status: string) {
   if (status === "Coming Soon") return "status-pill--coming-soon";
   return "status-pill--planned";
 }
+
+// AI Agent Network (Website Next Phase, Step 3) -- a product-facing,
+// conceptual view of what KAI's agent ecosystem could grow into,
+// distinct from the technical sub_agents.py registry rendered below.
+// Deliberately not a duplicate: where a conceptual role already has a
+// real, declared technical counterpart (Research, Analytics), its card
+// links down to that real card instead of re-describing it differently.
+// Everything without existing code is honestly Planned -- none of this
+// implies a new backend agent was built; this section is presentation
+// only, per this step's explicit "public website representation only" scope.
+const AGENT_NETWORK = [
+  {
+    name: "YouTube / Content", tier: "status-operational", label: "Operational",
+    mission: `Researches, writes, assembles, and publishes videos end-to-end. ${production.completed_total} real uploads to date.`,
+    link: { href: "/status", text: "See production status" },
+  },
+  {
+    name: "Research", tier: "status-planned", label: "Planned",
+    mission: "Would source, verify, and summarize information to feed future pages like AI News and Future Radar.",
+    link: { href: "#sub-agent-research", text: "See the declared technical agent" },
+  },
+  {
+    name: "News", tier: "status-planned", label: "Planned",
+    mission: "Would discover and summarize AI news automatically. A hand-curated AI News Center is already live -- this agent would only automate how it grows and keep it current.",
+    link: { href: "/ai-news", text: "See the curated collection" },
+  },
+  {
+    name: "Community", tier: "status-planned", label: "Planned",
+    mission: "Would power future discussion and community features. No backend, no accounts, no stored comments exist today -- comment UI is live across the Media Network, but nothing typed into it is saved.",
+    link: { href: "/media", text: "Explore the Media Network" },
+  },
+  {
+    name: "Comment", tier: "status-planned", label: "Planned",
+    mission: "Would draft on-brand reply suggestions for human review -- never auto-posts. Not yet started; the full design (intent detection, tone, mandatory human approval) is documented.",
+    link: { href: "/command-center#comment-assistant", text: "See the Comment Assistant design" },
+  },
+  {
+    name: "Future Radar", tier: "status-planned", label: "Planned",
+    mission: "Would research and maintain a future-technology signal set automatically. A hand-curated Future Radar is already live -- this agent would only automate how it updates.",
+    link: { href: "/future-radar", text: "See the live radar" },
+  },
+  {
+    name: "Fun Facts", tier: "status-planned", label: "Planned",
+    mission: "Would automatically source and verify new AI facts. A small, hand-curated collection is already live -- this agent would only automate how it grows.",
+    link: { href: "/fun-facts", text: "See the live collection" },
+  },
+  {
+    name: "Joke", tier: "status-planned", label: "Planned",
+    mission: "Would automatically curate new AI jokes. A small, hand-curated collection is already live -- this agent would only automate how it grows.",
+    link: { href: "/ai-jokes", text: "See the live collection" },
+  },
+  {
+    name: "Analytics", tier: "status-planned", label: "Planned",
+    mission: "Would track and interpret real production/YouTube performance beyond today's view/like/comment counts.",
+    link: { href: "#sub-agent-analytics", text: "See the declared technical agent" },
+  },
+  {
+    name: "Affiliate", tier: "status-planned", label: "Planned",
+    mission: "Future capability for identifying and managing affiliate revenue opportunities. Not yet started.",
+    link: null,
+  },
+  {
+    name: "Digital Products", tier: "status-planned", label: "Planned",
+    mission: "Future capability for building and managing digital products. Not yet started.",
+    link: null,
+  },
+  {
+    name: "Freelance", tier: "status-planned", label: "Planned",
+    mission: "Future capability for sourcing and completing freelance work. Not yet started.",
+    link: null,
+  },
+  {
+    name: "Remote Job", tier: "status-planned", label: "Planned",
+    mission: "Future capability for identifying remote work opportunities. Not yet started.",
+    link: null,
+  },
+  {
+    name: "Trading", tier: "status-planned", label: "Planned",
+    mission: "A separate, independent trading system already exists in the KAI OS backend. It is not connected to this website, shows no live data here, and stays out of scope until a separate integration project explicitly authorizes it.",
+    link: null,
+  },
+  {
+    name: "Web3", tier: "status-planned", label: "Planned",
+    mission: "Future capability for on-chain / decentralized-web interaction. Not yet started.",
+    link: null,
+  },
+  {
+    name: "Content Router", tier: "status-operational", label: "Operational",
+    mission: "Deterministically assigns any content category to ProjectKAIAI or Project Kai AI Lessons, with a stated reason -- real and running today, not a placeholder.",
+    link: { href: "/media", text: "See the router demo" },
+  },
+  {
+    name: "Recommendation", tier: "status-operational", label: "Operational",
+    mission: "Surprise Me and What Should I Explore both run today over the real content index -- deterministic, not machine-learned. A smarter, personalization-aware version remains Planned.",
+    link: { href: "/media", text: "Try the recommenders" },
+  },
+];
 ---
 
 <Layout
-  title="All 13 KAI OS Agents | Project KAI"
-  description="The complete, real KAI OS agent architecture -- 13 specialized agents, each with an honest Capability Status and Autonomous Agent Status."
+  title="The Project KAI Agent Network | 13 Real Agents"
+  description="The complete, real Project KAI agent architecture -- 13 specialized agents, each with an honest Capability Status and Autonomous Agent Status."
   canonicalPath="/agents"
 >
   <Header />
@@ -34,9 +132,9 @@ function statusClass(status: string) {
     <section class="page-hero">
       <div class="container">
         <p class="page-kicker">AI Agent Ecosystem</p>
-        <h1 class="page-title">The complete KAI OS agent architecture -- 13 agents, honestly labeled.</h1>
+        <h1 class="page-title">The complete Project KAI agent architecture -- 13 agents, honestly labeled.</h1>
         <p class="page-lede">
-          Every agent below is real and documented in the KAI OS codebase
+          Every agent below is real and documented in the Project KAI codebase
           (<code>sub_agents/agents.py</code>). Two statuses are shown for each, on purpose:
           <strong>Capability Status</strong> -- is the underlying work actually happening in
           production today -- and <strong>Autonomous Agent Status</strong> -- is it running as
@@ -61,6 +159,33 @@ function statusClass(status: string) {
       </div>
     </section>
 
+    <section class="page-section network-section">
+      <div class="container">
+        <div class="section-center">
+          <div class="section-badge">AI Agent Network</div>
+          <h2 class="section-title">Where the agent ecosystem is headed.</h2>
+          <p class="section-subtitle">
+            A product-facing view of the roles KAI's agent ecosystem could grow into -- distinct
+            from the technical registry below. Only YouTube / Content is real today; everything
+            else is honestly Planned, with no fabricated capability or timeline.
+          </p>
+        </div>
+
+        <div class="network-grid">
+          {AGENT_NETWORK.map((item) => (
+            <article class="content-card network-card">
+              <div class="network-card-head">
+                <h3>{item.name}</h3>
+                <span class={`status-badge ${item.tier}`}>{item.label}</span>
+              </div>
+              <p>{item.mission}</p>
+              {item.link && <a class="network-card-link" href={item.link.href}>{item.link.text} →</a>}
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
     {LAYERS.map((layer) => {
       const layerAgents = AGENTS.filter((agent) => agent.layer === layer.key);
       if (!layerAgents.length) return null;
@@ -73,7 +198,7 @@ function statusClass(status: string) {
             </div>
             <div class="agents-full-grid">
               {layerAgents.map((agent) => (
-                <article class="content-card agent-detail-card">
+                <article class="content-card agent-detail-card" id={`sub-agent-${agent.slug}`}>
                   <div class="agent-status-row">
                     <div class="agent-status-item">
                       <span class="agent-status-label">Capability</span>
@@ -126,6 +251,65 @@ function statusClass(status: string) {
 </Layout>
 
 <style>
+.network-section {
+  padding-bottom: 24px;
+}
+
+.network-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.network-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.network-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.network-card-head h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.network-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13.5px;
+  line-height: 1.65;
+  flex-grow: 1;
+}
+
+.network-card-link {
+  color: var(--primary);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.network-card-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1100px) {
+  .network-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .network-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .agent-layer-section {
   padding-top: 0;
   padding-bottom: 56px;
