@@ -1,6 +1,8 @@
 # PROJECT KAI — projectkai.dev PRODUCTION MIGRATION PLAN
 
-Read-only audit. No DNS, Cloudflare, hosting, or credential changes were made while producing this document. Every claim below is either a direct file read, a live HTTP check against `projectkai.dev` performed this pass, or an explicit citation of a prior session's already-written report (`PROJECT_KAI_SPRINT13_LAUNCH_AUDIT.md`, dated 2026-07-07) — never inferred or assumed.
+**RESOLVED.** This plan's Option A (Cloudflare Pages, via the existing Git-connected `kai-os-website` project) was executed and verified live on `projectkai.dev` — see `PROJECT_KAI_CLOUDFLARE_PRODUCTION_PROMOTION_REPORT.md` for the full promotion record (old/new commits, deployment IDs, rollback reference, live verification). The rest of this document is kept as the historical audit trail explaining how that decision was reached.
+
+Read-only audit (at the time it was written). No DNS, Cloudflare, hosting, or credential changes were made while producing this document. Every claim below is either a direct file read, a live HTTP check against `projectkai.dev` performed at the time, or an explicit citation of a prior session's already-written report (`PROJECT_KAI_SPRINT13_LAUNCH_AUDIT.md`, dated 2026-07-07) — never inferred or assumed.
 
 ## 1. Current production architecture (`projectkai.dev`)
 
