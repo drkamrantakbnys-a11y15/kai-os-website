@@ -26,6 +26,38 @@ import { isBackendConfigured } from "../lib/supabase.js";
       </div>
     </section>
 
+    <section class="page-section" id="kai-control">
+      <div class="container">
+        <div class="content-card admin-panel kai-control-panel">
+          <h3>KAI System Control</h3>
+          <p class="admin-note">
+            Talks to the local KAI OS backend through the Cloudflare Access + Tunnel bridge.
+            Control actions (START/STOP/EMERGENCY STOP/RUNWAY) require the passphrase you set as
+            this Pages project's <code>KAI_CONTROL_PASSPHRASE</code> environment variable -- entered
+            below, kept only in this tab's memory, never stored or sent anywhere except as a header
+            on your own control requests.
+          </p>
+
+          <p class="kai-control-live-indicator" id="kai-live-indicator">Checking connection&hellip;</p>
+
+          <div id="kai-status-grid" class="admin-stats" hidden></div>
+
+          <div class="kai-control-passphrase-row">
+            <input type="password" id="kai-passphrase" placeholder="Control passphrase (only needed for START/STOP/EMERGENCY STOP)" />
+          </div>
+
+          <div class="kai-control-buttons">
+            <button type="button" class="secondary-button" id="kai-refresh-btn">Refresh Status</button>
+            <button type="button" class="secondary-button" id="kai-start-btn">Start KAI</button>
+            <button type="button" class="secondary-button" id="kai-stop-btn">Stop KAI</button>
+            <button type="button" class="secondary-button kai-emergency-btn" id="kai-emergency-btn">Emergency Stop</button>
+          </div>
+
+          <p class="admin-status" id="kai-control-status"></p>
+        </div>
+      </div>
+    </section>
+
     {isBackendConfigured && (
       <section class="page-section">
         <div class="container">
@@ -60,6 +92,95 @@ import { isBackendConfigured } from "../lib/supabase.js";
 </Layout>
 
 <script>
+  // KAI System Control -- independent of Supabase; talks to the
+  // same-origin Pages Function proxy at /api/kai/*, which is the only
+  // thing holding the real backend credentials (server-side Pages
+  // environment variables, never present in this bundle).
+  (function initKaiControl() {
+    const liveIndicator = document.getElementById("kai-live-indicator");
+    const statusGrid = document.getElementById("kai-status-grid");
+    const statusMsg = document.getElementById("kai-control-status");
+    const passphraseInput = document.getElementById("kai-passphrase");
+
+    function passphraseHeaders() {
+      const value = passphraseInput.value.trim();
+      return value ? { "X-KAI-Control-Passphrase": value } : {};
+    }
+
+    async function refreshStatus() {
+      liveIndicator.textContent = "Checking connection...";
+      liveIndicator.className = "kai-control-live-indicator";
+      try {
+        const resp = await fetch("/api/kai/control/status");
+        if (resp.status === 503) {
+          const body = await resp.json();
+          liveIndicator.textContent = `OFFLINE -- ${body.reason}`;
+          liveIndicator.className = "kai-control-live-indicator kai-control-offline";
+          statusGrid.hidden = true;
+          return;
+        }
+        if (!resp.ok) {
+          liveIndicator.textContent = `OFFLINE -- backend returned ${resp.status}`;
+          liveIndicator.className = "kai-control-live-indicator kai-control-offline";
+          statusGrid.hidden = true;
+          return;
+        }
+        const data = await resp.json();
+        liveIndicator.textContent = `LIVE -- state: ${data.control_state}`;
+        liveIndicator.className = `kai-control-live-indicator kai-control-live kai-state-${(data.control_state || "").toLowerCase()}`;
+        statusGrid.hidden = false;
+        statusGrid.innerHTML = `
+          <div class="admin-stat"><strong>${data.control_state ?? "?"}</strong><span>Control State</span></div>
+          <div class="admin-stat"><strong>${data.last_state_change_by ?? "n/a"}</strong><span>Changed By</span></div>
+          <div class="admin-stat"><strong>${data.runway_decision ?? "none"}</strong><span>Runway Decision</span></div>
+          <div class="admin-stat"><strong>${data.current_job ? data.current_job.topic_id : "idle"}</strong><span>Current Job</span></div>
+        `;
+      } catch (err) {
+        liveIndicator.textContent = "OFFLINE -- could not reach the Pages Function.";
+        liveIndicator.className = "kai-control-live-indicator kai-control-offline";
+        statusGrid.hidden = true;
+      }
+    }
+
+    async function sendControl(path, body) {
+      statusMsg.textContent = "Sending...";
+      try {
+        const resp = await fetch(`/api/kai/${path}`, {
+          method: "POST",
+          headers: { "content-type": "application/json", ...passphraseHeaders() },
+          body: JSON.stringify(body || {}),
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (resp.status === 401) {
+          statusMsg.textContent = "Rejected: wrong or missing control passphrase.";
+          return;
+        }
+        if (resp.status === 503) {
+          statusMsg.textContent = `Not available: ${data.reason || "backend bridge not configured"}`;
+          return;
+        }
+        if (!resp.ok) {
+          statusMsg.textContent = `Error: ${data.error || resp.status}`;
+          return;
+        }
+        statusMsg.textContent = `OK -- control_state is now ${data.control_state}`;
+        refreshStatus();
+      } catch (err) {
+        statusMsg.textContent = "Network error contacting the Pages Function.";
+      }
+    }
+
+    document.getElementById("kai-refresh-btn")?.addEventListener("click", refreshStatus);
+    document.getElementById("kai-start-btn")?.addEventListener("click", () => sendControl("control/start", { changed_by: "admin-page" }));
+    document.getElementById("kai-stop-btn")?.addEventListener("click", () => sendControl("control/stop", { changed_by: "admin-page" }));
+    document.getElementById("kai-emergency-btn")?.addEventListener("click", () => {
+      if (!confirm("Emergency stop blocks ALL new production, uploads, and trading activity until you send START again. Continue?")) return;
+      sendControl("control/emergency-stop", { changed_by: "admin-page", reason: "Triggered from website admin panel" });
+    });
+
+    refreshStatus();
+  })();
+
   import { isBackendConfigured, getClient, safeCall } from "../lib/supabase.js";
   import { classify } from "../lib/commentClassifier.js";
 
@@ -415,5 +536,61 @@ import { isBackendConfigured } from "../lib/supabase.js";
 .admin-action--danger:hover {
   border-color: rgba(248, 113, 113, 0.5);
   color: #f87171;
+}
+
+.kai-control-panel {
+  max-width: 640px;
+}
+
+.kai-control-live-indicator {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.kai-control-live {
+  color: #34d399;
+}
+
+.kai-control-offline {
+  color: #f87171;
+}
+
+.kai-state-emergency_stop {
+  color: #f87171;
+}
+
+.kai-state-paused {
+  color: #facc15;
+}
+
+.kai-control-passphrase-row {
+  display: flex;
+  gap: 10px;
+}
+
+.kai-control-passphrase-row input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(2, 6, 23, 0.5);
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+.kai-control-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.kai-emergency-btn {
+  border-color: rgba(248, 113, 113, 0.4) !important;
+  color: #f87171 !important;
+}
+
+.kai-emergency-btn:hover {
+  background: rgba(248, 113, 113, 0.1);
 }
 </style>
