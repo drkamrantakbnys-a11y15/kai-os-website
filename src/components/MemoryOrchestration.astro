@@ -1,0 +1,128 @@
+---
+const ARCHITECTURE = [
+  { step: "01", title: "User / Owner", note: "Intent and authority" },
+  { step: "02", title: "KAI", note: "Conversation and coordination" },
+  { step: "03", title: "Governance / Policy", note: "Permissions and safety gates" },
+  { step: "04", title: "Specialized Intelligence", note: "Domain reasoning and plans" },
+  { step: "05", title: "Tools / Domain Systems", note: "Bounded, approved action" },
+  { step: "06", title: "Memory / Evidence", note: "Decisions, outcomes, and review" },
+];
+
+const MEMORY_SYSTEMS = [
+  "Knowledge Brain",
+  "Developer Memory",
+  "Strategy Memory",
+  "Decision Records",
+  "Failure Memory",
+  "Knowledge Graph",
+];
+---
+
+<section class="memory-section" id="memory-orchestration">
+  <div class="container">
+    <div class="section-center">
+      <div class="section-badge">Memory &amp; Orchestration</div>
+      <h2 class="section-title">A governed path from intent to evidence.</h2>
+      <p class="section-subtitle">
+        KAI coordinates specialized systems through explicit policy and records what matters
+        across multiple persistent memory stores. These systems support different domains;
+        they are not presented as one perfect universal memory.
+      </p>
+    </div>
+
+    <div class="architecture-chain" aria-label="KAI system architecture">
+      {ARCHITECTURE.map((item) => (
+        <div class="architecture-node">
+          <span>{item.step}</span>
+          <strong>{item.title}</strong>
+          <small>{item.note}</small>
+        </div>
+      ))}
+    </div>
+
+    <div class="memory-panel">
+      <div>
+        <span class="memory-panel-kicker">Persistent by domain</span>
+        <h3>Multiple memories. Explicit provenance.</h3>
+        <p>
+          Records are kept close to the systems that create them, preserving evidence and
+          reducing the temptation to turn every stored item into an unsupported global claim.
+        </p>
+      </div>
+      <div class="memory-tags">
+        {MEMORY_SYSTEMS.map((system) => <span>{system}</span>)}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.memory-section {
+  background:
+    radial-gradient(circle at 50% 100%, rgba(129, 140, 248, 0.08), transparent 34%),
+    linear-gradient(180deg, var(--bg-main), var(--bg-section));
+}
+
+.architecture-chain {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.architecture-node {
+  position: relative;
+  min-width: 0;
+  min-height: 150px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.68);
+}
+
+.architecture-node:not(:last-child)::after {
+  content: "›";
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: -9px;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.architecture-node > span { display: block; margin-bottom: 22px; color: var(--primary); font-size: 11px; font-weight: 900; }
+.architecture-node strong { display: block; margin-bottom: 10px; font-size: 16px; line-height: 1.35; }
+.architecture-node small { color: var(--text-muted); font-size: 12px; line-height: 1.45; }
+
+.memory-panel {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 50px;
+  align-items: center;
+  margin-top: 24px;
+  padding: 34px;
+  border: 1px solid rgba(56, 189, 248, 0.24);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.58);
+}
+
+.memory-panel-kicker { color: var(--primary); font-size: 11px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+.memory-panel h3 { margin: 12px 0; font-size: 24px; }
+.memory-panel p { margin: 0; color: var(--text-soft); font-size: 14px; line-height: 1.7; }
+.memory-tags { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.memory-tags span { padding: 12px 14px; border: 1px solid var(--border); border-radius: 6px; color: var(--text-soft); background: rgba(15, 23, 42, 0.54); font-size: 13px; font-weight: 700; }
+
+@media (max-width: 1100px) {
+  .architecture-chain { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .architecture-node:nth-child(3)::after { display: none; }
+}
+
+@media (max-width: 720px) {
+  .architecture-chain { grid-template-columns: 1fr; }
+  .architecture-node { min-height: auto; }
+  .architecture-node::after { display: none; }
+  .memory-panel { grid-template-columns: 1fr; gap: 28px; padding: 24px; }
+  .memory-tags { grid-template-columns: 1fr; }
+}
+</style>

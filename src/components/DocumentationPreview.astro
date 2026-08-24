@@ -1,441 +1,66 @@
 ---
 import { CHANGELOG } from "../data/changelog.js";
-const latestChangelogEntry = CHANGELOG[0];
+import { DOCUMENTATION_AREAS } from "../data/product.js";
+const latest = CHANGELOG[0];
 
-// Every document category below is real and verified to exist in the
-// KAI_OS codebase before being written here -- dates are real git-log or
-// filesystem-mtime values (checked directly), not placeholders. None of
-// the documents themselves are hosted publicly yet, so every "View
-// Documentation" button says "Coming Soon" rather than linking anywhere.
-// As of Sprint 7, real AGGREGATE facts derived from some of these
-// documents are public -- see the Public Evidence links below the grid.
-// The distinction matters: /status shows real counts, not the raw
-// pipeline_metrics.jsonl log itself; /knowledge shows a real report
-// count, not the report contents. This page never blurs that line.
-const DOCS = [
-  {
-    title: "Engineering Reports",
-    purpose: "Architecture decisions, bug root-causes, and system audits produced throughout development.",
-    status: "Actively Maintained",
-    lastUpdated: "2026-06-26",
-    description: "Dozens of real engineering reports exist internally, covering everything from architecture audits to production-readiness checklists.",
-  },
-  {
-    title: "CEO Reports",
-    purpose: "A business-level summary for every video produced: what worked, what was fixed, what it means for the business.",
-    status: "Actively Maintained",
-    lastUpdated: "2026-08-03",
-    description: "Every produced video gets a real CEO Report -- production summary, content intelligence review, and lessons learned.",
-  },
-  {
-    title: "Pipeline Metrics",
-    purpose: "Real production KPIs tracked across every video run.",
-    status: "Actively Maintained",
-    lastUpdated: "2026-07-31",
-    description: "An append-only metrics log covering repair counts, compliance pass rate, scene counts, and real trend detection across recent runs.",
-  },
-  {
-    title: "Improvement Backlog",
-    purpose: "Every planned improvement, tracked so nothing gets lost between sessions.",
-    status: "Actively Maintained",
-    lastUpdated: "2026-08-03",
-    description: "This website's own improvement backlog -- the same document driving the sprints rolling out across this site.",
-  },
-  {
-    title: "Developer Memory",
-    purpose: "A permanent, append-only record of real bugs, root causes, and fixes.",
-    status: "Actively Maintained",
-    lastUpdated: "2026-07-31",
-    description: "Every real engineering incident this project has hit gets recorded here, so the same problem is never solved twice.",
-  },
-  {
-    title: "Architecture Documents",
-    purpose: "Written architecture proposals and system-design records for major subsystems.",
-    status: "Actively Maintained",
-    lastUpdated: "2026-07-31",
-    description: "Documents covering the Visual Intelligence Engine, the agent architecture, and related systems.",
-  },
-  {
-    title: "Quality Reports",
-    purpose: "An honest per-video quality assessment.",
-    status: "Actively Maintained",
-    lastUpdated: "2026-08-03",
-    description: "Every produced video gets a real quality report: a verified engineering score, plus a creative score explicitly labeled as subjective judgment, never a fabricated rating.",
-  },
-];
-
-const METRICS = [
-  { label: "Documentation", status: "Partially Implemented", note: "Real and extensive, not yet public." },
-  { label: "Testing", status: "Operational", note: "Every real fix ships with regression tests." },
-  { label: "Quality", status: "Partially Implemented", note: "Real per-video scoring exists; no trained quality model yet." },
-  { label: "Architecture", status: "Partially Implemented", note: "Real, documented, still evolving." },
-  { label: "Automation", status: "Partially Implemented", note: "Production is automated; review and publishing are human-controlled by design." },
-  { label: "Memory", status: "Partially Implemented", note: "Real ledgers exist, not yet auto-wired into every run." },
-  { label: "Review", status: "Operational", note: "Every video is reviewed by a person, without exception." },
-  { label: "Reports", status: "Operational", note: "Generated automatically for every video produced." },
-];
-
-const PRINCIPLES = [
-  "Build incrementally",
-  "Never fabricate",
-  "Human oversight",
-  "Evidence before claims",
-  "Regression testing",
-  "Reuse before rewrite",
-];
-
-function statusClass(status: string) {
-  if (status === "Operational") return "status-pill--operational";
-  if (status === "Partially Implemented") return "status-pill--partially-implemented";
-  return "status-pill--planned";
+function statusClass(status) {
+  return status === "Available" ? "status-operational" : "status-development";
 }
 ---
 
 <section class="documentation" id="documentation">
   <div class="container">
-    <div class="section-center">
-      <div class="section-badge">Documentation Preview</div>
-
-      <h2 class="section-title">
-        Documentation Preview
-      </h2>
-
-      <p class="section-subtitle">
-        Every improvement is documented, tested, and tracked as Project KAI evolves.
-      </p>
+    <div class="documentation-heading">
+      <div>
+        <div class="section-badge">Public Documentation</div>
+        <h2 class="section-title">The product story, with its boundaries intact.</h2>
+      </div>
+      <div class="documentation-intro">
+        <p>
+          The public documentation hub explains architecture, capabilities, safety, content,
+          voice, paper trading, and roadmap status without publishing private operational detail.
+        </p>
+        <a href="/docs" class="primary-button">Open Documentation Hub</a>
+      </div>
     </div>
 
     <div class="docs-grid">
-      {DOCS.map((doc) => (
-        <article class="content-card doc-card">
-          <div class="doc-card-header">
-            <h3>{doc.title}</h3>
-            <span class="status-pill status-pill--partially-implemented">{doc.status}</span>
-          </div>
-          <p class="doc-purpose">{doc.purpose}</p>
-          <p class="doc-description">{doc.description}</p>
-          <p class="doc-updated">Last updated: {doc.lastUpdated}</p>
-          <span class="secondary-button doc-button" aria-disabled="true">Coming Soon</span>
-        </article>
+      {DOCUMENTATION_AREAS.slice(0, 6).map((doc) => (
+        <a href={doc.route} class="doc-card">
+          <div><span class={`status-badge ${statusClass(doc.status)}`}>{doc.status}</span><span class="doc-arrow" aria-hidden="true">↗</span></div>
+          <h3>{doc.title}</h3>
+          <p>{doc.description}</p>
+        </a>
       ))}
     </div>
 
-    <div class="public-evidence-row">
-      <p class="public-evidence-text">
-        The documents above remain internal. Real, aggregate facts derived from some of them
-        are already public:
-      </p>
-      <div class="public-evidence-links">
-        <a href="/docs">Documentation Index →</a>
-        <a href="/status">System Status →</a>
-        <a href="/changelog">Engineering Changelog →</a>
-        <a href="/knowledge">Knowledge Brain →</a>
-      </div>
-      <a href="/changelog" class="public-evidence-latest">
-        Latest engineering work ({latestChangelogEntry.date}): {latestChangelogEntry.title} →
-      </a>
-    </div>
-
-    <div class="section-center panel-heading">
-      <h3>Engineering Metrics</h3>
-      <p class="section-subtitle small">No fabricated numbers -- just where each real system stands today.</p>
-    </div>
-
-    <div class="metrics-grid">
-      {METRICS.map((metric) => (
-        <div class="metric-card">
-          <div class="metric-card-top">
-            <span class="metric-label">{metric.label}</span>
-            <span class={`status-pill ${statusClass(metric.status)}`}>{metric.status}</span>
-          </div>
-          <p class="metric-note">{metric.note}</p>
-        </div>
-      ))}
-    </div>
-
-    <div class="focus-principles-grid">
-      <div class="content-card focus-card">
-        <div class="section-badge">Current Focus</div>
-        <h3>What Project KAI is working on right now</h3>
-        <ul>
-          <li>Phase 1: producing an initial batch of review-ready YouTube videos</li>
-          <li>Website: turning ProjectKAI.dev into a premium, honest public presence</li>
-          <li>AI Agent Architecture: formalizing today's real pipeline logic into standalone agents</li>
-        </ul>
-      </div>
-
-      <div class="content-card principles-card">
-        <div class="section-badge">Engineering Principles</div>
-        <h3>What actually guides this project</h3>
-        <ul class="principles-list">
-          {PRINCIPLES.map((principle) => <li>{principle}</li>)}
-        </ul>
-      </div>
+    <div class="evidence-bar">
+      <div><span>Latest engineering record</span><strong>{latest.date} · {latest.title}</strong></div>
+      <nav aria-label="Public evidence links">
+        <a href="/status">Status</a><a href="/changelog">Changelog</a><a href="/knowledge">Knowledge Brain</a>
+      </nav>
     </div>
   </div>
 </section>
 
 <style>
-.documentation {
-  background:
-    radial-gradient(circle at 75% 10%, rgba(56, 189, 248, 0.06), transparent 32%),
-    linear-gradient(180deg, #050b18 0%, #08111f 100%);
-}
-
-.docs-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-  margin-bottom: 32px;
-}
-
-.public-evidence-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px 20px;
-  max-width: 720px;
-  margin: 0 auto 64px;
-  padding: 16px 20px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: rgba(15, 23, 42, 0.5);
-  text-align: center;
-}
-
-.public-evidence-text {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.public-evidence-links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 18px;
-}
-
-.public-evidence-links a {
-  color: var(--primary);
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.public-evidence-links a:hover {
-  text-decoration: underline;
-}
-
-.public-evidence-latest {
-  display: block;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
-  color: var(--text-muted);
-  font-size: 12.5px;
-  font-weight: 600;
-}
-
-.public-evidence-latest:hover {
-  color: var(--primary);
-}
-
-@media (max-width: 700px) {
-  .public-evidence-row {
-    flex-direction: column;
-  }
-}
-
-.doc-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.doc-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 6px 10px;
-}
-
-.doc-card-header h3 {
-  min-width: 0;
-}
-
-.doc-card-header h3 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.doc-purpose {
-  margin: 0;
-  color: var(--text-main);
-  font-size: 13.5px;
-  font-weight: 600;
-  line-height: 1.6;
-}
-
-.doc-description {
-  margin: 0;
-  color: var(--text-soft);
-  font-size: 13.5px;
-  line-height: 1.65;
-}
-
-.doc-updated {
-  margin: 4px 0 6px;
-  color: var(--text-muted);
-  font-size: 12px;
-}
-
-.doc-button {
-  min-height: 40px;
-  padding: 0 18px;
-  font-size: 13px;
-  cursor: default;
-  opacity: 0.75;
-}
-
-.panel-heading {
-  margin-bottom: 32px;
-}
-
-.panel-heading h3 {
-  margin: 0 0 10px;
-  font-size: 2rem;
-}
-
-.section-subtitle.small {
-  font-size: 1rem;
-}
-
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 80px;
-}
-
-.metric-card {
-  padding: 20px;
-  border-radius: 8px;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
-  transition: 0.25s ease;
-}
-
-.metric-card:hover {
-  border-color: var(--border-bright);
-}
-
-.metric-card-top {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.metric-label {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--text-main);
-}
-
-.metric-note {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 12.5px;
-  line-height: 1.6;
-}
-
-.focus-principles-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.focus-card h3,
-.principles-card h3 {
-  margin: 16px 0 16px;
-  font-size: 1.35rem;
-}
-
-.focus-card ul,
-.principles-list {
-  margin: 0;
-  padding-left: 20px;
-  color: var(--text-soft);
-}
-
-.focus-card li {
-  margin-bottom: 10px;
-  line-height: 1.6;
-  font-size: 14.5px;
-}
-
-.principles-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 16px;
-  list-style: none;
-  padding-left: 0;
-}
-
-.principles-list li {
-  padding-left: 18px;
-  position: relative;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.principles-list li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 9px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--primary);
-}
-
-@media (max-width: 1100px) {
-  .docs-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .metrics-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 900px) {
-  .focus-principles-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 700px) {
-  .docs-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .metrics-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .principles-list {
-    grid-template-columns: 1fr;
-  }
-}
+.documentation { background: radial-gradient(circle at 75% 10%, rgba(56, 189, 248, 0.06), transparent 32%), linear-gradient(180deg, var(--bg-section), var(--bg-main)); }
+.documentation-heading { display: grid; grid-template-columns: 1fr 0.75fr; gap: 70px; align-items: end; margin-bottom: 56px; }
+.documentation-heading .section-title { margin-bottom: 0; }
+.documentation-intro p { margin: 0 0 24px; color: var(--text-soft); font-size: 15px; line-height: 1.75; }
+.docs-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.doc-card { min-width: 0; min-height: 230px; padding: 24px; border: 1px solid var(--border); border-radius: 8px; background: rgba(15, 23, 42, 0.68); transition: transform 0.25s ease, border-color 0.25s ease; }
+.doc-card:hover { transform: translateY(-4px); border-color: var(--border-bright); }
+.doc-card > div { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.doc-arrow { color: var(--primary); font-size: 20px; }
+.doc-card h3 { margin: 30px 0 12px; font-size: 18px; }
+.doc-card p { margin: 0; color: var(--text-soft); font-size: 13px; line-height: 1.65; }
+.evidence-bar { display: flex; align-items: center; justify-content: space-between; gap: 30px; margin-top: 22px; padding: 22px 24px; border: 1px solid var(--border); border-radius: 8px; background: rgba(2, 6, 23, 0.52); }
+.evidence-bar div { display: grid; gap: 6px; }
+.evidence-bar span { color: var(--text-muted); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
+.evidence-bar strong { font-size: 13px; }
+.evidence-bar nav { display: flex; gap: 18px; flex-wrap: wrap; }
+.evidence-bar a { color: var(--primary); font-size: 12px; font-weight: 800; }
+@media (max-width: 1000px) { .documentation-heading { grid-template-columns: 1fr; gap: 24px; } .docs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .docs-grid { grid-template-columns: 1fr; } .doc-card { min-height: 0; } .evidence-bar { align-items: flex-start; flex-direction: column; } }
 </style>

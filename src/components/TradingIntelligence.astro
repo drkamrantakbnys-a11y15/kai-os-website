@@ -1,0 +1,161 @@
+---
+const CONTROLS = [
+  "Daily-loss controls",
+  "Exposure limits",
+  "Stop-loss / take-profit logic",
+  "Drawdown protection",
+  "Independent KillSwitch",
+];
+
+const FLOW = ["Market data", "Strategy", "Governance", "Risk", "Alpaca Paper"];
+---
+
+<section class="trading-section" id="trading">
+  <div class="container">
+    <div class="trading-heading">
+      <div>
+        <div class="section-badge">Trading Intelligence</div>
+        <h2 class="section-title">Paper-first by design.</h2>
+        <p class="section-subtitle">
+          KAI's trading layer combines market observation, strategy evaluation, structured
+          memory, broker abstraction, and risk governance. Controlled Alpaca Paper validation
+          is underway. Continuous paper execution is not enabled.
+        </p>
+      </div>
+      <div class="paper-seal" aria-label="Paper trading only">
+        <span>Validation boundary</span>
+        <strong>Paper Trading Only</strong>
+        <small>No live-money execution</small>
+      </div>
+    </div>
+
+    <div class="trading-flow" aria-label="Paper trading evaluation flow">
+      {FLOW.map((step, index) => (
+        <div class="trading-flow-step">
+          <span>{String(index + 1).padStart(2, "0")}</span>
+          <strong>{step}</strong>
+        </div>
+      ))}
+    </div>
+
+    <div class="trading-detail-grid">
+      <article class="trading-card">
+        <div class="trading-card-head">
+          <h3>Risk controls are part of the path</h3>
+          <span class="status-badge status-operational">Operational</span>
+        </div>
+        <ul>{CONTROLS.map((control) => <li>{control}</li>)}</ul>
+      </article>
+
+      <article class="trading-card trading-card--boundary">
+        <div class="trading-card-head">
+          <h3>Activation status</h3>
+          <span class="status-badge status-development">In Development</span>
+        </div>
+        <p>
+          The Alpaca integration is configured for paper brokerage validation. Open-market
+          certification and any future continuous paper-learning activation remain separate,
+          explicitly controlled milestones.
+        </p>
+        <p class="trading-disclaimer">
+          Research software only. No live capital management, performance promise, or investment advice.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+.trading-section {
+  background:
+    linear-gradient(90deg, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+    linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+    linear-gradient(180deg, var(--bg-main), var(--bg-section));
+  background-size: 48px 48px, 48px 48px, auto;
+}
+
+.trading-heading {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 54px;
+  align-items: end;
+  margin-bottom: 58px;
+}
+
+.trading-heading .section-subtitle { margin: 0; text-align: left; }
+.trading-heading .section-title { max-width: 760px; }
+
+.paper-seal {
+  display: grid;
+  gap: 9px;
+  padding: 24px;
+  border: 1px solid rgba(56, 189, 248, 0.34);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.74);
+}
+
+.paper-seal span,
+.paper-seal small {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.paper-seal strong { color: var(--primary); font-size: 22px; text-transform: uppercase; }
+
+.trading-flow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.trading-flow-step {
+  position: relative;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.68);
+}
+
+.trading-flow-step span { display: block; margin-bottom: 14px; color: var(--primary); font-size: 11px; font-weight: 900; }
+.trading-flow-step strong { font-size: 15px; }
+
+.trading-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.trading-card {
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.72);
+  box-shadow: var(--shadow-soft);
+}
+
+.trading-card--boundary { border-color: rgba(250, 204, 21, 0.24); }
+.trading-card-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+.trading-card h3 { margin: 0; font-size: 20px; }
+.trading-card p { color: var(--text-soft); font-size: 14px; line-height: 1.7; }
+.trading-card ul { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 20px; margin: 22px 0 0; padding: 0; list-style: none; }
+.trading-card li { position: relative; padding-left: 16px; color: var(--text-soft); font-size: 14px; }
+.trading-card li::before { content: ""; position: absolute; top: 7px; left: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+.trading-disclaimer { margin-bottom: 0; padding-top: 14px; border-top: 1px solid var(--border); color: var(--text-muted) !important; font-size: 12.5px !important; }
+
+@media (max-width: 950px) {
+  .trading-heading { grid-template-columns: 1fr; }
+  .paper-seal { max-width: 420px; }
+  .trading-flow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+  .trading-flow { grid-template-columns: 1fr; }
+  .trading-detail-grid { grid-template-columns: 1fr; }
+  .trading-card ul { grid-template-columns: 1fr; }
+}
+</style>

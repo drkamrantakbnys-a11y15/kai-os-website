@@ -3,47 +3,11 @@ import Layout from "../layouts/Layout.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import kaiOsData from "../data/generated/kai-os-public-data.json";
+import { PRODUCT_SYSTEMS } from "../data/product.js";
 import { NEWS } from "../data/news.js";
 import { FUTURE_RADAR } from "../data/futureRadar.js";
 
-let healthSnapshot = null;
-try {
-  healthSnapshot = (await import("../data/generated/kai-os-health-snapshot.json")).default;
-} catch {
-  // Not generated yet on this machine -- honestly show "not available"
-  // below rather than fabricate a health section. Run
-  // `python scripts/generate_health_snapshot.py` in KAI_OS to produce it.
-}
-
 const { agents, desktop_operator, engineering, production, security, generated_at, note } = kaiOsData;
-
-const SEVERITY_LABEL = { GREEN: "Operational", YELLOW: "Degraded", RED: "Blocked" };
-// RED intentionally does not reuse "status-planned" (that class means
-// "not started yet," a different, less urgent meaning than "currently
-// blocked") -- "status-blocked" is a small page-scoped class added below.
-const SEVERITY_TIER = { GREEN: "status-operational", YELLOW: "status-development", RED: "status-blocked" };
-const healthGeneratedDate = healthSnapshot
-  ? new Date(healthSnapshot.generated_at).toLocaleString("en-US", { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "2-digit" })
-  : null;
-
-// Per-channel YouTube identity (Phase 3B) -- sourced from the same
-// "YouTube channel identity" health check's structured `channels` array,
-// never from a separate live call. Shows PRIMARY/SECONDARY side by side.
-// Only fields already present in the sanitized JSON are rendered -- no
-// token values, no file paths, ever.
-const youtubeChannels = healthSnapshot
-  ? healthSnapshot.checks.find((c) => c.check === "YouTube channel identity")?.channels ?? null
-  : null;
-const CHANNEL_STATUS_TIER = {
-  VERIFIED: "status-operational",
-  NOT_AUTHENTICATED: "status-blocked",
-  KAI_YOUTUBE_CHANNEL_MISMATCH: "status-blocked",
-};
-const CHANNEL_STATUS_LABEL = {
-  VERIFIED: "Verified",
-  NOT_AUTHENTICATED: "Not Authenticated",
-  KAI_YOUTUBE_CHANNEL_MISMATCH: "Channel Mismatch",
-};
 
 const generatedDate = new Date(generated_at).toLocaleDateString("en-US", {
   year: "numeric", month: "long", day: "numeric",
@@ -111,71 +75,17 @@ const SYSTEM_STATUS = [
   },
 ];
 
-// Agent Matrix (Section 3) -- conceptual business-function categories,
-// deliberately distinct from the 13 technical sub_agents.py classes
-// (see /agents for those). Only "YouTube / Content" has any real,
-// operational implementation; everything else is honestly PLANNED
-// unless a real sub-agent already exists for it (Research, Developer /
-// Meta), in which case its real capabilityStatus from agents.js is used
-// rather than invented. Trading is explicitly PLANNED, no live data,
-// no connection to the real trading system, per standing project rule.
-const AGENT_MATRIX = [
-  {
-    name: "YouTube / Content", tier: "status-operational", label: "Operational",
-    mission: `Researches, writes, assembles, and publishes videos end-to-end. ${production.completed_total} real uploads to date.`,
-    explore: { href: "/status", text: "See production status" },
-  },
-  {
-    name: "Research", tier: "status-planned", label: "Planned",
-    mission: "Would source, verify, and summarize real information for KAI to act on. Declared in the agent registry; not yet implemented.",
-    explore: { href: "/agents", text: "See agent registry" },
-  },
-  {
-    name: "Developer / Meta", tier: "status-planned", label: "Planned",
-    mission: "Would build software, fix bugs, and maintain KAI OS's own codebase. Declared in the agent registry; not yet implemented.",
-    explore: { href: "/agents", text: "See agent registry" },
-  },
-  {
-    name: "Trading", tier: "status-planned", label: "Planned",
-    mission: "Future autonomous market-analysis and trading research capability. A separate, independent trading system already exists in the KAI OS backend -- it is not connected here, shows no live data, and is out of scope for this website.",
-    explore: null,
-  },
-  {
-    name: "Affiliate", tier: "status-planned", label: "Planned",
-    mission: "Future capability for identifying and managing affiliate revenue opportunities. Not yet started.",
-    explore: null,
-  },
-  {
-    name: "Digital Products", tier: "status-planned", label: "Planned",
-    mission: "Future capability for building and managing digital products. Not yet started.",
-    explore: null,
-  },
-  {
-    name: "Freelance", tier: "status-planned", label: "Planned",
-    mission: "Future capability for sourcing and completing freelance work. Not yet started.",
-    explore: null,
-  },
-  {
-    name: "Remote Jobs", tier: "status-planned", label: "Planned",
-    mission: "Future capability for identifying remote work opportunities. Not yet started.",
-    explore: null,
-  },
-  {
-    name: "Course Selling", tier: "status-planned", label: "Planned",
-    mission: "Future capability for packaging and selling educational content. Not yet started.",
-    explore: null,
-  },
-  {
-    name: "Web3", tier: "status-planned", label: "Planned",
-    mission: "Future capability for on-chain / decentralized-web interaction. Not yet started.",
-    explore: null,
-  },
-  {
-    name: "Micro Tasks", tier: "status-planned", label: "Planned",
-    mission: "Future capability for small, discrete automatable tasks. Not yet started.",
-    explore: null,
-  },
-];
+const AGENT_MATRIX = PRODUCT_SYSTEMS.map((system) => ({
+  name: system.title,
+  tier: system.tier,
+  label: system.status,
+  mission: system.description,
+  explore:
+    system.code === "TRD" ? { href: "/#trading", text: "Review paper-only trading" }
+    : system.code === "KNOW" ? { href: "/knowledge", text: "Open Knowledge Brain" }
+    : system.code === "DESK" ? { href: "/desktop-operator", text: "Review Desktop Operator" }
+    : { href: "/#capabilities", text: "See verified capabilities" },
+}));
 
 // Quick Actions (Section 4) -- real routes link normally; anything not
 // yet built uses a controlled "coming soon" interaction instead of a
@@ -284,38 +194,28 @@ const MEDIA_NETWORK_CARDS = [
       </div>
     </section>
 
-    <section class="page-section" id="infrastructure-health">
+    <section class="page-section" id="public-status-boundary">
       <div class="container">
         <div class="section-center">
-          <div class="section-badge">Infrastructure Health</div>
-          <h2 class="section-title">The real, current blockers.</h2>
+          <div class="section-badge">Public Status Boundary</div>
+          <h2 class="section-title">Status without exposing the private runtime.</h2>
           <p class="section-subtitle">
-            {healthSnapshot
-              ? `From a real infrastructure_health_check.py run, generated ${healthGeneratedDate} -- not live telemetry, refreshed by re-running that script.`
-              : "No health snapshot has been generated on this build. Run python scripts/generate_health_snapshot.py in KAI_OS to produce one -- nothing fabricated here in its absence."}
+            Internal health checks cover local services, credentials, schedules, logs, and account
+            identity. Those details are intentionally not rendered publicly. The evidence-safe
+            build snapshot remains available through System Status.
           </p>
         </div>
-
-        {healthSnapshot && (
-          <>
-            <div class="cc-status-grid">
-              {healthSnapshot.checks.map((check) => (
-                <article class="content-card cc-status-card">
-                  <div class="cc-status-head">
-                    <h3>{check.check}</h3>
-                    <span class={`status-badge ${SEVERITY_TIER[check.severity]}`}>{SEVERITY_LABEL[check.severity]}</span>
-                  </div>
-                  <p>{check.detail}</p>
-                  {check.repair_category && <p class="cc-repair-category">{check.repair_category.replaceAll("_", " ")}</p>}
-                  {check.recommended_action && <p class="cc-recommended-action">→ {check.recommended_action}</p>}
-                </article>
-              ))}
-            </div>
-            <p class="cc-personality">
-              {healthSnapshot.summary.GREEN} operational, {healthSnapshot.summary.YELLOW} degraded, {healthSnapshot.summary.RED} blocked -- of {healthSnapshot.checks.length} real checks.
-            </p>
-          </>
-        )}
+        <div class="cc-status-grid">
+          <article class="content-card cc-status-card">
+            <div class="cc-status-head"><h3>Public build snapshot</h3><span class="status-badge status-operational">Available</span></div>
+            <p>Aggregate agent, security, production, and engineering facts are published without private endpoints or account identifiers.</p>
+            <a class="cc-evidence-link" href="/status">Open System Status →</a>
+          </article>
+          <article class="content-card cc-status-card">
+            <div class="cc-status-head"><h3>Operational diagnostics</h3><span class="status-badge status-development">Private</span></div>
+            <p>Service endpoints, credential state, repair commands, scheduler detail, and internal logs remain inside the owner's environment.</p>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -323,31 +223,20 @@ const MEDIA_NETWORK_CARDS = [
       <div class="container">
         <div class="section-center">
           <div class="section-badge">YouTube Channels</div>
-          <h2 class="section-title">Two channels, one identity guard.</h2>
+          <h2 class="section-title">Public channels. Private authorization state.</h2>
           <p class="section-subtitle">
-            {healthSnapshot
-              ? `From the same infrastructure_health_check.py run, generated ${healthGeneratedDate} -- each channel's identity is verified against a hard-coded channel ID before any upload or thumbnail action is ever permitted.`
-              : "No health snapshot has been generated on this build. Run python scripts/generate_health_snapshot.py in KAI_OS to produce one -- nothing fabricated here in its absence."}
+            Project KAI operates two public media channels. Internal channel identifiers,
+            authentication state, OAuth detail, and upload authorization evidence are not
+            exposed on this public system map.
           </p>
         </div>
-
-        {youtubeChannels && (
-          <div class="cc-status-grid">
-            {youtubeChannels.map((ch) => (
-              <article class="content-card cc-status-card">
-                <div class="cc-status-head">
-                  <h3>{ch.name}</h3>
-                  <span class={`status-badge ${CHANNEL_STATUS_TIER[ch.status] ?? "status-blocked"}`}>
-                    {CHANNEL_STATUS_LABEL[ch.status] ?? ch.status}
-                  </span>
-                </div>
-                <p class="cc-repair-category">{ch.destination}</p>
-                <p>Channel ID: {ch.channel_id}</p>
-                <p>Authenticated: {ch.authenticated ? "Yes" : "No"} &middot; Verified: {ch.verified ? "Yes" : "No"}</p>
-              </article>
-            ))}
-          </div>
-        )}
+        <div class="cc-status-grid">
+          <article class="content-card cc-status-card">
+            <div class="cc-status-head"><h3>Media Network</h3><span class="status-badge status-operational">Public</span></div>
+            <p>Channel names and public destinations are available from the Media Network hub; private control-plane data is not.</p>
+            <a class="cc-evidence-link" href="/media">Open Media Network →</a>
+          </article>
+        </div>
       </div>
     </section>
 

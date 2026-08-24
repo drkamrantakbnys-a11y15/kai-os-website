@@ -1,0 +1,157 @@
+<section class="voice-section" id="voice">
+  <div class="container voice-grid">
+    <div class="voice-copy">
+      <div class="section-badge">Voice &amp; Conversation</div>
+      <h2 class="section-title">Conversation that stays close to the system.</h2>
+      <p class="section-subtitle">
+        KAI's conversational layer is designed for local interaction first. English and Hindi
+        output paths are operational, language routing has been verified through the local
+        interface, and an offline fallback keeps basic spoken responses available without
+        turning voice style into identity or authorization.
+      </p>
+      <div class="voice-boundary">
+        <span class="status-badge status-planned">Roadmap</span>
+        <p>More natural neural voice is the next conversational-interface upgrade.</p>
+      </div>
+    </div>
+
+    <div class="voice-console" aria-label="KAI voice capability status">
+      <div class="voice-console-head">
+        <span>Local conversation stack</span>
+        <span class="status-badge status-operational">Operational</span>
+      </div>
+      <div class="voice-steps">
+        <div class="voice-step">
+          <span>01</span>
+          <div><strong>Understand</strong><p>Routes English, Hindi, and mixed-language interactions.</p></div>
+        </div>
+        <div class="voice-step">
+          <span>02</span>
+          <div><strong>Respond</strong><p>Builds context-aware replies inside explicit system boundaries.</p></div>
+        </div>
+        <div class="voice-step">
+          <span>03</span>
+          <div><strong>Speak</strong><p>Uses local spoken output with a bounded offline fallback.</p></div>
+        </div>
+      </div>
+      <div class="language-row" aria-label="Supported output languages">
+        <span>English output</span>
+        <span>Hindi output</span>
+        <span>Local fallback</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.voice-section {
+  background:
+    radial-gradient(circle at 16% 28%, rgba(56, 189, 248, 0.1), transparent 30%),
+    linear-gradient(180deg, var(--bg-section), var(--bg-main));
+}
+
+.voice-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.92fr;
+  gap: 70px;
+  align-items: center;
+}
+
+.voice-copy .section-title {
+  max-width: 760px;
+  font-size: clamp(2.7rem, 5vw, 4.5rem);
+}
+
+.voice-copy .section-subtitle {
+  margin: 0;
+  text-align: left;
+}
+
+.voice-boundary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.voice-boundary p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.voice-console {
+  padding: 28px;
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.64);
+  box-shadow: var(--shadow-soft);
+}
+
+.voice-console-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.voice-steps {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.voice-step {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.voice-step > span {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.voice-step strong { display: block; margin-bottom: 5px; font-size: 16px; }
+.voice-step p { margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.55; }
+
+.language-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.language-row span {
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+@media (max-width: 950px) {
+  .voice-grid { grid-template-columns: 1fr; gap: 42px; }
+}
+
+@media (max-width: 600px) {
+  .voice-console { padding: 20px; }
+  .voice-console-head { align-items: flex-start; flex-direction: column; }
+  .voice-boundary { align-items: flex-start; flex-direction: column; }
+}
+</style>

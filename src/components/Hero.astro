@@ -4,256 +4,82 @@
 
   <div class="container hero-container">
     <div class="hero-content">
-      <div class="section-badge">
-        Project KAI
-      </div>
-
-      <h1>
-        Discover what<br />
-        <span class="gradient-text">comes next.</span>
-      </h1>
-
+      <div class="section-badge">Project KAI · Local-First AI Operating System</div>
+      <h1>Local intelligence.<br /><span class="gradient-text">Human control.</span></h1>
       <p>
-        Project KAI is an AI, technology, and discovery media platform -- news, future radar,
-        experiments, and reviews, powered by KAI OS, its modular AI operating system: specialized
-        agents, a shared memory layer, and a default-deny security model, built one verified
-        capability at a time instead of announced all at once. This site is the public record of
-        that build -- what's running today, what's still in development, and how to check either
-        claim yourself.
+        A local-first AI operating system built to think, coordinate, and execute through
+        specialized intelligence, persistent memory, and explicit governance. KAI brings
+        conversation, research, automation, and paper-trading systems together without
+        turning consequential decisions into unchecked autonomy.
       </p>
-
       <div class="hero-actions">
-        <a href="#agents" class="primary-button">
-          Explore Agents
-        </a>
-
-        <a href="/security" class="secondary-button">
-          See the Security Model
-        </a>
+        <a href="#capabilities" class="primary-button">Explore KAI</a>
+        <a href="/docs" class="secondary-button">View Documentation</a>
       </div>
-
-      <div class="hero-proof">
-        <a href="/agents">13 AI Agents</a>
-        <a href="/security">3 Active Capabilities</a>
-        <a href="/status">Human-Reviewed</a>
+      <div class="hero-proof" aria-label="Verified product principles">
+        <span>Local-first</span><span>Specialized systems</span><span>Human-reviewed</span>
       </div>
     </div>
 
-    <div class="hero-system" aria-label="Project KAI system overview">
-      <div class="system-topline">
-        <span>Project KAI System Map</span>
-        <span>Static, Evidence-Driven Site</span>
+    <div class="hero-system" aria-label="Project KAI operating model">
+      <div class="system-topline"><span>KAI operating model</span><span>Evidence-driven · August 2026</span></div>
+      <div class="system-owner">
+        <span>Authority</span><strong>User / Owner</strong><small>Intent, approval, and final control</small>
       </div>
-
+      <div class="system-line" aria-hidden="true"></div>
+      <div class="system-core">
+        <div><span>Core</span><strong>KAI OS</strong></div>
+        <p>Policy routes each request toward the right bounded capability.</p>
+      </div>
       <div class="system-grid">
-        <div>
-          <span>Agents</span>
-          <strong>Research / Content / Business</strong>
-        </div>
-        <div>
-          <span>Workflows</span>
-          <strong>Manual-first automation paths</strong>
-        </div>
-        <div>
-          <span>Safety</span>
-          <strong>Review, approval, rollback</strong>
-        </div>
-        <div>
-          <span>Memory</span>
-          <strong>Reports, plans, validation</strong>
-        </div>
+        <div><span>Conversation</span><strong>English / Hindi</strong></div>
+        <div><span>Production</span><strong>Human-reviewed</strong></div>
+        <div><span>Research</span><strong>Evidence-led</strong></div>
+        <div><span>Trading</span><strong>Paper only</strong></div>
       </div>
+      <div class="system-footer"><span>Memory</span><span>Audit</span><span>Kill switches</span><span>Approval gates</span></div>
     </div>
   </div>
 </section>
 
 <style>
-.hero h1 span {
-  display: inline-block;
-}
 .hero {
-  min-height: 94vh;
+  min-height: 790px;
   display: flex;
   align-items: center;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.16), transparent 32%),
-    radial-gradient(circle at 80% 30%, rgba(129, 140, 248, 0.14), transparent 30%),
-    linear-gradient(180deg, #050b18 0%, #08111f 52%, #050b18 100%);
+  background: radial-gradient(circle at 14% 24%, rgba(56, 189, 248, 0.16), transparent 30%), radial-gradient(circle at 86% 32%, rgba(129, 140, 248, 0.12), transparent 28%), linear-gradient(180deg, #050b18 0%, #08111f 70%, #050b18 100%);
 }
-
-.hero-container {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  gap: 48px;
-}
-
-.hero-content {
-  max-width: 920px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.hero h1 {
-  margin: 26px 0 24px;
-  font-size: 6.25rem;
-  line-height: 0.95;
-  letter-spacing: 0;
-}
-
-.hero p {
-  max-width: 760px;
-  margin: 0 auto;
-  color: var(--text-soft);
-  font-size: clamp(17px, 2vw, 22px);
-  line-height: 1.8;
-}
-
-.hero-system {
-  max-width: 920px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 22px;
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.65), rgba(8, 17, 31, 0.75));
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(56, 189, 248, 0.22);
-  box-shadow: 0 26px 90px rgba(0, 0, 0, 0.28);
-}
-
-.system-topline,
-.system-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-}
-
-.system-topline {
-  margin-bottom: 14px;
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.system-topline span:last-child {
-  text-align: right;
-  color: var(--primary);
-}
-
-.system-grid {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.system-grid div {
-  min-height: 118px;
-  padding: 18px;
-  border-radius: 8px;
-  background: rgba(2, 6, 23, 0.55);
-  border: 1px solid rgba(148, 163, 184, 0.16);
-}
-
-.system-grid span {
-  display: block;
-  margin-bottom: 12px;
-  color: var(--primary);
-  font-size: 12px;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.system-grid strong {
-  color: var(--text-main);
-  font-size: 15px;
-  line-height: 1.45;
-}
-
-.hero-actions {
-  margin-top: 44px;
-  display: flex;
-  justify-content: center;
-  gap: 18px;
-  flex-wrap: wrap;
-}
-
-.hero-proof {
-  margin-top: 36px;
-  display: flex;
-  justify-content: center;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-.hero-proof a {
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 700;
-  background: rgba(15, 23, 42, 0.5);
-  transition: 0.2s ease;
-}
-
-.hero-proof a:hover {
-  color: var(--primary);
-  border-color: var(--border-bright);
-  transform: translateY(-2px);
-}
-
-.hero-glow {
-  position: absolute;
-  width: 360px;
-  height: 360px;
-  border-radius: 999px;
-  filter: blur(70px);
-  opacity: 0.45;
-  pointer-events: none;
-}
-
-.hero-glow-one {
-  top: 18%;
-  left: 12%;
-  background: rgba(56, 189, 248, 0.32);
-}
-
-.hero-glow-two {
-  right: 14%;
-  bottom: 18%;
-  background: rgba(129, 140, 248, 0.26);
-}
-
-@media (max-width: 768px) {
-  .hero {
-    min-height: auto;
-    padding-top: 140px;
-    padding-bottom: 90px;
-  }
-
-  .hero h1 {
-    font-size: 4.25rem;
-    letter-spacing: 0;
-  }
-
-  .system-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 560px) {
-  .hero h1 {
-    font-size: 3.05rem;
-  }
-
-  .system-topline,
-  .system-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .system-topline span:last-child {
-    text-align: left;
-  }
-}
+.hero-container { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(420px, 0.92fr); gap: 72px; align-items: center; }
+.hero-content { max-width: 760px; }
+.hero h1 { margin: 28px 0 26px; font-size: clamp(4.5rem, 7vw, 6.8rem); line-height: 0.92; letter-spacing: -0.055em; }
+.hero h1 span { display: inline-block; }
+.hero p { max-width: 720px; margin: 0; color: var(--text-soft); font-size: clamp(17px, 1.6vw, 20px); line-height: 1.8; }
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 38px; }
+.hero-proof { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 30px; }
+.hero-proof span { padding: 8px 11px; border: 1px solid var(--border); border-radius: 999px; color: var(--text-muted); background: rgba(15, 23, 42, 0.5); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+.hero-system { width: 100%; padding: 24px; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.28); background: rgba(2, 6, 23, 0.7); box-shadow: 0 30px 100px rgba(0, 0, 0, 0.36); }
+.system-topline, .system-footer { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.system-topline { padding-bottom: 18px; border-bottom: 1px solid var(--border); color: var(--text-muted); font-size: 10px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+.system-topline span:last-child { color: var(--primary); }
+.system-owner, .system-core { padding: 18px; border: 1px solid var(--border); border-radius: 7px; background: rgba(15, 23, 42, 0.58); }
+.system-owner { margin-top: 18px; }
+.system-owner span, .system-core span, .system-grid span { display: block; margin-bottom: 7px; color: var(--primary); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.07em; }
+.system-owner strong { display: block; font-size: 18px; }
+.system-owner small { color: var(--text-muted); font-size: 12px; }
+.system-line { width: 1px; height: 18px; margin: 0 auto; background: var(--primary); }
+.system-core { display: grid; grid-template-columns: 0.6fr 1.4fr; gap: 18px; align-items: center; border-color: rgba(56, 189, 248, 0.3); }
+.system-core strong { font-size: 22px; }
+.system-core p { margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.55; }
+.system-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+.system-grid div { min-width: 0; padding: 14px; border: 1px solid var(--border); border-radius: 6px; background: rgba(15, 23, 42, 0.48); }
+.system-grid strong { font-size: 13px; }
+.system-footer { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.system-footer span { color: var(--text-muted); font-size: 10px; font-weight: 800; text-transform: uppercase; }
+.hero-glow { position: absolute; width: 340px; height: 340px; border-radius: 50%; filter: blur(80px); opacity: 0.35; pointer-events: none; }
+.hero-glow-one { top: 18%; left: 4%; background: rgba(56, 189, 248, 0.3); }
+.hero-glow-two { right: 4%; bottom: 12%; background: rgba(129, 140, 248, 0.22); }
+@media (max-width: 1100px) { .hero { padding-top: 130px; } .hero-container { grid-template-columns: 1fr; gap: 48px; } .hero-content { max-width: 900px; } .hero-system { max-width: 760px; } }
+@media (max-width: 700px) { .hero { min-height: auto; padding-top: 118px; padding-bottom: 86px; } .hero h1 { font-size: clamp(3rem, 15vw, 4.2rem); } .hero-actions { flex-direction: column; } .hero-system { padding: 18px; } .system-core { grid-template-columns: 1fr; } }
+@media (max-width: 440px) { .system-grid { grid-template-columns: 1fr; } }
 </style>

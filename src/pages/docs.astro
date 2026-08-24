@@ -5,52 +5,52 @@ import Footer from "../components/Footer.astro";
 import { DOC_CATEGORIES } from "../data/docs.js";
 
 function statusClass(status: string) {
-  if (status === "Available") return "status-pill--operational";
-  if (status === "Internal") return "status-pill--illustrative";
-  return "status-pill--planned";
+  return status === "Available" ? "status-operational" : "status-development";
 }
 ---
 
 <Layout
-  title="Documentation | Project KAI"
-  description="An index of Project KAI's real documentation and evidence -- how the product works, what's currently true, and where to verify it. Not a marketing summary."
+  title="Project KAI Documentation | Architecture, Capabilities & Safety"
+  description="Public-safe Project KAI documentation covering architecture, verified capabilities, voice, human-reviewed content production, paper-only trading intelligence, safety, and roadmap."
   canonicalPath="/docs"
 >
   <Header />
+  <main id="main-content" class="page-main docs-main">
+    <section class="page-hero docs-hero">
+      <div class="container docs-hero-grid">
+        <div>
+          <p class="page-kicker">Public Documentation Hub</p>
+          <h1 class="page-title">Understand the system without exposing the private runtime.</h1>
+          <p class="page-lede">
+            This documentation explains what Project KAI does, how authority flows through it,
+            which capabilities are operational, and where the product is still being validated.
+            It is a curated public layer—not a dump of internal reports, credentials, or account data.
+          </p>
+        </div>
+        <aside class="docs-principles" aria-label="Documentation principles">
+          <span>Documentation standard</span>
+          <strong>Evidence before claims</strong>
+          <ul><li>Operational status is explicit</li><li>Roadmap work stays labeled</li><li>Private implementation detail stays private</li></ul>
+        </aside>
+      </div>
+    </section>
 
-  <main id="main-content" class="page-main">
-    <section class="page-hero">
-      <div class="container">
-        <p class="page-kicker">Documentation</p>
-        <h1 class="page-title">Understand how Project KAI is built, operated, and evolved.</h1>
-        <p class="page-lede">
-          This page doesn't contain new content -- it's an index of what already exists across
-          the site, organized so you can find the real evidence behind any claim quickly.
-          Every entry below links to a page that's live today.
-        </p>
+    <section class="docs-map-section">
+      <div class="container docs-map" aria-label="Documentation section map">
+        {DOC_CATEGORIES.map((category) => <a href={`#docs-${category.key}`}>{category.label}</a>)}
       </div>
     </section>
 
     {DOC_CATEGORIES.map((category) => (
-      <section class="page-section docs-category-section">
+      <section class="page-section docs-category-section" id={`docs-${category.key}`}>
         <div class="container">
-          <div class="docs-category-heading">
-            <h2>{category.label}</h2>
-            <p>{category.description}</p>
-          </div>
+          <div class="docs-category-heading"><h2>{category.label}</h2><p>{category.description}</p></div>
           <div class="docs-hub-grid">
             {category.docs.map((doc) => (
-              <article class="content-card docs-hub-card">
-                <div class="docs-hub-card-header">
-                  <h3>{doc.title}</h3>
-                  <span class={`status-pill ${statusClass(doc.status)}`}>{doc.status}</span>
-                </div>
+              <article class="docs-hub-card">
+                <div class="docs-hub-card-header"><h3>{doc.title}</h3><span class={`status-badge ${statusClass(doc.status)}`}>{doc.status}</span></div>
                 <p>{doc.description}</p>
-                {doc.route ? (
-                  <a href={doc.route} class="docs-hub-link">{doc.cta} →</a>
-                ) : (
-                  <span class="docs-hub-link docs-hub-link--disabled" aria-disabled="true">Not public</span>
-                )}
+                <a href={doc.route} class="docs-hub-link">{doc.cta} →</a>
               </article>
             ))}
           </div>
@@ -58,91 +58,31 @@ function statusClass(status: string) {
       </section>
     ))}
   </main>
-
   <Footer />
 </Layout>
 
 <style>
-.docs-category-section {
-  padding-top: 0;
-  padding-bottom: 56px;
-}
-
-.docs-category-section:last-of-type {
-  padding-bottom: var(--section-padding);
-}
-
-.docs-category-heading {
-  margin-bottom: 24px;
-}
-
-.docs-category-heading h2 {
-  margin: 0 0 6px;
-  font-size: 22px;
-}
-
-.docs-category-heading p {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 14px;
-}
-
-.docs-hub-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.docs-hub-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.docs-hub-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.docs-hub-card-header h3 {
-  margin: 0;
-  font-size: 17px;
-}
-
-.docs-hub-card p {
-  margin: 0;
-  color: var(--text-soft);
-  font-size: 13.5px;
-  line-height: 1.6;
-  flex-grow: 1;
-}
-
-.docs-hub-link {
-  align-self: flex-start;
-  color: var(--primary);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.docs-hub-link:hover {
-  text-decoration: underline;
-}
-
-.docs-hub-link--disabled {
-  color: var(--text-muted);
-  cursor: default;
-}
-
-.docs-hub-link--disabled:hover {
-  text-decoration: none;
-}
-
-@media (max-width: 700px) {
-  .docs-hub-grid {
-    grid-template-columns: 1fr;
-  }
-}
+.docs-hero { padding-bottom: 64px; }
+.docs-hero-grid { display: grid; grid-template-columns: 1fr 350px; gap: 70px; align-items: end; }
+.docs-principles { padding: 24px; border: 1px solid rgba(56, 189, 248, 0.26); border-radius: 8px; background: rgba(2, 6, 23, 0.58); }
+.docs-principles > span { color: var(--primary); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
+.docs-principles strong { display: block; margin: 14px 0; font-size: 20px; }
+.docs-principles ul { display: grid; gap: 9px; margin: 0; padding-left: 18px; color: var(--text-soft); font-size: 12px; line-height: 1.5; }
+.docs-map-section { position: sticky; top: 78px; z-index: 10; padding: 0 24px; background: rgba(5, 11, 24, 0.92); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); backdrop-filter: blur(14px); }
+.docs-map { display: flex; gap: 6px; padding: 10px 0; overflow-x: auto; }
+.docs-map a { flex: 0 0 auto; padding: 9px 12px; border-radius: 6px; color: var(--text-muted); font-size: 11px; font-weight: 800; }
+.docs-map a:hover { color: var(--primary); background: rgba(56, 189, 248, 0.08); }
+.docs-category-section { padding-top: 72px; padding-bottom: 0; scroll-margin-top: 135px; }
+.docs-category-section:last-of-type { padding-bottom: var(--section-padding); }
+.docs-category-heading { display: grid; grid-template-columns: 0.65fr 1.35fr; gap: 30px; align-items: baseline; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+.docs-category-heading h2 { margin: 0; font-size: 22px; }
+.docs-category-heading p { margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.6; }
+.docs-hub-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.docs-hub-card { display: flex; flex-direction: column; min-width: 0; min-height: 220px; padding: 24px; border: 1px solid var(--border); border-radius: 8px; background: rgba(15, 23, 42, 0.66); }
+.docs-hub-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.docs-hub-card h3 { margin: 0; font-size: 17px; }
+.docs-hub-card p { flex-grow: 1; margin: 26px 0 18px; color: var(--text-soft); font-size: 13px; line-height: 1.65; }
+.docs-hub-link { color: var(--primary); font-size: 12px; font-weight: 800; }
+@media (max-width: 1000px) { .docs-hero-grid { grid-template-columns: 1fr; gap: 34px; } .docs-principles { max-width: 520px; } .docs-hub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .docs-map-section { top: 72px; } .docs-category-heading { grid-template-columns: 1fr; gap: 8px; } .docs-hub-grid { grid-template-columns: 1fr; } .docs-hub-card { min-height: 0; } }
 </style>

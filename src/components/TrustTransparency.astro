@@ -1,71 +1,37 @@
 ---
-import kaiOsData from "../data/generated/kai-os-public-data.json";
-
-const { desktop_operator, engineering } = kaiOsData;
-
-// Every claim below is checkable against real, already-established facts
-// from this session's own work -- not written as generic trust-page
-// copy. Privacy specifically states what's real and true today (a static
-// site with no backend, so no data collection happens by construction),
-// rather than defaulting to "under development" when something more
-// accurate and more honest is available.
 const PILLARS = [
-  {
-    icon: "◈",
-    title: "Human Review",
-    body: "Every video produced by KAI OS stops for review before it's marked ready. A person checks the facts, watches the result, and decides go or no-go. Publishing only happens after that explicit approval -- KAI OS has never uploaded or published anything on its own.",
-  },
-  {
-    icon: "◇",
-    title: "Engineering Standards",
-    body: `Every real fix ships with regression tests -- ${engineering.total_test_files}+ real automated tests exist across the codebase today. Work happens in small, verified increments, each one built, tested, and checked before the next begins. Data and logic live in one place, reused everywhere, not copied between components. Desktop Operator -- real command/control and approval-gating architecture, ${desktop_operator.test_file_count} of those tests -- is a concrete example: it's currently ${desktop_operator.status.toLowerCase()}, with human-approval gating designed in from the start, ahead of any live automation.`,
-  },
-  {
-    icon: "◎",
-    title: "Transparency",
-    body: "No fabricated statistics, testimonials, team members, or customer logos appear anywhere on this site. What's shown as the roadmap reflects real, ongoing work. Every status label on this site (Operational, In Development, Planned, Coming Soon) is checked against real code before publishing, not assumed.",
-  },
-  {
-    icon: "◐",
-    title: "Continuous Improvement",
-    body: "A real, append-only Developer Memory records bugs, fixes, and lessons so the same problem isn't solved twice. Pipeline Metrics tracks real production KPIs across runs. An Improvement Backlog keeps every planned change written down, not forgotten between sessions.",
-  },
-  {
-    icon: "◑",
-    title: "Privacy",
-    body: "This site is static: no accounts, no payment processing, no backend database, and no analytics service connected today -- so no personal data is collected by construction, not by policy alone. Beyond the website, KAI OS itself runs on a real, verified capability-based security model -- default-deny authorization, revocation, kill switches, rate limiting, and audit logging.",
-    link: { href: "/privacy", text: "Read the full Privacy Policy" },
-  },
-  {
-    icon: "◒",
-    title: "Future Philosophy",
-    body: "Build AI that assists people, not one that replaces their judgment. Keep humans in control of every consequential decision. Build modular systems that can be reviewed piece by piece. Choose transparency over automation hype, every time.",
-  },
+  { code: "HUM", title: "Human Review", body: "Content publishing and consequential activation decisions remain explicit human checkpoints, not unattended defaults." },
+  { code: "POL", title: "Permission Gates", body: "Capabilities are authorized narrowly. Policy, owner state, and approval requirements are checked before controlled execution." },
+  { code: "PPR", title: "Paper-First Finance", body: "Trading intelligence is validated against paper brokerage infrastructure before any broader activation is considered." },
+  { code: "STOP", title: "Kill Switches & Pause", body: "Independent stop controls, global pause, and emergency state provide more than one way to prevent new consequential work." },
+  { code: "RISK", title: "Risk Governance", body: "Daily loss, exposure, drawdown, position, and exit protections sit inside the trading evaluation path—not outside it." },
+  { code: "AUD", title: "Auditability", body: "Decisions, failures, evidence, and outcomes are recorded so safety and product claims can be reviewed rather than assumed." },
+  { code: "LOC", title: "Local-First Processing", body: "Core conversational and operational paths prioritize the owner's environment and bounded local fallbacks." },
+  { code: "PRIV", title: "Public-Safe Disclosure", body: "The website explains principles and status without publishing credentials, account details, private runtime paths, or security-sensitive configuration.", link: { href: "/privacy", text: "Read the privacy policy" } },
 ];
 ---
 
 <section class="trust" id="trust">
   <div class="container">
-    <div class="section-center">
-      <div class="section-badge">Trust &amp; Transparency</div>
-
-      <h2 class="section-title">
-        Trust &amp; Transparency
-      </h2>
-
+    <div class="trust-heading">
+      <div>
+        <div class="section-badge">Safety by Design</div>
+        <h2 class="section-title">Capability without invisible authority.</h2>
+      </div>
       <p class="section-subtitle">
-        We believe trustworthy AI is built through engineering discipline, human
-        oversight, and transparent development.
+        KAI is designed around a simple rule: more consequential work gets stricter gates.
+        Safety is expressed through operating controls, human checkpoints, and evidence—not
+        through a promise of perfect autonomy.
       </p>
     </div>
 
     <div class="trust-grid">
       {PILLARS.map((pillar) => (
-        <article class="content-card trust-card">
-          <div class="trust-icon" aria-hidden="true">{pillar.icon}</div>
+        <article class="trust-card">
+          <span class="trust-code" aria-hidden="true">{pillar.code}</span>
           <h3>{pillar.title}</h3>
           <p>{pillar.body}</p>
-          {pillar.link && <a href={pillar.link.href} class="trust-link">{pillar.link.text}</a>}
+          {pillar.link && <a href={pillar.link.href} class="trust-link">{pillar.link.text} →</a>}
         </article>
       ))}
     </div>
@@ -73,70 +39,17 @@ const PILLARS = [
 </section>
 
 <style>
-.trust {
-  background:
-    radial-gradient(circle at 20% 15%, rgba(56, 189, 248, 0.06), transparent 32%),
-    linear-gradient(180deg, #050b18 0%, #08111f 100%);
-}
-
-.trust-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-.trust-card {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.trust-icon {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 6px;
-  display: grid;
-  place-items: center;
-  border-radius: 8px;
-  background: rgba(56, 189, 248, 0.1);
-  border: 1px solid rgba(56, 189, 248, 0.22);
-  color: var(--primary);
-  font-size: 20px;
-}
-
-.trust-card h3 {
-  margin: 0 0 4px;
-  font-size: 20px;
-}
-
-.trust-card p {
-  margin: 0;
-  color: var(--text-soft);
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.trust-link {
-  margin-top: 8px;
-  color: var(--primary);
-  font-size: 13px;
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.trust-link:hover {
-  color: var(--text-main);
-}
-
-@media (max-width: 1000px) {
-  .trust-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 700px) {
-  .trust-grid {
-    grid-template-columns: 1fr;
-  }
-}
+.trust { background: radial-gradient(circle at 20% 15%, rgba(56, 189, 248, 0.06), transparent 32%), linear-gradient(180deg, var(--bg-main), var(--bg-section)); }
+.trust-heading { display: grid; grid-template-columns: 1fr 0.8fr; gap: 64px; align-items: end; margin-bottom: 58px; }
+.trust-heading .section-title { margin-bottom: 0; }
+.trust-heading .section-subtitle { margin: 0; text-align: left; }
+.trust-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.trust-card { min-width: 0; min-height: 250px; padding: 24px; border: 1px solid var(--border); border-radius: 8px; background: rgba(15, 23, 42, 0.68); }
+.trust-code { display: inline-flex; margin-bottom: 28px; padding: 7px 9px; border: 1px solid rgba(56, 189, 248, 0.22); border-radius: 5px; color: var(--primary); background: rgba(56, 189, 248, 0.07); font-size: 10px; font-weight: 900; }
+.trust-card h3 { margin: 0 0 10px; font-size: 18px; }
+.trust-card p { margin: 0; color: var(--text-soft); font-size: 13px; line-height: 1.7; }
+.trust-link { display: inline-block; margin-top: 14px; color: var(--primary); font-size: 12px; font-weight: 800; }
+@media (max-width: 1050px) { .trust-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 800px) { .trust-heading { grid-template-columns: 1fr; gap: 24px; } }
+@media (max-width: 600px) { .trust-grid { grid-template-columns: 1fr; } .trust-card { min-height: 0; } }
 </style>

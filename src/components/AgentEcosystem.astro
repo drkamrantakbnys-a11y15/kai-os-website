@@ -1,308 +1,71 @@
 ---
-import { getAgentBySlug } from "../data/agents.js";
-
-const visual = getAgentBySlug("visual");
-const voice = getAgentBySlug("voice");
-const music = getAgentBySlug("music");
-const thumbnail = getAgentBySlug("thumbnail");
-const compliance = getAgentBySlug("compliance");
-const analytics = getAgentBySlug("analytics");
-const knowledge = getAgentBySlug("knowledge");
-
-// Real pipeline order, verified against produce_next_video.py's main()
-// function directly -- not the generic "Research -> Knowledge Brain ->
-// Developer -> Content -> Publishing -> Analytics -> Learning" flow
-// requested, which doesn't match what the code actually does (grep
-// confirms knowledge_brain/ is never referenced in produce_next_video.py,
-// and publishing is never automatic). This tells the same request -> work
-// -> publish -> learn story, but every step is checkable against real code.
 const FLOW = [
-  {
-    step: "01",
-    name: "Topic Queued",
-    description: "The next topic is pulled from a real, human-curated content queue -- not a live user request.",
-    capabilityStatus: "Operational",
-    checkpoint: false,
-  },
-  {
-    step: "02",
-    name: "Script Written",
-    description: "Narration is drafted, then automatically validated for duplicated wording, CTAs, and URLs before any expensive work starts.",
-    capabilityStatus: "Operational",
-    checkpoint: false,
-  },
-  {
-    step: "03",
-    slug: visual.slug,
-    name: visual.name,
-    description: visual.purpose,
-    capabilityStatus: visual.capabilityStatus,
-    agentStatus: visual.agentStatus,
-    checkpoint: false,
-  },
-  {
-    step: "04",
-    slug: voice.slug,
-    name: voice.name,
-    description: voice.purpose,
-    capabilityStatus: voice.capabilityStatus,
-    agentStatus: voice.agentStatus,
-    checkpoint: false,
-  },
-  {
-    step: "05",
-    slug: music.slug,
-    name: music.name,
-    description: music.purpose,
-    capabilityStatus: music.capabilityStatus,
-    agentStatus: music.agentStatus,
-    checkpoint: false,
-  },
-  {
-    step: "06",
-    slug: thumbnail.slug,
-    name: thumbnail.name,
-    description: thumbnail.purpose,
-    capabilityStatus: thumbnail.capabilityStatus,
-    agentStatus: thumbnail.agentStatus,
-    checkpoint: false,
-  },
-  {
-    step: "07",
-    slug: compliance.slug,
-    name: compliance.name,
-    description: compliance.purpose,
-    capabilityStatus: compliance.capabilityStatus,
-    agentStatus: compliance.agentStatus,
-    checkpoint: false,
-  },
-  {
-    step: "08",
-    name: "Human Review",
-    description: "Every video stops here. A person watches it, checks the facts, and decides go or no-go -- never skipped, never automated.",
-    capabilityStatus: "Operational",
-    checkpoint: true,
-  },
-  {
-    step: "09",
-    name: "Publishing",
-    description: "Only happens after human approval. KAI OS never uploads or publishes anything on its own.",
-    capabilityStatus: "Operational",
-    checkpoint: true,
-  },
-  {
-    step: "10",
-    slug: analytics.slug,
-    name: "Analytics",
-    description: analytics.purpose,
-    capabilityStatus: analytics.capabilityStatus,
-    agentStatus: analytics.agentStatus,
-    checkpoint: false,
-    // Publishing does not automatically trigger this today -- collect_analytics.py
-    // is a separate, manually-run script (confirmed via source, not the sequential
-    // position in this diagram). Labeled so the flow doesn't imply automatic
-    // hand-off where none exists yet.
-    plannedConnection: true,
-  },
-  {
-    step: "11",
-    slug: knowledge.slug,
-    name: "Knowledge Brain",
-    description: knowledge.purpose,
-    capabilityStatus: knowledge.capabilityStatus,
-    agentStatus: knowledge.agentStatus,
-    checkpoint: false,
-    // Same reasoning: knowledge_brain/ is real and works when queried
-    // directly, but nothing in the pipeline calls it automatically yet.
-    plannedConnection: true,
-  },
+  { step: "01", name: "Topic", detail: "A human-curated topic enters the production queue.", status: "Operational" },
+  { step: "02", name: "Script", detail: "Narration is drafted inside the bounded production workflow.", status: "Operational" },
+  { step: "03", name: "Claims Review", detail: "Wording, links, repeated claims, and factual risk are checked early.", status: "Operational" },
+  { step: "04", name: "Scenes", detail: "The script is translated into a structured visual plan.", status: "Operational" },
+  { step: "05", slug: "visual", name: "Visuals", detail: "Licensed visual assets are sourced and checked for reuse.", status: "Operational" },
+  { step: "06", slug: "voice", name: "Narration", detail: "The approved script is converted into timed spoken audio.", status: "Operational" },
+  { step: "07", name: "Captions", detail: "Readable captions are generated and aligned to the narration.", status: "Operational" },
+  { step: "08", slug: "music", name: "Music", detail: "A licensed background track is selected and recorded.", status: "Operational" },
+  { step: "09", name: "Assembly", detail: "Scenes, narration, captions, and music become a reviewable video.", status: "Operational" },
+  { step: "10", slug: "thumbnail", name: "Thumbnail", detail: "A thumbnail is produced and checked against prior concepts.", status: "Operational" },
+  { step: "11", slug: "compliance", name: "Compliance", detail: "Licensing and content-risk evidence is gathered for review.", status: "Operational" },
+  { step: "12", name: "Human Review", detail: "A person watches, checks, and approves or rejects the finished package.", status: "Human Controlled", checkpoint: true },
+  { step: "13", name: "Publishing", detail: "Publishing occurs only after explicit human approval.", status: "Human Controlled", checkpoint: true },
 ];
-
-function statusClass(status: string) {
-  if (status === "Operational") return "status-pill--operational";
-  if (status === "In Development") return "status-pill--in-development";
-  if (status === "Coming Soon") return "status-pill--coming-soon";
-  return "status-pill--planned";
-}
 ---
 
 <section class="agent-ecosystem" id="ecosystem">
   <div class="container">
     <div class="section-center">
-      <div class="section-badge">Agent Ecosystem</div>
-
-      <h2 class="section-title">
-        What's actually inside KAI OS.
-      </h2>
-
+      <div class="section-badge">Content Automation</div>
+      <h2 class="section-title">Automates production. Keeps publication under human control.</h2>
       <p class="section-subtitle">
-        Real agents, shown in the order they actually cooperate -- not a simplified
-        diagram, and every step below is checkable against the production code. Steps
-        marked <strong>Human Checkpoint</strong> are never automated, by design.
+        The content system is a real, ordered production pipeline—not a generic autonomous
+        agent mesh. Automated stages prepare a reviewable package; the final decision and
+        publishing action remain human-controlled.
       </p>
+    </div>
+
+    <div class="content-policy">
+      <span class="status-pill status-pill--human-controlled">Mandatory checkpoint</span>
+      <p>No finished video bypasses human review. Publishing is never treated as an unattended default.</p>
     </div>
 
     <div class="ecosystem-flow">
       {FLOW.map((node) => (
-        <div
-          id={node.slug ? `ecosystem-${node.slug}` : undefined}
-          class:list={["ecosystem-node", "reveal", { "ecosystem-node--checkpoint": node.checkpoint }]}
-        >
-          <div class="ecosystem-node-marker">{node.step}</div>
-          <div class="ecosystem-node-body">
-            {node.plannedConnection && (
-              <p class="planned-connection-note">
-                Planned connection -- not yet triggered automatically by the step above it.
-              </p>
+        <article id={node.slug ? `ecosystem-${node.slug}` : undefined} class:list={["ecosystem-node", { "ecosystem-node--checkpoint": node.checkpoint }]}>
+          <div class="ecosystem-node-top">
+            <span class="ecosystem-node-marker">{node.step}</span>
+            {node.checkpoint ? (
+              <span class="status-pill status-pill--human-controlled">{node.status}</span>
+            ) : (
+              <span class="status-badge status-operational">{node.status}</span>
             )}
-            <div class="ecosystem-node-header">
-              <h3>{node.name}</h3>
-              {node.checkpoint && <span class="checkpoint-badge">Human Checkpoint</span>}
-            </div>
-            <p>{node.description}</p>
-            <div class="ecosystem-node-status">
-              <span class={`status-pill ${statusClass(node.capabilityStatus)}`}>{node.capabilityStatus}</span>
-              {node.agentStatus && (
-                <span class={`status-pill ${statusClass(node.agentStatus)}`}>Agent: {node.agentStatus}</span>
-              )}
-            </div>
           </div>
-        </div>
+          <h3>{node.name}</h3>
+          <p>{node.detail}</p>
+        </article>
       ))}
     </div>
   </div>
 </section>
 
 <style>
-.agent-ecosystem {
-  background:
-    radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.07), transparent 32%),
-    linear-gradient(180deg, #050b18 0%, #08111f 100%);
-}
-
-.ecosystem-flow {
-  position: relative;
-  max-width: 760px;
-  margin: 64px auto 0;
-  padding-left: 40px;
-  border-left: 2px solid var(--border);
-}
-
-.ecosystem-node {
-  position: relative;
-  margin-bottom: 24px;
-  scroll-margin-top: 100px;
-}
-
-.ecosystem-node:last-child {
-  margin-bottom: 0;
-}
-
-.ecosystem-node-marker {
-  position: absolute;
-  left: -57px;
-  top: 24px;
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--bg-main);
-  border: 2px solid var(--primary);
-  color: var(--primary);
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.ecosystem-node--checkpoint .ecosystem-node-marker {
-  border-color: var(--violet);
-  color: var(--violet);
-}
-
-.ecosystem-node-body {
-  padding: 26px 28px;
-  border-radius: 8px;
-  background: rgba(15, 23, 42, 0.72);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
-  transition: 0.25s ease;
-}
-
-.ecosystem-node--checkpoint .ecosystem-node-body {
-  border-color: rgba(129, 140, 248, 0.35);
-}
-
-.ecosystem-node-body:hover {
-  transform: translateY(-4px);
-  border-color: var(--border-bright);
-}
-
-.ecosystem-node-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-}
-
-.ecosystem-node-header h3 {
-  margin: 0;
-  font-size: 20px;
-}
-
-.planned-connection-note {
-  margin: 0 0 12px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  background: rgba(148, 163, 184, 0.08);
-  border-left: 2px dashed var(--text-muted);
-  color: var(--text-muted);
-  font-size: 12.5px;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-.checkpoint-badge {
-  padding: 5px 11px;
-  border-radius: 999px;
-  background: rgba(129, 140, 248, 0.14);
-  border: 1px solid rgba(129, 140, 248, 0.35);
-  color: var(--violet);
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.ecosystem-node-body p {
-  margin: 0 0 14px;
-  color: var(--text-soft);
-  font-size: 15px;
-  line-height: 1.65;
-}
-
-.ecosystem-node-status {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-@media (max-width: 700px) {
-  .ecosystem-flow {
-    padding-left: 30px;
-  }
-
-  .ecosystem-node-marker {
-    left: -47px;
-    width: 28px;
-    height: 28px;
-    font-size: 11px;
-  }
-
-  .ecosystem-node-body {
-    padding: 20px;
-  }
-}
+.agent-ecosystem { background: radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.07), transparent 32%), linear-gradient(180deg, var(--bg-main), var(--bg-section)); }
+.content-policy { display: flex; align-items: center; justify-content: center; gap: 14px; max-width: 840px; margin: 0 auto 34px; padding: 15px 18px; border: 1px solid rgba(129, 140, 248, 0.28); border-radius: 8px; background: rgba(129, 140, 248, 0.06); }
+.content-policy p { margin: 0; color: var(--text-soft); font-size: 13px; line-height: 1.6; }
+.ecosystem-flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.ecosystem-node { min-width: 0; min-height: 210px; padding: 22px; scroll-margin-top: 100px; border: 1px solid var(--border); border-radius: 8px; background: rgba(15, 23, 42, 0.7); box-shadow: var(--shadow-soft); transition: transform 0.25s ease, border-color 0.25s ease; }
+.ecosystem-node:hover { transform: translateY(-4px); border-color: var(--border-bright); }
+.ecosystem-node--checkpoint { border-color: rgba(129, 140, 248, 0.34); background: rgba(129, 140, 248, 0.07); }
+.ecosystem-node-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 22px; }
+.ecosystem-node-marker { color: var(--primary); font-size: 12px; font-weight: 900; }
+.ecosystem-node h3 { margin: 0 0 10px; font-size: 18px; }
+.ecosystem-node p { margin: 0; color: var(--text-soft); font-size: 13.5px; line-height: 1.65; }
+.ecosystem-node .status-badge, .ecosystem-node .status-pill { min-height: 28px; padding: 6px 9px; font-size: 9px; }
+@media (max-width: 1100px) { .ecosystem-flow { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 780px) { .ecosystem-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .ecosystem-flow { grid-template-columns: 1fr; } .ecosystem-node { min-height: 0; } .content-policy { align-items: flex-start; flex-direction: column; } }
 </style>

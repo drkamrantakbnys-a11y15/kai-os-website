@@ -1,236 +1,71 @@
+---
+const STAGES = [
+  {
+    label: "Now · Operational",
+    tier: "status-operational",
+    title: "Working foundations",
+    items: [
+      "Local conversational interface",
+      "English and Hindi voice output",
+      "Human-reviewed content production",
+      "Mature trading intelligence and Alpaca Paper validation",
+      "Persistent memory and orchestration foundations",
+    ],
+  },
+  {
+    label: "Next",
+    tier: "status-development",
+    title: "Controlled product completion",
+    items: [
+      "Open-market Alpaca Paper certification",
+      "Clean continuous paper-learning activation, only after approval",
+      "More natural neural conversational voice",
+      "Richer Trading Professional interface",
+      "Consolidated owner command center",
+    ],
+  },
+  {
+    label: "Later",
+    tier: "status-planned",
+    title: "Governed expansion",
+    items: [
+      "AI shadow-strategy comparison",
+      "Governed AI paper execution",
+      "Broader cross-division orchestration",
+      "Carefully approved desktop-control capability",
+    ],
+  },
+];
+---
+
 <section class="roadmap" id="roadmap">
   <div class="container">
-
     <div class="section-center">
-      <div class="section-badge">
-        KAI Evolution Roadmap
-      </div>
-
-      <h2 class="section-title">
-        Building the Future,<br>
-        <span class="gradient-text">One Phase at a Time</span>
-      </h2>
-
-      <p class="section-subtitle">
-        KAI OS is evolving through real, honestly-labeled stages -- what's actually
-        running today, what's actively being built, what's planned next, and where
-        the long-term vision points.
-      </p>
+      <div class="section-badge">Roadmap</div>
+      <h2 class="section-title">Now, next, and later—without collapsing the difference.</h2>
+      <p class="section-subtitle">Operational work is separated from the next controlled milestone and the longer-term direction. A roadmap item is not a completed capability claim.</p>
     </div>
-
-    <div class="roadmap-timeline">
-
-      <div class="roadmap-stage">
-        <div class="roadmap-stage-header">
-          <span class="stage-label stage-label--now">Now</span>
-          <h3>What's running today</h3>
-        </div>
-        <div class="roadmap-items">
-          <div class="timeline-item">
-            <div class="phase">Foundation</div>
-            <h3>Architecture &amp; Documentation</h3>
-            <p>Real architecture, memory systems, and project documentation, actively maintained and extended.</p>
-          </div>
-          <div class="timeline-item">
-            <div class="phase">Automation</div>
-            <h3>Content Production Pipeline</h3>
-            <p>A real, running automation pipeline for research, scripting, and publishing -- in active daily use, not a concept.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="roadmap-stage">
-        <div class="roadmap-stage-header">
-          <span class="stage-label stage-label--next">Next</span>
-          <h3>Actively being built</h3>
-        </div>
-        <div class="roadmap-items">
-          <div class="timeline-item">
-            <div class="phase">AI Agents</div>
-            <h3>Formalizing the Agent Architecture</h3>
-            <p>Turning today's automation into a documented, testable multi-agent system -- Developer, Content, Research, Business, Automation, and Meta agents.</p>
-          </div>
-          <div class="timeline-item">
-            <div class="phase">Digital Business</div>
-            <h3>Beyond Publishing</h3>
-            <p>Expanding from content publishing into a broader set of digital products and monetization paths.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="roadmap-stage">
-        <div class="roadmap-stage-header">
-          <span class="stage-label stage-label--future">Future</span>
-          <h3>Planned, not yet started</h3>
-        </div>
-        <div class="roadmap-items">
-          <div class="timeline-item">
-            <div class="phase">Platform</div>
-            <h3>Dashboard &amp; Integrations</h3>
-            <p>A real operational dashboard, APIs, public documentation, and community integrations.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="roadmap-stage">
-        <div class="roadmap-stage-header">
-          <span class="stage-label stage-label--vision">Long-Term Vision</span>
-          <h3>Where this is headed</h3>
-        </div>
-        <div class="roadmap-items">
-          <div class="timeline-item">
-            <div class="phase">Vision</div>
-            <h3>A Self-Evolving AI Operating System</h3>
-            <p>A continuously improving system with long-term memory and collaboration between specialized agents. This is a direction, not a committed timeline.</p>
-          </div>
-        </div>
-      </div>
-
+    <div class="roadmap-grid">
+      {STAGES.map((stage, index) => (
+        <article class:list={["roadmap-stage", { "roadmap-stage--featured": index === 0 }]}>
+          <span class={`status-badge ${stage.tier}`}>{stage.label}</span>
+          <h3>{stage.title}</h3>
+          <ul>{stage.items.map((item) => <li>{item}</li>)}</ul>
+        </article>
+      ))}
     </div>
-
   </div>
 </section>
 
 <style>
-.roadmap{
-background:linear-gradient(180deg,#08111f,#050b18);
-}
-
-.roadmap-timeline {
-  position: relative;
-  max-width: 860px;
-  margin: 70px auto 0;
-  padding-left: 32px;
-  border-left: 2px solid var(--border);
-}
-
-.roadmap-stage {
-  position: relative;
-  margin-bottom: 56px;
-}
-
-.roadmap-stage:last-child {
-  margin-bottom: 0;
-}
-
-.roadmap-stage::before {
-  content: "";
-  position: absolute;
-  left: -39px;
-  top: 6px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--bg-main);
-  border: 2px solid var(--primary);
-}
-
-.roadmap-stage-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 22px;
-  flex-wrap: wrap;
-}
-
-.roadmap-stage-header h3 {
-  margin: 0;
-  font-size: 22px;
-  color: var(--text-main);
-}
-
-.stage-label {
-  display: inline-flex;
-  align-items: center;
-  padding: 7px 14px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.stage-label--now {
-  background: rgba(56, 189, 248, 0.18);
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  color: var(--primary);
-}
-
-.stage-label--next {
-  background: rgba(129, 140, 248, 0.16);
-  border: 1px solid rgba(129, 140, 248, 0.36);
-  color: var(--violet);
-}
-
-.stage-label--future {
-  background: rgba(148, 163, 184, 0.14);
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  color: var(--text-soft);
-}
-
-.stage-label--vision {
-  background: rgba(148, 163, 184, 0.08);
-  border: 1px dashed rgba(148, 163, 184, 0.3);
-  color: var(--text-muted);
-}
-
-.roadmap-items {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.timeline-item{
-padding:30px;
-border-radius:8px;
-background:rgba(15,23,42,.72);
-backdrop-filter:blur(20px);
--webkit-backdrop-filter:blur(20px);
-border:1px solid var(--border);
-box-shadow:var(--shadow-soft);
-transition:.3s;
-}
-
-.timeline-item:hover{
-transform:translateY(-8px);
-border-color:var(--border-bright);
-}
-
-.phase{
-display:inline-block;
-padding:7px 13px;
-margin-bottom:16px;
-border-radius:999px;
-background:rgba(56,189,248,.12);
-color:var(--primary);
-font-size:12px;
-font-weight:800;
-}
-
-.timeline-item h3{
-margin:0 0 12px;
-font-size:20px;
-}
-
-.timeline-item p{
-margin:0;
-color:var(--text-soft);
-line-height:1.7;
-font-size:15px;
-}
-
-@media(max-width:900px){
-.roadmap-items{
-grid-template-columns:1fr;
-}
-}
-
-@media(max-width:700px){
-.roadmap-timeline{
-padding-left:22px;
-}
-.roadmap-stage::before{
-left:-29px;
-}
-}
+.roadmap { background: linear-gradient(180deg, var(--bg-main), var(--bg-section)); }
+.roadmap-grid { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 20px; }
+.roadmap-stage { min-width: 0; padding: 30px; border: 1px solid var(--border); border-radius: 8px; background: rgba(15, 23, 42, 0.68); box-shadow: var(--shadow-soft); }
+.roadmap-stage--featured { border-color: rgba(74, 222, 128, 0.25); }
+.roadmap-stage h3 { margin: 30px 0 20px; font-size: 24px; }
+.roadmap-stage ul { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.roadmap-stage li { position: relative; padding: 0 0 14px 18px; border-bottom: 1px solid var(--border); color: var(--text-soft); font-size: 14px; line-height: 1.55; }
+.roadmap-stage li:last-child { padding-bottom: 0; border-bottom: 0; }
+.roadmap-stage li::before { content: ""; position: absolute; top: 8px; left: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+@media (max-width: 950px) { .roadmap-grid { grid-template-columns: 1fr; } }
 </style>
