@@ -14,6 +14,7 @@ The latest directive (Parallel Website Improvement Directive) gives the most gra
 
 | # | Sprint | Status | Commit(s) |
 |---|---|---|---|
+| — | Priority B (product reality refresh, visual system, public docs, verification gate) | Done — voice/conversation, human-reviewed content flow, paper-only trading, memory/orchestration, safety, Now/Next/Later roadmap, public docs hub, responsive QA, and automated public-site checks | `d7dcbe9` `80c98fe` |
 | — | Priority A (mobile nav, OG/Twitter/JSON-LD, counters, links, sitemap/robots) | Done | `326e033` `2d029fa` `c58b2dc` |
 | 1 | Visual Language (remove HUD/glitch/scanline/particles/cursor-glow) | Done | `c9d88e3` `c76a881` `9ea108a` |
 | 2 | Homepage redesign (Hero/CTA/Value Prop/Journey/Story/Mission/Vision/Timeline/Founder/Research/Roadmap) | Partial — Roadmap done; Hero/CTA/Mission/Founder/Research sections still use original copy/layout, not yet revisited under this directive | `823454c` (roadmap only) |
