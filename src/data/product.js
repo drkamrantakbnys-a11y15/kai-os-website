@@ -40,7 +40,7 @@ export const PRODUCT_CAPABILITIES = [
     title: "Trading Intelligence",
     status: "In Development",
     tier: "status-development",
-    summary: "A mature research and risk stack is being validated against Alpaca Paper. Continuous paper execution is not enabled.",
+    summary: "A mature research and risk stack is being observed through a tightly bounded Alpaca Paper baseline. AI-directed and live-money execution remain disabled.",
     points: ["Market and strategy evaluation", "Risk and exposure controls", "Alpaca Paper integration"],
   },
   {
@@ -141,7 +141,7 @@ export const DOCUMENTATION_AREAS = [
   },
   {
     title: "Trading — Paper Only",
-    description: "The current research and validation boundary, including what is not continuously or live-money enabled.",
+    description: "The current bounded paper-only observation boundary, including the disabled AI-directed and live-money paths.",
     route: "/#trading",
     status: "In Development",
   },

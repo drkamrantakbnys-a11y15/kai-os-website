@@ -1,7 +1,7 @@
 <section class="community" id="community">
   <div class="container">
     <div class="section-center">
-      <div class="section-badge">Community</div>
+      <div class="section-badge">Project KAI Collective</div>
 
       <h2 class="section-title">
         Follow the journey.
@@ -9,7 +9,9 @@
 
       <p class="section-subtitle">
         Project KAI is being built in public. Two real YouTube channels are live today;
-        the rest are planned -- check back as the project grows.
+        the rest are planned -- check back as the project grows. The Project KAI Collective
+        is the open, still-forming group of people contributing ideas, skills, and support to
+        the project -- no fixed membership, no invented headcount, just an open door.
       </p>
     </div>
 
@@ -56,6 +58,28 @@
         <span class="community-status">Coming Soon</span>
       </div>
     </div>
+
+    <div class="community-categories">
+      <p class="community-categories-label">Contribution areas</p>
+      <div class="community-category-list">
+        {["AI / ML", "Software Engineering", "UI / UX", "Agent Ideas", "Business Models", "Research", "Content / Media", "Security", "Market Intelligence", "Product Strategy", "Community Growth", "Partnership Proposals"].map((c) => (
+          <span class="community-category-chip">{c}</span>
+        ))}
+      </div>
+    </div>
+
+    <div class="community-cta-row">
+      <a href="/media#feature-request" class="secondary-button">Contribute an Idea</a>
+      <a href="#community" class="secondary-button">Join the KAI Community</a>
+      <a href="#support" class="secondary-button">Support Project KAI</a>
+      <a href="/kai" class="secondary-button">Talk to KAI</a>
+    </div>
+    <p class="community-cta-note">
+      Financial support does not automatically make someone a developer, employee, partner,
+      operator, or shareholder. Ideas, technical suggestions, UX suggestions, research directions,
+      agent proposals, and collaboration proposals are all welcome -- actual collaboration is
+      separately reviewed.
+    </p>
   </div>
 </section>
 
@@ -135,6 +159,60 @@
 @media (max-width: 560px) {
   .community-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+.community-categories {
+  margin-top: 44px;
+  text-align: center;
+}
+.community-categories-label {
+  margin: 0 0 14px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+.community-category-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.community-category-chip {
+  padding: 6px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(56, 189, 248, 0.06);
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.community-cta-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.community-cta-note {
+  max-width: 680px;
+  margin: 24px auto 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+  .community-cta-row {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 </style>

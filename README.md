@@ -8,12 +8,16 @@ Built with [Astro](https://astro.build).
 
 ```text
 /
+├── functions/           # Optional public-safe serverless bridge
 ├── public/              # Static assets (favicon, robots.txt, sitemap.xml)
+├── scripts/             # Public-site verification and maintenance
 ├── src
 │   ├── assets/          # Images and SVGs
 │   ├── components/      # Page sections (Hero, About, Agents, Research, Footer, ...)
+│   ├── data/            # Curated and generated public-safe data
 │   ├── layouts/         # Shared page layout
 │   └── pages/           # Routes (index, about, agents, research, blog, contact, ...)
+├── supabase/            # Optional community persistence configuration
 └── package.json
 ```
 

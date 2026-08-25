@@ -1,0 +1,505 @@
+---
+// Public, real, evidence-grounded conversation with the canonical
+// ProductionAssistantOrchestrator's chat engine (backend_api/kai_chat.py
+// via the new POST /api/chat/public bridge route) -- read/analyze/chat
+// only, no privileged execution of any kind. See
+// PROJECT_KAI_PUBLIC_HUMANOID_CONVERSATION.md for the full design and
+// security boundary this page operates inside.
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const STARTER_QUESTIONS = [
+  "What is Project KAI?",
+  "Give me the latest Project KAI report.",
+  "What is KAI working on right now?",
+  "What has the trading division learned?",
+  "How is the YouTube division progressing?",
+  "What improvements are currently recommended?",
+  "What can KAI do today?",
+];
+---
+
+<Layout
+  title="Talk to KAI | Project KAI"
+  description="A real, evidence-grounded public conversation with KAI -- read-only and analysis-only. KAI cannot execute trades, control the desktop, or approve upgrades remotely."
+  canonicalPath="/kai"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero kai-hero">
+      <div class="container">
+        <p class="page-kicker">Public Conversation</p>
+        <h1 class="page-title">Talk to KAI.</h1>
+        <p class="page-lede">
+          This is a real conversation with Project KAI's canonical assistant, grounded in
+          verified system evidence -- not a scripted demo. It runs in a deliberately
+          low-privilege public mode: KAI can read, analyze, and discuss real system, trading,
+          and content evidence here, but it cannot execute trades, control any desktop, start
+          or stop the system, or approve self-upgrades from this page. See the limitations
+          note below the conversation for the full boundary.
+        </p>
+      </div>
+    </section>
+
+    <section class="page-section kai-section">
+      <div class="container kai-layout">
+        <div class="kai-panel kai-avatar-panel">
+          <div class="kai-orb" id="kai-orb" data-state="offline" aria-hidden="true">
+            <span class="kai-orb-core"></span>
+          </div>
+          <p class="kai-state-label" id="kai-state-label">Connecting…</p>
+
+          <div class="kai-evidence-badge" id="kai-evidence-badge">
+            <span class="status-badge status-development" id="kai-connection-badge">Checking connection…</span>
+          </div>
+
+          <div class="kai-upgrade-badge" id="kai-upgrade-badge" hidden>
+            <span class="status-badge status-development">Pending self-upgrade proposal(s)</span>
+            <p>Visible for transparency only -- approval happens locally with the owner's PIN, never from this page.</p>
+          </div>
+
+          <div class="kai-starters">
+            <p class="kai-starters-label">Try asking:</p>
+            <div class="kai-starter-list" id="kai-starter-list">
+              {STARTER_QUESTIONS.map((q) => (
+                <button type="button" class="kai-starter-chip" data-starter={q}>{q}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div class="kai-panel kai-chat-panel">
+          <div class="kai-transcript" id="kai-transcript" role="log" aria-live="polite" aria-label="Conversation with KAI">
+            <div class="kai-message kai-message--assistant">
+              <p>Hello. I'm KAI. Ask me about Project KAI, what I can do today, or the current state of the trading and content divisions -- I'll answer from verified evidence where it exists, and say so plainly when it doesn't.</p>
+            </div>
+          </div>
+
+          <form class="kai-input-row" id="kai-form">
+            <label for="kai-input" class="sr-only">Message KAI</label>
+            <textarea
+              id="kai-input"
+              name="message"
+              rows="1"
+              maxlength="4000"
+              placeholder="Ask KAI something..."
+              autocomplete="off"
+            ></textarea>
+            <div class="kai-input-actions">
+              <button type="button" class="kai-clear-button" id="kai-clear-button">Clear conversation</button>
+              <button type="submit" class="primary-button kai-send-button" id="kai-send-button">Send</button>
+            </div>
+          </form>
+          <p class="kai-input-note" id="kai-input-note"></p>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="kai-limitations">
+          <p class="kai-limitations-title">What this page can and can't do</p>
+          <ul>
+            <li><strong>Can:</strong> answer questions grounded in real, verified system evidence -- status, agents, trading research (paper-only), content/YouTube progress, and known pending improvements.</li>
+            <li><strong>Can't:</strong> execute trades, control any desktop, start/stop the system, change risk settings, approve or apply self-upgrades, publish YouTube content, or reveal any PIN, secret, API key, or session token. None of these are reachable from this page, regardless of what is typed.</li>
+            <li>Conversation history is kept only for this browser tab's session and is not reviewed by a person unless you separately contact the team.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+.kai-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.kai-panel {
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.55);
+  padding: 24px;
+}
+
+.kai-avatar-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  position: sticky;
+  top: 24px;
+}
+
+.kai-orb {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 35% 30%, rgba(56, 189, 248, 0.35), rgba(3, 7, 17, 0.9));
+  border: 1px solid var(--border-bright);
+  box-shadow: var(--shadow-glow);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.kai-orb-core {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 18px 4px rgba(56, 189, 248, 0.55);
+}
+
+.kai-orb[data-state="idle"] .kai-orb-core { opacity: 0.85; }
+.kai-orb[data-state="thinking"] .kai-orb-core,
+.kai-orb[data-state="working"] .kai-orb-core {
+  animation: kai-pulse 1.1s ease-in-out infinite;
+}
+.kai-orb[data-state="listening"] .kai-orb-core { background: var(--violet); box-shadow: 0 0 18px 4px rgba(129, 140, 248, 0.55); }
+.kai-orb[data-state="speaking"] .kai-orb-core { animation: kai-pulse 0.6s ease-in-out infinite; }
+.kai-orb[data-state="warning"] { border-color: rgba(251, 191, 36, 0.6); }
+.kai-orb[data-state="warning"] .kai-orb-core { background: #fbbf24; box-shadow: 0 0 18px 4px rgba(251, 191, 36, 0.45); }
+.kai-orb[data-state="offline"] { border-color: rgba(148, 163, 184, 0.35); box-shadow: none; }
+.kai-orb[data-state="offline"] .kai-orb-core { background: var(--text-muted); box-shadow: none; opacity: 0.6; }
+.kai-orb[data-state="waiting_for_approval"] .kai-orb-core { background: #fbbf24; }
+
+@keyframes kai-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.18); opacity: 1; }
+}
+
+.kai-state-label {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.kai-evidence-badge, .kai-upgrade-badge { width: 100%; }
+.kai-upgrade-badge p {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.kai-starters { width: 100%; margin-top: 6px; text-align: left; }
+.kai-starters-label {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.kai-starter-list { display: flex; flex-direction: column; gap: 6px; }
+.kai-starter-chip {
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(2, 6, 23, 0.4);
+  color: var(--text-soft);
+  font-size: 12.5px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+.kai-starter-chip:hover, .kai-starter-chip:focus-visible {
+  border-color: var(--border-bright);
+  color: var(--primary);
+}
+
+.kai-chat-panel { display: flex; flex-direction: column; min-height: 520px; }
+
+.kai-transcript {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 4px;
+  margin-bottom: 16px;
+}
+
+.kai-message {
+  max-width: 85%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.kai-message p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.kai-message--assistant {
+  align-self: flex-start;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid var(--border);
+  color: var(--text-soft);
+}
+.kai-message--user {
+  align-self: flex-end;
+  background: rgba(129, 140, 248, 0.12);
+  border: 1px solid rgba(129, 140, 248, 0.3);
+  color: var(--text-main);
+}
+.kai-message--system {
+  align-self: center;
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--text-muted);
+  font-size: 12.5px;
+}
+
+.kai-input-row { display: flex; flex-direction: column; gap: 10px; }
+#kai-input {
+  width: 100%;
+  min-height: 52px;
+  max-height: 160px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(2, 6, 23, 0.5);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+#kai-input:focus-visible { outline: 2px solid var(--border-bright); outline-offset: 2px; }
+
+.kai-input-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.kai-clear-button {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 4px 0;
+}
+.kai-clear-button:hover { color: var(--primary); }
+.kai-send-button { min-width: 110px; }
+.kai-send-button[disabled] { opacity: 0.55; cursor: not-allowed; }
+
+.kai-input-note {
+  min-height: 16px;
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.kai-input-note[data-tone="error"] { color: #fbbf24; }
+
+.kai-limitations {
+  margin-top: 28px;
+  padding: 22px 24px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(2, 6, 23, 0.35);
+}
+.kai-limitations-title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-soft);
+}
+.kai-limitations ul { margin: 0; padding-left: 20px; color: var(--text-muted); font-size: 13px; line-height: 1.8; }
+.kai-limitations li { margin-bottom: 4px; }
+
+@media (max-width: 900px) {
+  .kai-layout { grid-template-columns: 1fr; }
+  .kai-avatar-panel { position: static; }
+  .kai-starter-list { flex-direction: row; flex-wrap: wrap; }
+  .kai-starter-chip { flex: 1 1 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kai-orb[data-state="thinking"] .kai-orb-core,
+  .kai-orb[data-state="working"] .kai-orb-core,
+  .kai-orb[data-state="speaking"] .kai-orb-core {
+    animation: none;
+  }
+}
+</style>
+
+<script>
+type KaiState = "idle" | "listening" | "thinking" | "working" | "speaking" | "waiting_for_approval" | "warning" | "offline";
+
+const CONVERSATION_KEY = "kai_public_conversation_id";
+const CHAT_ENDPOINT = "/api/kai/chat/public";
+const STATUS_ENDPOINT = "/api/kai/system/status";
+
+function getConversationId(): string {
+  let id = sessionStorage.getItem(CONVERSATION_KEY);
+  if (!id) {
+    id = (crypto.randomUUID ? crypto.randomUUID() : `c-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    sessionStorage.setItem(CONVERSATION_KEY, id);
+  }
+  return id;
+}
+
+const orb = document.getElementById("kai-orb") as HTMLElement;
+const stateLabel = document.getElementById("kai-state-label") as HTMLElement;
+const connectionBadge = document.getElementById("kai-connection-badge") as HTMLElement;
+const upgradeBadge = document.getElementById("kai-upgrade-badge") as HTMLElement;
+const transcript = document.getElementById("kai-transcript") as HTMLElement;
+const form = document.getElementById("kai-form") as HTMLFormElement;
+const input = document.getElementById("kai-input") as HTMLTextAreaElement;
+const sendButton = document.getElementById("kai-send-button") as HTMLButtonElement;
+const clearButton = document.getElementById("kai-clear-button") as HTMLButtonElement;
+const inputNote = document.getElementById("kai-input-note") as HTMLElement;
+const starterButtons = document.querySelectorAll<HTMLButtonElement>("[data-starter]");
+
+const STATE_LABELS: Record<KaiState, string> = {
+  idle: "Idle",
+  listening: "Listening",
+  thinking: "Thinking",
+  working: "Retrieving evidence",
+  speaking: "Speaking",
+  waiting_for_approval: "Pending approval (view only)",
+  warning: "Needs attention",
+  offline: "Offline",
+};
+
+function setState(next: KaiState) {
+  orb.dataset.state = next;
+  stateLabel.textContent = STATE_LABELS[next];
+}
+
+// Safe by construction: every transcript entry is built with textContent,
+// never innerHTML, so nothing a user types or the model returns can ever
+// be interpreted as markup.
+function addMessage(role: "user" | "assistant" | "system", text: string) {
+  const wrapper = document.createElement("div");
+  wrapper.className = `kai-message kai-message--${role}`;
+  const p = document.createElement("p");
+  p.textContent = text;
+  wrapper.appendChild(p);
+  transcript.appendChild(wrapper);
+  transcript.scrollTop = transcript.scrollHeight;
+}
+
+function setConnectionBadge(label: string, tier: "operational" | "development" | "planned") {
+  connectionBadge.textContent = label;
+  connectionBadge.className = `status-badge status-${tier}`;
+}
+
+async function checkBackendStatus() {
+  try {
+    const resp = await fetch(STATUS_ENDPOINT, { method: "GET" });
+    if (!resp.ok) throw new Error(`status ${resp.status}`);
+    const data = await resp.json();
+    const issues = (data?.health_summary?.YELLOW || 0) + (data?.health_summary?.RED || 0);
+    setConnectionBadge(issues > 0 ? `Connected -- ${issues} health item(s) flagged` : "Connected -- systems verified", "operational");
+    setState("idle");
+    const pending = Number(data?.pending_self_upgrade_proposals || 0);
+    if (pending > 0) {
+      upgradeBadge.hidden = false;
+      upgradeBadge.querySelector(".status-badge")!.textContent = `${pending} pending self-upgrade proposal(s)`;
+    }
+  } catch {
+    setConnectionBadge("Backend unavailable", "planned");
+    setState("offline");
+  }
+}
+
+function setBusy(busy: boolean) {
+  sendButton.disabled = busy;
+  input.disabled = busy;
+}
+
+async function sendMessage(message: string) {
+  const trimmed = message.trim();
+  if (!trimmed) return;
+  inputNote.textContent = "";
+  inputNote.removeAttribute("data-tone");
+  addMessage("user", trimmed);
+  input.value = "";
+  setBusy(true);
+  setState("thinking");
+
+  try {
+    const resp = await fetch(CHAT_ENDPOINT, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ message: trimmed, conversation_id: getConversationId() }),
+    });
+
+    if (resp.status === 429) {
+      inputNote.textContent = "KAI is getting a lot of messages right now -- please wait a moment and try again.";
+      inputNote.dataset.tone = "error";
+      setState("warning");
+      return;
+    }
+    if (resp.status === 413) {
+      inputNote.textContent = "That message is too long. Please shorten it and try again.";
+      inputNote.dataset.tone = "error";
+      setState("warning");
+      return;
+    }
+
+    const data = await resp.json().catch(() => null);
+    if (!resp.ok || !data || data.status !== "success") {
+      const reason = data?.error === "ollama_unavailable"
+        ? "KAI's local model isn't reachable right now."
+        : "KAI couldn't process that message.";
+      addMessage("system", reason);
+      setState("warning");
+      return;
+    }
+
+    addMessage("assistant", data.response as string);
+    setState("idle");
+  } catch {
+    addMessage("system", "Couldn't reach KAI's backend. It may be offline right now -- please try again shortly.");
+    setState("offline");
+  } finally {
+    setBusy(false);
+    input.focus();
+  }
+}
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  void sendMessage(input.value);
+});
+
+input.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    void sendMessage(input.value);
+  }
+});
+
+starterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const question = button.dataset.starter || "";
+    void sendMessage(question);
+  });
+});
+
+clearButton.addEventListener("click", () => {
+  sessionStorage.removeItem(CONVERSATION_KEY);
+  transcript.innerHTML = "";
+  addMessage("assistant", "Conversation cleared. Ask me anything about Project KAI.");
+  input.focus();
+});
+
+void checkBackendStatus();
+</script>

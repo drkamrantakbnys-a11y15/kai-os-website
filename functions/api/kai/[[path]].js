@@ -33,9 +33,56 @@
 const BACKEND_ORIGIN = "https://api.projectkai.dev";
 const CONTROL_PREFIX = "control/";
 
+// Public chat (/api/kai/chat/public -> backend /api/chat/public) is the
+// first route on this bridge reachable by anonymous internet visitors
+// rather than just the owner's own admin/command-center pages, and each
+// call can trigger a real local model inference -- worth a tighter,
+// dedicated limit on top of whatever the backend's own rate_limit.py
+// already enforces (defense in depth, not a replacement for it).
+//
+// This counter lives in the Worker/Pages Function module scope, which
+// Cloudflare does NOT guarantee persists between invocations (an isolate
+// can be evicted and recreated at any time) -- so, exactly like
+// backend_api/rate_limit.py's own documented tradeoff, this is
+// best-effort defense-in-depth for a single warm isolate, not a hard
+// distributed guarantee. No paid infrastructure (KV/Durable Objects) is
+// introduced for this phase; Cloudflare's own dashboard-level Rate
+// Limiting Rules are the recommended follow-up for a hard guarantee
+// (see PROJECT_KAI_PUBLIC_HUMANOID_CONVERSATION.md).
+const CHAT_PATH = "chat/public";
+const CHAT_WINDOW_MS = 60_000;
+const CHAT_MAX_REQUESTS_PER_WINDOW = 12;
+const CHAT_MAX_BODY_BYTES = 16 * 1024;
+const _chatRequestsByKey = new Map();
+
+function isChatRateLimited(clientKey) {
+  const now = Date.now();
+  const timestamps = (_chatRequestsByKey.get(clientKey) || []).filter((t) => now - t < CHAT_WINDOW_MS);
+  if (timestamps.length >= CHAT_MAX_REQUESTS_PER_WINDOW) {
+    _chatRequestsByKey.set(clientKey, timestamps);
+    return true;
+  }
+  timestamps.push(now);
+  _chatRequestsByKey.set(clientKey, timestamps);
+  // Bound the map itself so a flood of distinct IPs can't grow it
+  // unboundedly within one warm isolate's lifetime.
+  if (_chatRequestsByKey.size > 5000) {
+    const oldestKey = _chatRequestsByKey.keys().next().value;
+    _chatRequestsByKey.delete(oldestKey);
+  }
+  return false;
+}
+
 function unavailable(reason) {
   return new Response(JSON.stringify({ error: "backend_bridge_not_configured", reason }), {
     status: 503,
+    headers: { "content-type": "application/json" },
+  });
+}
+
+function jsonError(status, error) {
+  return new Response(JSON.stringify({ status: "error", error }), {
+    status,
     headers: { "content-type": "application/json" },
   });
 }
@@ -60,6 +107,18 @@ export async function onRequest(context) {
         status: 401,
         headers: { "content-type": "application/json" },
       });
+    }
+  }
+
+  const isPublicChat = subPath === CHAT_PATH && request.method === "POST";
+  if (isPublicChat) {
+    const clientKey = request.headers.get("CF-Connecting-IP") || "unknown";
+    if (isChatRateLimited(clientKey)) {
+      return jsonError(429, "rate_limited");
+    }
+    const contentLength = Number(request.headers.get("content-length") || 0);
+    if (contentLength > CHAT_MAX_BODY_BYTES) {
+      return jsonError(413, "request_too_large");
     }
   }
 

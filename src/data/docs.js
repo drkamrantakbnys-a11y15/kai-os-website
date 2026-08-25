@@ -47,7 +47,7 @@ export const DOC_CATEGORIES = [
     description: "Research and broker validation under explicit paper-only and risk-governed constraints.",
     docs: [
       { title: "Paper-First Trading", description: "Market observation, strategy evaluation, governance, risk, and Alpaca Paper integration status.", route: "/#trading", status: "In Development", cta: "Review" },
-      { title: "Safety Boundary", description: "Continuous paper execution is not enabled; live-money execution is not a current public capability.", route: "/#trading", status: "In Development", cta: "Review" },
+      { title: "Safety Boundary", description: "A tightly bounded Alpaca Paper observation baseline is active; AI-directed and live-money execution remain disabled.", route: "/#trading", status: "In Development", cta: "Review" },
       { title: "Research Lab", description: "Strategy research, simulation, backtesting, reporting, and the distinction between research and advice.", route: "/research", status: "Available", cta: "Explore" },
     ],
   },

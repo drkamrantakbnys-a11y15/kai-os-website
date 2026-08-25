@@ -13,8 +13,14 @@
         turning consequential decisions into unchecked autonomy.
       </p>
       <div class="hero-actions">
-        <a href="#capabilities" class="primary-button">Explore KAI</a>
-        <a href="/docs" class="secondary-button">View Documentation</a>
+        <button type="button" class="primary-button" data-open-vision-modal>
+          <span class="play-glyph" aria-hidden="true">&#9654;</span> Watch the KAI Vision
+        </button>
+        <a href="/kai" class="secondary-button">Talk to KAI</a>
+      </div>
+      <div class="hero-actions hero-actions--secondary">
+        <a href="#capabilities" class="tertiary-link">Explore KAI</a>
+        <a href="/docs" class="tertiary-link">View Documentation</a>
       </div>
       <div class="hero-proof" aria-label="Verified product principles">
         <span>Local-first</span><span>Specialized systems</span><span>Human-reviewed</span>
@@ -56,6 +62,11 @@
 .hero h1 span { display: inline-block; }
 .hero p { max-width: 720px; margin: 0; color: var(--text-soft); font-size: clamp(17px, 1.6vw, 20px); line-height: 1.8; }
 .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 38px; }
+.hero-actions button.primary-button { border: none; cursor: pointer; font-family: inherit; }
+.play-glyph { display: inline-block; margin-right: 9px; font-size: 11px; transform: translateY(-1px); }
+.hero-actions--secondary { margin-top: 14px; gap: 18px; }
+.tertiary-link { color: var(--text-muted); font-size: 13px; font-weight: 700; padding: 4px 0; border-bottom: 1px solid transparent; transition: 0.2s ease; }
+.tertiary-link:hover { color: var(--primary); border-bottom-color: var(--border-bright); }
 .hero-proof { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 30px; }
 .hero-proof span { padding: 8px 11px; border: 1px solid var(--border); border-radius: 999px; color: var(--text-muted); background: rgba(15, 23, 42, 0.5); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
 .hero-system { width: 100%; padding: 24px; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.28); background: rgba(2, 6, 23, 0.7); box-shadow: 0 30px 100px rgba(0, 0, 0, 0.36); }

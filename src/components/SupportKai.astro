@@ -1,0 +1,153 @@
+---
+// Presentation-only support section. No payment processor exists anywhere
+// in this codebase yet (confirmed by audit -- no Stripe/PayPal/checkout
+// code, no pricing page), and none is added here per the explicit
+// instruction not to integrate one without separate approval. Every tier
+// button routes to the existing, real /contact page rather than a fake
+// checkout flow -- honest about what's actually wired up today.
+const TIERS = [
+  { amount: "$5", label: "Support KAI", cadence: "one-time", recommended: false },
+  { amount: "$10", label: "KAI Supporter", cadence: "/month", recommended: true },
+  { amount: "$25", label: "KAI Builder", cadence: "/month", recommended: false },
+  { amount: "$50", label: "KAI Pioneer", cadence: "/month", recommended: false },
+  { amount: "$100+", label: "Project Sponsor", cadence: "/month", recommended: false },
+];
+---
+
+<section class="support-kai" id="support">
+  <div class="container">
+    <div class="section-center">
+      <div class="section-badge">Support Project KAI</div>
+      <h2 class="section-title">Build KAI with us.</h2>
+      <p class="section-subtitle">
+        Project KAI is being developed independently. Support helps fund AI infrastructure,
+        model access, compute, APIs, research, testing, and continued development.
+      </p>
+    </div>
+
+    <div class="support-tiers">
+      {TIERS.map((tier) => (
+        <div class={`support-tier ${tier.recommended ? "support-tier--recommended" : ""}`}>
+          {tier.recommended && <span class="support-tier-flag">Recommended</span>}
+          <span class="support-tier-amount">{tier.amount}<small>{tier.cadence}</small></span>
+          <span class="support-tier-label">{tier.label}</span>
+          <a href="/contact" class={tier.recommended ? "primary-button" : "secondary-button"}>
+            Register Interest
+          </a>
+        </div>
+      ))}
+    </div>
+
+    <p class="support-disclosure">
+      No payment processor is connected yet -- "Register Interest" routes to a real contact
+      form, not a checkout. Support contributions do not represent equity, investment
+      ownership, employment, partnership, or guaranteed financial returns. Contributing does
+      not automatically provide employment, developer privileges, system access, operator
+      privileges, ownership, equity, or trading participation.
+    </p>
+  </div>
+</section>
+
+<style>
+.support-kai {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(56, 189, 248, 0.09), transparent 32%),
+    linear-gradient(180deg, #08111f 0%, #050b18 100%);
+}
+
+.support-tiers {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.support-tier {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 26px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.55);
+  text-align: center;
+  transition: 0.25s ease;
+}
+
+.support-tier:hover {
+  border-color: var(--border-bright);
+  transform: translateY(-3px);
+}
+
+.support-tier--recommended {
+  border-color: rgba(56, 189, 248, 0.5);
+  background: rgba(56, 189, 248, 0.07);
+  box-shadow: var(--shadow-glow);
+}
+
+.support-tier-flag {
+  position: absolute;
+  top: -11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #041018;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.support-tier-amount {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--text-main);
+}
+
+.support-tier-amount small {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.support-tier-label {
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.support-tier a {
+  width: 100%;
+  margin-top: 6px;
+  min-height: 42px;
+  font-size: 13px;
+}
+
+.support-disclosure {
+  max-width: 760px;
+  margin: 34px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+@media (max-width: 1000px) {
+  .support-tiers { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .support-tiers { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 420px) {
+  .support-tiers { grid-template-columns: 1fr; }
+}
+</style>

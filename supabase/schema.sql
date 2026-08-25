@@ -229,6 +229,12 @@ create table if not exists feature_requests (
   category text not null check (category in ('CONTENT', 'FEATURE', 'AI', 'YOUTUBE', 'COMMUNITY', 'DISCOVERY', 'LEARNING', 'OTHER')),
   request text not null,
   reason text,
+  -- Added for the Founder Vision + Support + Community phase: a plain
+  -- boolean flag, not a privilege grant of any kind -- an idea submission
+  -- (and this flag) is DATA ONLY. If this column does not yet exist on an
+  -- already-provisioned database, run:
+  --   alter table feature_requests add column if not exists collaboration_interest boolean not null default false;
+  collaboration_interest boolean not null default false,
   priority text not null default 'NORMAL' check (priority in ('LOW', 'NORMAL', 'HIGH')),
   status text not null default 'new' check (status in ('new', 'reviewed', 'planned', 'declined')),
   created_at timestamptz not null default now()

@@ -12,7 +12,7 @@ import { isBackendConfigured } from "../lib/supabase.js";
 const CATEGORIES = ["CONTENT", "FEATURE", "AI", "YOUTUBE", "COMMUNITY", "DISCOVERY", "LEARNING", "OTHER"];
 ---
 
-<section class="feature-request" data-backend-configured={String(isBackendConfigured)}>
+<section class="feature-request" id="feature-request" data-backend-configured={String(isBackendConfigured)}>
   <div class="comment-head">
     <h2>Tell KAI what to investigate next</h2>
     {isBackendConfigured
@@ -45,8 +45,22 @@ const CATEGORIES = ["CONTENT", "FEATURE", "AI", "YOUTUBE", "COMMUNITY", "DISCOVE
       <textarea id="fr-idea" name="idea" rows="3" placeholder="Describe the idea..." maxlength="2000"></textarea>
     </div>
     <div class="comment-form-row">
-      <label for="fr-reason">Why? (optional)</label>
+      <label for="fr-reason">Why would this help Project KAI? (optional)</label>
       <textarea id="fr-reason" name="reason" rows="2" placeholder="What would this help with?" maxlength="1000"></textarea>
+    </div>
+    <div class="comment-form-row comment-form-row--checkbox">
+      <label for="fr-collab">
+        <input type="checkbox" id="fr-collab" name="collaboration_interest" />
+        I'd be interested in helping build this, not just suggesting it (optional)
+      </label>
+    </div>
+    {/* Honeypot: hidden from real visitors via CSS, never shown or
+        labeled. A submission with this filled in is near-certainly an
+        automated bot filling every field -- it never appears in the UI
+        for a human to fill in accidentally. */}
+    <div class="comment-form-row comment-form-hp" aria-hidden="true">
+      <label for="fr-website">Website</label>
+      <input type="text" id="fr-website" name="website" tabindex="-1" autocomplete="off" />
     </div>
     <div class="comment-form-actions">
       <button type="submit" class="secondary-button">Submit Idea</button>
@@ -118,6 +132,34 @@ const CATEGORIES = ["CONTENT", "FEATURE", "AI", "YOUTUBE", "COMMUNITY", "DISCOVE
   resize: vertical;
 }
 
+.comment-form-row--checkbox label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+  cursor: pointer;
+}
+.comment-form-row--checkbox input {
+  margin-top: 2px;
+  width: auto;
+}
+
+.comment-form-hp {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .comment-form-actions {
   display: flex;
   align-items: center;
@@ -148,6 +190,17 @@ const CATEGORIES = ["CONTENT", "FEATURE", "AI", "YOUTUBE", "COMMUNITY", "DISCOVE
       return;
     }
 
+    // Honeypot: a real visitor never sees or fills this field (hidden via
+    // CSS, tabindex="-1"). A non-empty value here means an automated bot
+    // filled every input it found -- silently accept without submitting,
+    // rather than telling the bot its submission was rejected.
+    const honeypot = document.getElementById("fr-website");
+    if (honeypot && honeypot.value.trim()) {
+      note.textContent = "Submitted -- thank you.";
+      form.reset();
+      return;
+    }
+
     const request = document.getElementById("fr-idea").value.trim();
     if (!request) {
       note.textContent = "Describe your idea before submitting.";
@@ -163,6 +216,7 @@ const CATEGORIES = ["CONTENT", "FEATURE", "AI", "YOUTUBE", "COMMUNITY", "DISCOVE
         category: document.getElementById("fr-category").value,
         request,
         reason: document.getElementById("fr-reason").value.trim() || null,
+        collaboration_interest: document.getElementById("fr-collab").checked,
       })
     );
 
