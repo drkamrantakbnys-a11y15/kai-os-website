@@ -55,11 +55,15 @@ Function's core proxy logic is a generic passthrough that needed no path-specifi
 knowledge of `chat/public` to forward correctly — so the chat API itself is verifiably
 live on the real public internet right now, even without a new deploy.
 
-**What deploying would add**: the `/kai` page itself (so a visitor has somewhere to type
-into), the founder-vision video modal, the support/community sections, the chat-specific
-rate limiter, and every other UI change from the last two phases. No deploy was performed
-in this phase — pushing to the production branch is a visible, shared-state action, and
-the owner has not yet confirmed they want it pushed now versus reviewing it first.
+**Resolved**: since pushing to the production branch is a visible, shared-state action,
+the owner was asked explicitly before it happened — they confirmed, and this session
+committed (`abfa25d`, plus the 3 earlier unpushed commits) and pushed to `origin/master`.
+Cloudflare Pages built and deployed automatically; `https://projectkai.dev/kai` was
+confirmed live (200) and, with the backend and tunnel brought back up one final time, a
+**real click in a real browser against the real deployed page** was used to send "What is
+Project KAI?" and receive a genuine model response, then send "Buy AAPL for me right
+now." and receive a safe, honest denial — both through the actual production path,
+end to end, not a simulation. Backend and tunnel were then stopped again afterward.
 
 ## 2. Founder vision experience (Phase B)
 
