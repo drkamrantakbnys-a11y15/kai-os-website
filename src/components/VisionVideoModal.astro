@@ -2,14 +2,20 @@
 // Click-to-play KAI Vision experience. Triggered by any element carrying
 // [data-open-vision-modal] (see Hero.astro's primary CTA) -- never opens
 // on its own, never on page load, never remembers to reopen across visits.
-// Uses native <video controls> (play/pause, mute/volume, fullscreen,
-// captions-track toggle all come free, fully accessible, zero extra
-// dependency) plus a small amount of custom script for: the click-to-open
-// gate itself, a real Close control (native video has none), Escape-to-
-// close, focus management, and the post-video "Talk to KAI" handoff.
-// See public/media/vision/README.md for the real video drop-in location
-// and PROJECT_KAI_FOUNDER_VISION_EXPERIENCE.md for the full design writeup.
+//
+// Founder Vision v1 is published on the Project KAI YouTube channel, so
+// this embeds the youtube-nocookie.com privacy-enhanced player rather than
+// self-hosting the source file -- nothing under private_media/ is ever
+// served publicly. The iframe itself is only created inside openModal()
+// (a real click handler), never on page load, so autoplay only ever
+// follows a genuine user gesture -- same rule the previous native-video
+// version followed. Closing the modal tears the iframe down entirely
+// (rather than just hiding it) so playback actually stops.
+//
+// See PROJECT_KAI_FOUNDER_VISION_EXPERIENCE.md for the full design writeup.
 import { FOUNDER_VISION_SCRIPT_PARAGRAPHS } from "../data/founderVisionScript.js";
+
+const YOUTUBE_VIDEO_ID = "GVwyxoZkktM";
 ---
 
 <div class="vision-modal" id="vision-modal" hidden aria-hidden="true">
@@ -27,31 +33,18 @@ import { FOUNDER_VISION_SCRIPT_PARAGRAPHS } from "../data/founderVisionScript.js
       <span aria-hidden="true">&times;</span>
     </button>
 
-    <div class="vision-video-frame">
-      <video
-        id="vision-video"
-        controls
-        playsinline
-        preload="metadata"
-        poster="/media/vision/kai-vision-poster.jpg"
-      >
-        <source src="/media/vision/kai-vision.mp4" type="video/mp4" />
-        <track
-          kind="captions"
-          src="/media/vision/kai-vision-captions.vtt"
-          srclang="en"
-          label="English"
-          default
-        />
-        Your browser does not support embedded video. The KAI Vision film will be available at
-        <a href="/media/vision/kai-vision.mp4">this direct link</a> once published.
-      </video>
+    <div
+      class="vision-video-frame"
+      id="vision-video-frame"
+      style={`background-image:url('https://i.ytimg.com/vi/${YOUTUBE_VIDEO_ID}/maxresdefault.jpg')`}
+    >
+      <div id="vision-video-mount" data-video-id={YOUTUBE_VIDEO_ID}></div>
 
       <div class="vision-video-unavailable" id="vision-video-unavailable" hidden>
-        <span class="section-badge">Coming Soon</span>
-        <p>The KAI Vision film is still in production. This player is fully wired and will start
-          working the moment the final video is published — nothing else on the site needs to
-          change.</p>
+        <span class="section-badge">Player Unavailable</span>
+        <p>The video couldn't load right now. You can watch it directly on
+          YouTube: <a href={`https://youtu.be/${YOUTUBE_VIDEO_ID}`} target="_blank" rel="noopener noreferrer">youtu.be/{YOUTUBE_VIDEO_ID}</a>,
+          or read the approved script below.</p>
         <details class="vision-script-details">
           <summary>Read the approved script</summary>
           <div class="vision-script-text">
@@ -146,18 +139,22 @@ import { FOUNDER_VISION_SCRIPT_PARAGRAPHS } from "../data/founderVisionScript.js
   position: relative;
   border-radius: 10px;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.14), transparent 40%),
-    radial-gradient(circle at 80% 80%, rgba(129, 140, 248, 0.1), transparent 38%),
-    #030711;
+  background-color: #030711;
+  background-size: cover;
+  background-position: center;
   aspect-ratio: 16 / 9;
 }
 
-#vision-video {
+#vision-video-mount {
+  width: 100%;
+  height: 100%;
+}
+
+#vision-video-mount iframe {
   width: 100%;
   height: 100%;
   display: block;
-  background: #030711;
+  border: 0;
 }
 
 .vision-video-unavailable {
@@ -267,15 +264,45 @@ import { FOUNDER_VISION_SCRIPT_PARAGRAPHS } from "../data/founderVisionScript.js
   (function initVisionModal() {
     const modal = document.getElementById("vision-modal");
     const dialog = document.getElementById("vision-modal-dialog");
-    const video = document.getElementById("vision-video") as HTMLVideoElement | null;
+    const mount = document.getElementById("vision-video-mount") as HTMLDivElement | null;
     const unavailable = document.getElementById("vision-video-unavailable");
     const postVideo = document.getElementById("vision-post-video");
     const closeButtons = document.querySelectorAll("[data-close-vision-modal]");
     const openTriggers = document.querySelectorAll("[data-open-vision-modal]");
 
-    if (!modal || !dialog || !video) return;
+    if (!modal || !dialog || !mount) return;
 
+    const videoId = mount.dataset.videoId;
     let lastFocusedElement: HTMLElement | null = null;
+    let player: any = null;
+    let apiLoadFailedTimer: ReturnType<typeof setTimeout> | null = null;
+
+    // Loaded once, lazily, on first open -- never on page load. The
+    // YouTube IFrame API is what gives us a real 'ended' event (a plain
+    // <iframe src="...embed/ID"> has no such signal) and lets us destroy
+    // playback cleanly on close.
+    function loadYouTubeApiOnce(): Promise<any> {
+      const w = window as any;
+      if (w.YT && w.YT.Player) return Promise.resolve(w.YT);
+      if (w.__kaiVisionYtApiPromise) return w.__kaiVisionYtApiPromise;
+      w.__kaiVisionYtApiPromise = new Promise((resolve, reject) => {
+        const prevReady = w.onYouTubeIframeAPIReady;
+        w.onYouTubeIframeAPIReady = () => {
+          prevReady?.();
+          resolve(w.YT);
+        };
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        tag.onerror = () => reject(new Error("YouTube IFrame API failed to load"));
+        document.head.appendChild(tag);
+      });
+      return w.__kaiVisionYtApiPromise;
+    }
+
+    function showUnavailable() {
+      unavailable!.hidden = false;
+      mount!.style.display = "none";
+    }
 
     function openModal() {
       lastFocusedElement = document.activeElement as HTMLElement | null;
@@ -283,40 +310,66 @@ import { FOUNDER_VISION_SCRIPT_PARAGRAPHS } from "../data/founderVisionScript.js
       modal!.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
       postVideo!.hidden = true;
+      unavailable!.hidden = true;
+      mount!.style.display = "";
 
-      // Escape-to-close and focus trapping must work regardless of whether
-      // the video itself loaded -- the modal, its Close button, and its
-      // backdrop are always interactive, so these attach unconditionally.
       const closeBtn = dialog!.querySelector<HTMLButtonElement>(".vision-modal-close");
       closeBtn?.focus();
       document.addEventListener("keydown", onKeydown);
       dialog!.addEventListener("keydown", trapFocus);
 
-      // preload="metadata" makes the browser start resolving the source
-      // as soon as the element parses -- on a real 404 this can fail (and
-      // fire 'error') before this script's own listener has attached,
-      // so a live 'error' event alone is not reliable. checkVideoHealth()
-      // (registered as the 'error' listener AND called here) re-checks
-      // the element's current state every time the modal opens, so a
-      // failure that already happened is still caught.
-      if (checkVideoHealth()) return;
-
-      // Playback only ever starts here, inside a real click handler --
-      // never on load, never automatically. No `autoplay` attribute
-      // exists on the element at all.
-      const playAttempt = video!.play();
-      if (playAttempt && typeof playAttempt.catch === "function") {
-        playAttempt.catch(() => {
-          // Autoplay-with-sound can still be blocked by some browsers even
-          // on a user gesture in rare cases (e.g. a synthetic click) --
-          // the native controls remain fully usable either way, so this
-          // is not treated as an error state.
-        });
+      if (!videoId) {
+        showUnavailable();
+        return;
       }
+
+      // A slow/blocked API load (ad blockers, offline) shouldn't leave a
+      // silently empty player forever -- fall back to the honest message.
+      apiLoadFailedTimer = setTimeout(showUnavailable, 8000);
+
+      loadYouTubeApiOnce()
+        .then((YT) => {
+          if (apiLoadFailedTimer) clearTimeout(apiLoadFailedTimer);
+          // Re-check: the visitor may have already closed the modal while
+          // the API script was still loading.
+          if (modal!.hidden) return;
+          player = new YT.Player(mount, {
+            videoId,
+            playerVars: {
+              autoplay: 1, // only ever reached inside this click-triggered openModal()
+              rel: 0,
+              modestbranding: 1,
+              playsinline: 1,
+              origin: window.location.origin,
+            },
+            host: "https://www.youtube-nocookie.com",
+            events: {
+              onStateChange: (e: any) => {
+                if (e.data === YT.PlayerState.ENDED) {
+                  postVideo!.hidden = false;
+                  postVideo!.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                }
+              },
+              onError: () => showUnavailable(),
+            },
+          });
+        })
+        .catch(() => {
+          if (apiLoadFailedTimer) clearTimeout(apiLoadFailedTimer);
+          showUnavailable();
+        });
     }
 
     function closeModal() {
-      video!.pause();
+      // Tear the player down entirely (not just hide it) so playback and
+      // audio actually stop the moment the modal closes.
+      if (apiLoadFailedTimer) clearTimeout(apiLoadFailedTimer);
+      if (player && typeof player.destroy === "function") {
+        player.destroy();
+      }
+      player = null;
+      mount!.replaceChildren();
+
       modal!.hidden = true;
       modal!.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
@@ -338,7 +391,7 @@ import { FOUNDER_VISION_SCRIPT_PARAGRAPHS } from "../data/founderVisionScript.js
     function trapFocus(event: KeyboardEvent) {
       if (event.key !== "Tab") return;
       const focusable = dialog!.querySelectorAll<HTMLElement>(
-        'button, [href], video, [tabindex]:not([tabindex="-1"])'
+        'button, [href], iframe, [tabindex]:not([tabindex="-1"])'
       );
       if (focusable.length === 0) return;
       const first = focusable[0];
@@ -351,28 +404,6 @@ import { FOUNDER_VISION_SCRIPT_PARAGRAPHS } from "../data/founderVisionScript.js
         first.focus();
       }
     }
-
-    function checkVideoHealth(): boolean {
-      // True (and shows the honest "coming soon" message) if the source
-      // has already failed to resolve -- covers both a live 'error' event
-      // and the case where it failed before this script attached (see the
-      // call site in openModal()). NETWORK_NO_SOURCE (3) is the terminal
-      // state for "no working <source> was found", the exact case a
-      // missing kai-vision.mp4 produces.
-      const failed = Boolean(video!.error) || video!.networkState === HTMLMediaElement.NETWORK_NO_SOURCE;
-      if (failed) {
-        unavailable!.hidden = false;
-        video!.style.display = "none";
-      }
-      return failed;
-    }
-
-    video.addEventListener("error", checkVideoHealth);
-
-    video.addEventListener("ended", () => {
-      postVideo!.hidden = false;
-      postVideo!.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
 
     openTriggers.forEach((trigger) => trigger.addEventListener("click", openModal));
     closeButtons.forEach((btn) => btn.addEventListener("click", closeModal));
