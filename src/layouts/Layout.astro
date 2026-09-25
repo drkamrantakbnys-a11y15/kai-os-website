@@ -161,7 +161,7 @@ const ogImageUrl = `https://projectkai.dev${ogImagePath}`;
 
   <script>
     import { trackPageView } from "../lib/analytics.js";
-    trackPageView(window.location.pathname);
+    trackPageView(window.location.pathname, window.location.search);
   </script>
 
 </body>

@@ -48,6 +48,16 @@ as $$
   );
 $$;
 
+-- The admin dashboard calls this via client.rpc("is_admin") only after a
+-- real signed-in session exists (see src/pages/admin.astro) -- the
+-- `authenticated` role needs EXECUTE to invoke it at all. It runs SECURITY
+-- DEFINER, so the function body itself doesn't need a grant on `admins` for
+-- the caller's role. `anon` never calls this (no site code does), so no
+-- anon grant is added. admins itself gets NO grants to anon or
+-- authenticated anywhere in this file -- it stays reachable only through
+-- this function or the dashboard/service role.
+grant execute on function is_admin() to authenticated;
+
 -- ============================================================
 -- 2. Comments
 -- ============================================================
@@ -139,6 +149,18 @@ create trigger comments_rate_limit
   before insert on comments
   for each row execute function enforce_comment_rate_limit();
 
+-- Least-privilege table grants (Supabase Least-Privilege Grant Audit).
+-- RLS policies above only ever run once these base GRANTs let a role
+-- touch the table at all -- both are required, RLS alone is not enough.
+-- anon: comments_select_public (read) + comments_insert_public (post,
+-- src/components/CommentSection.astro), both used unauthenticated.
+grant select, insert on comments to anon;
+-- authenticated: same read/post path when signed in, plus
+-- comments_update_admin and comments_delete_own_or_admin -- the admin
+-- dashboard (src/pages/admin.astro) runs these as `authenticated`,
+-- narrowed further by is_admin() inside the policy itself.
+grant select, insert, update, delete on comments to authenticated;
+
 -- ============================================================
 -- 3. Comment reports (anyone flagging a comment for moderation --
 --    the anonymous-commenter's path to "delete" something objectionable)
@@ -175,6 +197,13 @@ drop trigger if exists comment_reports_bump on comment_reports;
 create trigger comment_reports_bump
   after insert on comment_reports
   for each row execute function bump_comment_report_count();
+
+-- Least-privilege table grants. reports_insert_public is used
+-- unauthenticated AND signed-in (CommentSection.astro's report button has
+-- no auth gate); reports_select_admin is only ever read from the admin
+-- dashboard as `authenticated` + is_admin().
+grant insert on comment_reports to anon;
+grant select, insert on comment_reports to authenticated;
 
 -- ============================================================
 -- 4. Reactions
@@ -219,6 +248,15 @@ create policy "reactions_delete_own" on reactions
   for delete
   using (user_id is not null and auth.uid() = user_id);
 
+-- Least-privilege table grants. reactions_select_public and
+-- reactions_insert_public (ReactionBar.astro) are both used unauthenticated
+-- and signed-in. reactions_delete_own has NO corresponding call in the
+-- website source today (no code calls .from("reactions").delete()), so no
+-- DELETE grant is added here -- the policy stays inert until something
+-- actually needs it, at which point the grant should be added alongside.
+grant select, insert on reactions to anon;
+grant select, insert on reactions to authenticated;
+
 -- ============================================================
 -- 5. Feature requests
 -- ============================================================
@@ -258,6 +296,15 @@ create policy "feature_requests_update_admin" on feature_requests
   using (is_admin())
   with check (is_admin());
 
+-- Least-privilege table grants. feature_requests_insert_public
+-- (FeatureRequest.astro) is unauthenticated-only in practice; nothing in
+-- the site reads or updates requests except the admin dashboard
+-- (`authenticated` + is_admin()), so anon gets INSERT only -- never
+-- SELECT/UPDATE, matching the "nobody, not even the submitter, can read
+-- requests back" design note above.
+grant insert on feature_requests to anon;
+grant select, update on feature_requests to authenticated;
+
 -- ============================================================
 -- 6. Bookmarks (authenticated users only -- anonymous bookmarks use
 --    localStorage on the client and never touch this table)
@@ -278,6 +325,14 @@ create policy "bookmarks_all_own" on bookmarks
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
+-- Least-privilege table grant. bookmarks_all_own covers all four verbs,
+-- but src/lib/bookmarks.js -- always gated on a real client.auth.getUser()
+-- result -- only ever calls insert() and delete(); there is no select() or
+-- update() call anywhere in the site source, so only those two verbs are
+-- granted here. No anon grant at all: anonymous bookmarks are
+-- localStorage-only and never touch this table.
+grant insert, delete on bookmarks to authenticated;
+
 -- ============================================================
 -- 7. Page views (real, aggregate-only site analytics -- Website
 --    Intelligence + Media Network Activation Sprint, Phase 15)
@@ -287,9 +342,37 @@ create policy "bookmarks_all_own" on bookmarks
 -- insert (fires once per page load); only admins can read, and only
 -- ever in aggregate (see /admin) -- never exposed as a public
 -- unauthenticated "live view counter."
+--
+-- utm_source/utm_medium/utm_campaign added for the YouTube -> Project
+-- KAI Attribution Foundation (CEO-authorized UTM Database Migration
+-- Readiness phase): traffic-source attribution metadata only, same
+-- privacy posture as `path` -- nullable (an ordinary non-campaign visit
+-- has none of these and remains a fully valid row), no PII, no viewer
+-- identity, no cookie. If this table/these columns do not yet exist on
+-- an already-provisioned database, run (same upgrade-path convention as
+-- feature_requests' collaboration_interest/contribution_area/
+-- relevant_link columns above):
+--   alter table page_views add column if not exists utm_source text;
+--   alter table page_views add column if not exists utm_medium text;
+--   alter table page_views add column if not exists utm_campaign text;
+--   drop policy if exists "page_views_insert_public" on page_views;
+--   create policy "page_views_insert_public" on page_views
+--     for insert
+--     with check (
+--       char_length(path) <= 200
+--       and char_length(coalesce(utm_source, '')) <= 100
+--       and char_length(coalesce(utm_medium, '')) <= 100
+--       and char_length(coalesce(utm_campaign, '')) <= 100
+--     );
+-- THIS FILE DOES NOT EXECUTE THESE STATEMENTS -- see the setup notes at
+-- the bottom of this file. Applying them against the real project
+-- requires a human to run them in the Supabase SQL editor.
 create table if not exists page_views (
   id uuid primary key default gen_random_uuid(),
   path text not null,
+  utm_source text,
+  utm_medium text,
+  utm_campaign text,
   created_at timestamptz not null default now()
 );
 
@@ -297,13 +380,33 @@ alter table page_views enable row level security;
 
 create index if not exists page_views_path_idx on page_views (path);
 
+-- No index on utm_campaign/utm_source/utm_medium yet -- at current
+-- traffic volume a sequential scan for an admin-only, low-frequency
+-- aggregate query is fine; add one later only with concrete evidence
+-- (row count/query latency) that it's needed, matching
+-- page_views_path_idx's own single-column precedent rather than
+-- pre-optimizing.
 create policy "page_views_insert_public" on page_views
   for insert
-  with check (char_length(path) <= 200);
+  with check (
+    char_length(path) <= 200
+    and char_length(coalesce(utm_source, '')) <= 100
+    and char_length(coalesce(utm_medium, '')) <= 100
+    and char_length(coalesce(utm_campaign, '')) <= 100
+  );
 
 create policy "page_views_select_admin" on page_views
   for select
   using (is_admin());
+
+-- Least-privilege table grants. anon gets INSERT only (analytics.js fires
+-- this unauthenticated on every page load) -- deliberately NO anon SELECT,
+-- preserving the "never a public unauthenticated view counter" design
+-- note above. authenticated gets SELECT only, used solely by the admin
+-- dashboard (authenticated + is_admin()); no UPDATE/DELETE anywhere in
+-- the site source, so none granted.
+grant insert on page_views to anon;
+grant select on page_views to authenticated;
 
 -- ============================================================
 -- Setup notes (not executed by this file)
