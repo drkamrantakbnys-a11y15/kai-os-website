@@ -6,7 +6,7 @@ import Footer from "../components/Footer.astro";
 
 <Layout
   title="Privacy Policy | Project KAI"
-  description="Privacy policy for the static Project KAI website and KAI OS launch pages."
+  description="How the Project KAI website handles analytics, email and digital-product purchases."
   canonicalPath="/privacy"
 >
   <Header />
@@ -17,7 +17,7 @@ import Footer from "../components/Footer.astro";
         <p class="page-kicker">Privacy</p>
         <h1 class="page-title">Privacy Policy</h1>
         <p class="page-lede">
-          Project KAI is a simple static website for KAI OS. It does not include accounts, payments, backend forms, analytics integrations, or credential collection.
+          Project KAI is a static website run by Kamran Tak. It has no user accounts and no on-site checkout, and it never asks for passwords or OTPs. This page explains the limited data involved in visiting the site, emailing us and buying a digital product.
         </p>
       </div>
     </section>
@@ -25,18 +25,33 @@ import Footer from "../components/Footer.astro";
     <section class="page-section">
       <div class="container content-grid">
         <article class="content-card">
-          <h2>Data Collection</h2>
-          <p>Project KAI does not intentionally collect personal data through this static website.</p>
+          <h2>Hosting and security</h2>
+          <p>The site is hosted on Cloudflare. Cloudflare processes technical request data, such as IP address and browser details, to deliver and protect the site, and its security checks may set strictly necessary cookies.</p>
         </article>
 
         <article class="content-card">
           <h2>Analytics</h2>
-          <p>No analytics service is connected in this version of the site.</p>
+          <p>We use Cloudflare Web Analytics to see aggregate page-view statistics. Your browser also keeps a small page-view counter and any campaign tags from the link you followed (for example <code>utm_source</code>) in local storage on your own device. If we enable aggregate page-view storage in our own database, it records only the page path, campaign tags and time, not your IP address or identity.</p>
         </article>
 
         <article class="content-card">
-          <h2>Contact</h2>
-          <p>If a contact method is provided later, any submitted information should be handled through that chosen channel.</p>
+          <h2>Email</h2>
+          <p>If you email us, we use your address and message only to reply and, if you buy something, to deliver it and provide support. We do not add you to a mailing list.</p>
+        </article>
+
+        <article class="content-card">
+          <h2>Purchases</h2>
+          <p>If you buy a digital product from us, such as the Freelancer Invoice Review Kit, payment is made on Razorpay's hosted checkout and processed by Razorpay under its own privacy policy. We never receive your full card number, CVV, UPI PIN or bank login. Razorpay shares the payment details we need with us, such as the payment reference, amount, status and the email address you enter at checkout. We keep only those records, plus the product version and delivery/refund records, for as long as needed to deliver the product, provide support and meet record-keeping obligations.</p>
+        </article>
+
+        <article class="content-card">
+          <h2>Sensitive information</h2>
+          <p>Please do not send us invoices, bank details, tax IDs, passwords or OTP codes. We never need them, and we will never ask for a password, OTP, bank credentials or card credentials.</p>
+        </article>
+
+        <article class="content-card">
+          <h2>Contact and requests</h2>
+          <p>To ask about, correct or delete information we hold about you, email <span class="email-address">drkamrantakbnys@gmail.com</span>. Some purchase records may need to be kept to meet legal or accounting obligations.</p>
         </article>
       </div>
     </section>
@@ -44,3 +59,7 @@ import Footer from "../components/Footer.astro";
 
   <Footer />
 </Layout>
+
+<style>
+.email-address{overflow-wrap:anywhere}
+</style>
