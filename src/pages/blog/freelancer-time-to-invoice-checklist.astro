@@ -17,8 +17,8 @@ const inquiry = mailto({
   body: "I'm interested in the Freelancer Invoice Review Kit. Please reply with information when available.\n\nWhat would make a manual invoice-review workflow useful to me (optional):\n\n--- Article reference ---\nopportunity_id: PK-018\nasset_id: PK-018-ARTICLE-V1\nchannel: website\noffer_id: PK018-KIT-V1\nsource: https://projectkai.dev/blog/freelancer-time-to-invoice-checklist\n\nPlease do not attach invoices or include bank details, payment-card information, passwords, tax identifiers, sensitive financial documents or unnecessary personal financial information."
 });
 const afterPay = mailto({
-  subject: "PK-018 kit delivery - payment ID",
-  body: "Razorpay payment ID (starts with pay_): \n\nPlease send the Freelancer Invoice Review Kit to this email address.\n\nDo not include card, UPI, bank or OTP details."
+  subject: "PK-018 payment or delivery problem - payment ID",
+  body: "Razorpay payment ID (starts with pay_): \n\nWhat went wrong (for example, the kit has not arrived): \n\nDo not include card, UPI, bank or OTP details."
 });
 const description = SALES_ENABLED
   ? "A practical freelancer checklist for reviewing time entries, agreed rates and billing totals, plus an optional Rs 199 Freelancer Invoice Review Kit."
@@ -71,16 +71,15 @@ const description = SALES_ENABLED
         <p><strong>How buying works</strong> (delivery is manual, so it is not instant):</p>
         <ol class="buy-steps">
           <li>Read the <a href="/kit-terms">kit terms</a> (licence, delivery and refunds) and the <a href="/privacy">privacy policy</a>, then tick the box below.</li>
-          <li>Pay ₹199 on Razorpay's secure checkout (UPI, cards or netbanking).</li>
-          <li><strong>After paying, email <span class="email-address">drkamrantakbnys@gmail.com</span> from the address where you want the kit</strong>, with your Razorpay payment ID (it starts with <code>pay_</code>). This confirms where to send the kit.</li>
-          <li>We verify your payment with Razorpay and email you the kit within 24 hours after verification.</li>
+          <li>Pay ₹199 on Razorpay's secure checkout (UPI, cards or netbanking) and <strong>enter the email address where you want the kit</strong>.</li>
+          <li>We verify your payment with Razorpay and email the kit to the email address you provided during Razorpay checkout, within 24 hours after verification. You don't need to contact us.</li>
         </ol>
         <p><strong>Refunds:</strong> if you are charged twice or pay in error, or the kit cannot be opened or materially differs from its description, email us and we will put it right. Your consumer rights are not affected. <strong>Support:</strong> by email for 14 days after delivery.</p>
         <p id="privacy-warning">Please do not send us real invoices, bank details, payment-card information, passwords, OTPs, tax identifiers, highly sensitive financial documents or unnecessary personal financial information. We never need them, and we will never ask for an OTP.</p>
         <p class="ack"><label><input type="checkbox" id="pk018-ack" /> I have read the kit terms (including delivery and refunds) and the privacy policy.</label></p>
         <a id="pk018-buy" class="interest-button" href={sales.paymentUrl} rel="noopener" aria-describedby="buy-help privacy-warning">Pay ₹199 on Razorpay</a>
         <p id="ack-hint" class="ack-hint" hidden>Please tick the box above first.</p>
-        <p id="buy-help">Opens Razorpay's secure checkout. Project KAI never sees your card, UPI or bank details. Then email your payment ID: <a id="pk018-after-pay" href={afterPay}>email us after paying</a>. Questions before buying? Email <span class="email-address">drkamrantakbnys@gmail.com</span>.</p>
+        <p id="buy-help">Opens Razorpay's secure checkout. Project KAI never sees your card, UPI or bank details. Problem with a payment or delivery? <a id="pk018-after-pay" href={afterPay}>Email us with your payment ID</a>. Questions before buying? Email <span class="email-address">drkamrantakbnys@gmail.com</span>.</p>
         <p>Sold by Kamran Tak, operating under the Project KAI brand. Your email is used to deliver the kit and provide support. This does not subscribe you to a mailing list.</p>
       </section>
       ) : (
