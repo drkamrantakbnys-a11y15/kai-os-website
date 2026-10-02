@@ -18,7 +18,7 @@ test('sales off never exposes a payment URL, even if one is configured', () => {
 });
 
 test('valid Razorpay-hosted checkout URLs are accepted', () => {
-  for (const url of [SAMPLE, 'https://rzp.io/l/AbC123', 'https://pages.razorpay.com/pk018-kit', 'https://pages.razorpay.com/pk018-kit/']) assert.ok(validatePaymentUrl(url).ok, url);
+  for (const url of [SAMPLE, 'https://rzp.io/rzp/projectkai-pk018', 'https://rzp.io/l/AbC123', 'https://pages.razorpay.com/pk018-kit', 'https://pages.razorpay.com/pk018-kit/']) assert.ok(validatePaymentUrl(url).ok, url);
   assert.deepEqual(resolveSalesState({...base, PAYMENT_URL: SAMPLE}), {mode: 'sales', paymentUrl: SAMPLE});
 });
 

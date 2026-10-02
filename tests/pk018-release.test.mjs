@@ -43,7 +43,7 @@ test('sales ON: CTA goes only to the approved Razorpay checkout and the offer is
   assert.ok(validatePaymentUrl(href).ok);
   assert.deepEqual([...new Set(decoded.match(RAZORPAY_URL))], [href], 'payment URL must appear only as the CTA');
   for (const text of ['Freelancer Invoice Review Kit — ₹199', '₹199 (INR), one-time', 'introductory price', 'digital product', 'delivered by email',
-    'email you the kit within 24 hours after verification', 'from the address where you want the kit', 'pay_', 'Checkout may not ask for your email',
+    'email you the kit within 24 hours after verification', 'from the address where you want the kit', 'pay_', 'This confirms where to send the kit',
     'Pay ₹199 on Razorpay', 'I have read the kit terms', 'charged twice or pay in error', 'materially differs from its description', 'consumer rights are not affected',
     'Support:', '14 days', 'For:', 'Not for:', 'Sold by Kamran Tak, operating under the Project KAI brand']) assert.ok(decoded.includes(text), text);
   assert.match(article, /href="\/kit-terms"/);
@@ -58,6 +58,30 @@ test('sales ON: CTA goes only to the approved Razorpay checkout and the offer is
   assert.equal(after.protocol, 'mailto:'); assert.equal(after.pathname, 'drkamrantakbnys@gmail.com');
   assert.match(after.searchParams.get('subject'), /PK-018/);
   assert.match(after.searchParams.get('body'), /Do not include card, UPI, bank or OTP details/);
+});
+
+const APPROVED_CHECKOUT = 'https://rzp.io/rzp/projectkai-pk018'; // reusable Razorpay Payment Page
+const OBSOLETE_CHECKOUTS = ['rzp.io/rzp/5TLn4ZH', 'plink_TizAIRlbCqfhrD']; // single-customer Payment Link (retired)
+
+test('sales ON: CTA uses the approved reusable Razorpay Payment Page; the retired link is gone from the build', {skip: !SALES}, () => {
+  assert.equal(PK018_SALES.PAYMENT_URL, APPROVED_CHECKOUT);
+  assert.equal(ctaHref('pk018-buy'), APPROVED_CHECKOUT);
+  const u = new URL(APPROVED_CHECKOUT);
+  assert.deepEqual([u.protocol, u.hostname, u.search, u.hash, u.username], ['https:', 'rzp.io', '', '', '']);
+  function walk(dir) {return readdirSync(dir, {withFileTypes:true}).flatMap(e => e.isDirectory() ? walk(join(dir,e.name)) : [join(dir,e.name)]);}
+  for (const file of walk(fileURLToPath(new URL('../dist', import.meta.url)))) {
+    if (!/\.(html|js|json|txt|xml)$/.test(file)) continue;
+    const text = readFileSync(file, 'utf8');
+    for (const old of OBSOLETE_CHECKOUTS) assert.ok(!text.includes(old), `${old} still present in ${file}`);
+  }
+});
+
+test('sales ON: manual fulfilment only; no automatic delivery, fake demand or tax-invoice claims', {skip: !SALES}, () => {
+  const d = decode(main);
+  assert.ok(d.includes('email you the kit within 24 hours after verification'));
+  assert.ok(!/instant (?:download|delivery|access)|download (?:immediately|instantly)|automatic(?:ally)? (?:delivered|delivery|sent)/i.test(d));
+  assert.ok(!/\b\d[\d,]*\+?\s+(?:customers|buyers|sold|downloads|freelancers (?:use|trust))\b|bestsell|trusted by/i.test(d));
+  assert.ok(!/GSTIN|tax invoice|GST (?:invoice|registered|collected)/i.test(decoded));
 });
 
 test('no forms, keys, secrets or unsupported sales claims on the article', () => {
@@ -88,7 +112,7 @@ test('privacy page is accurate and stands alone; terms page links the kit terms'
   const p = decode(privacy);
   assert.ok(!/No analytics service is connected|does not include accounts, payments/i.test(p));
   for (const text of ['Cloudflare Web Analytics', 'local storage', "Razorpay's hosted checkout", 'never receive your full card number', 'never ask for a password, OTP', 'you email us the address where you want the product delivered']) assert.ok(p.includes(text), text);
-  assert.ok(!/email address you enter at checkout/.test(p));
+  assert.ok(p.includes('the email address and phone number you enter at checkout'), 'privacy must disclose checkout email/phone');
   assert.ok(!/href="\/kit-terms"/.test(privacy), 'privacy must not depend on /kit-terms so it can deploy on its own');
   assert.match(terms, /href="\/kit-terms"/);
 });

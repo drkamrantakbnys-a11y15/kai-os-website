@@ -16,7 +16,7 @@ export const PK018_SALES = Object.freeze({
   SALES_ENABLED: true,
   // Owner-confirmed 2026-10-02: ₹199 is the total payable price; no separate tax line, no GSTIN shown.
   TAX_PRESENTATION_CONFIRMED: true,
-  PAYMENT_URL: "https://rzp.io/rzp/5TLn4ZH", // OWNER: paste the Razorpay Payment Page / Payment Link URL here when opening sales
+  PAYMENT_URL: "https://rzp.io/rzp/projectkai-pk018", // reusable Razorpay Payment Page (owner-created; cutover 2026-10-02)
   OFFER_ID: "PK018-INR-199-V1",
   PRICE_INR: 199,
 });
