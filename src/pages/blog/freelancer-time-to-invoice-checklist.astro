@@ -2,12 +2,29 @@
 import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
-const inquiry = "mailto:drkamrantakbnys@gmail.com?" + Object.entries({
+
+import { resolveSalesState } from "../../config/pk018-sales.mjs";
+
+// Paid-sales gate lives in src/config/pk018-sales.mjs. Default: inquiry-only
+// (today's page, unchanged). Enabling sales with a missing/invalid Razorpay
+// URL or unconfirmed GST presentation throws here and fails the build.
+const sales = resolveSalesState();
+const SALES_ENABLED = sales.mode === "sales";
+
+const mailto = (fields: Record<string, string>) => "mailto:drkamrantakbnys@gmail.com?" + Object.entries(fields).map(([key, value]) => key + "=" + encodeURIComponent(value)).join("&");
+const inquiry = mailto({
   subject: "Interest in the Freelancer Invoice Review Kit [PK-018]",
   body: "I'm interested in the Freelancer Invoice Review Kit. Please reply with information when available.\n\nWhat would make a manual invoice-review workflow useful to me (optional):\n\n--- Article reference ---\nopportunity_id: PK-018\nasset_id: PK-018-ARTICLE-V1\nchannel: website\noffer_id: PK018-KIT-V1\nsource: https://projectkai.dev/blog/freelancer-time-to-invoice-checklist\n\nPlease do not attach invoices or include bank details, payment-card information, passwords, tax identifiers, sensitive financial documents or unnecessary personal financial information."
-}).map(([key, value]) => key + "=" + encodeURIComponent(value)).join("&");
+});
+const afterPay = mailto({
+  subject: "PK-018 kit delivery - payment ID",
+  body: "Razorpay payment ID (starts with pay_): \n\nPlease send the Freelancer Invoice Review Kit to this email address.\n\nDo not include card, UPI, bank or OTP details."
+});
+const description = SALES_ENABLED
+  ? "A practical freelancer checklist for reviewing time entries, agreed rates and billing totals, plus an optional Rs 199 Freelancer Invoice Review Kit."
+  : "A practical freelancer checklist for reviewing time entries, agreed rates and billing totals. Explore a manual invoice-review workflow and express interest.";
 ---
-<Layout title="From time logs to a reviewable invoice | Project KAI" description="A practical freelancer checklist for reviewing time entries, agreed rates and billing totals. Explore a manual invoice-review workflow and express interest." canonicalPath="/blog/freelancer-time-to-invoice-checklist">
+<Layout title="From time logs to a reviewable invoice | Project KAI" description={description} canonicalPath="/blog/freelancer-time-to-invoice-checklist">
   <Header />
   <main id="main-content" class="page-main">
     <article class="container pk018-article">
@@ -38,6 +55,35 @@ const inquiry = "mailto:drkamrantakbnys@gmail.com?" + Object.entries({
 <p>Inspect the actual invoice attachment, recipient, due date and payment instructions. Keep a copy of what was sent. An invoice being sent is not evidence of payment; a reminder being acknowledged is not evidence of settlement.</p>
 <p>For follow-up, use a factual message quoting the invoice reference, actual send date, agreed due date and balance in your records. Ask the client to resolve a discrepancy instead of adding invented fees or pressure.</p>
       </div>
+      {SALES_ENABLED ? (
+      <section class="interest" aria-labelledby="kit-heading">
+        <p class="page-kicker">The kit</p>
+        <h2 id="kit-heading">Freelancer Invoice Review Kit — ₹199</h2>
+        <p>A compact, ready-to-use version of this checklist for your own billing week:</p>
+        <ul>
+          <li><strong>Ten-point pre-send invoice check</strong>: run it on your next invoice in about five minutes.</li>
+          <li><strong>Time-to-billing worksheet</strong> (spreadsheet and text versions) with the worked example above.</li>
+          <li><strong>Handoff summary and a factual payment-reminder draft.</strong></li>
+          <li><strong>Optional AI double-check prompt</strong> that works on redacted data only.</li>
+        </ul>
+        <p><strong>For:</strong> freelancers and independent professionals who bill by time and want a repeatable check before invoicing.<br /><strong>Not for:</strong> automatic time tracking, invoice generation, tax or accounting help, or professional advice.</p>
+        <p><strong>Price:</strong> ₹199 (INR), one-time. This is an introductory price while we learn whether the kit is useful.<br /><strong>Format:</strong> digital product, six files (Markdown, CSV and plain text) in one ZIP, delivered by email. Nothing is shipped.</p>
+        <p><strong>How buying works</strong> (delivery is manual, so it is not instant):</p>
+        <ol class="buy-steps">
+          <li>Read the <a href="/kit-terms">kit terms</a> (licence, delivery and refunds) and the <a href="/privacy">privacy policy</a>, then tick the box below.</li>
+          <li>Pay ₹199 on Razorpay's secure checkout (UPI, cards or netbanking).</li>
+          <li><strong>After paying, email <span class="email-address">drkamrantakbnys@gmail.com</span> from the address where you want the kit</strong>, with your Razorpay payment ID (it starts with <code>pay_</code>). Checkout may not ask for your email, so this step is needed for delivery.</li>
+          <li>We verify your payment with Razorpay and email you the kit within 24 hours after verification.</li>
+        </ol>
+        <p><strong>Refunds:</strong> if you are charged twice or pay in error, or the kit cannot be opened or materially differs from its description, email us and we will put it right. Your consumer rights are not affected. <strong>Support:</strong> by email for 14 days after delivery.</p>
+        <p id="privacy-warning">Please do not send us real invoices, bank details, payment-card information, passwords, OTPs, tax identifiers, highly sensitive financial documents or unnecessary personal financial information. We never need them, and we will never ask for an OTP.</p>
+        <p class="ack"><label><input type="checkbox" id="pk018-ack" /> I have read the kit terms (including delivery and refunds) and the privacy policy.</label></p>
+        <a id="pk018-buy" class="interest-button" href={sales.paymentUrl} rel="noopener" aria-describedby="buy-help privacy-warning">Pay ₹199 on Razorpay</a>
+        <p id="ack-hint" class="ack-hint" hidden>Please tick the box above first.</p>
+        <p id="buy-help">Opens Razorpay's secure checkout. Project KAI never sees your card, UPI or bank details. Then email your payment ID: <a id="pk018-after-pay" href={afterPay}>email us after paying</a>. Questions before buying? Email <span class="email-address">drkamrantakbnys@gmail.com</span>.</p>
+        <p>Sold by Kamran Tak, operating under the Project KAI brand. Your email is used to deliver the kit and provide support. This does not subscribe you to a mailing list.</p>
+      </section>
+      ) : (
       <section class="interest" aria-labelledby="interest-heading">
         <p class="page-kicker">Exploring interest</p>
         <h2 id="interest-heading">Would a reusable review kit help?</h2>
@@ -48,11 +94,24 @@ const inquiry = "mailto:drkamrantakbnys@gmail.com?" + Object.entries({
         <p id="email-help">Opens your email app with an article reference. You must send the email to register an inquiry; clicking alone sends nothing. If your email app does not open, write to <span class="email-address">drkamrantakbnys@gmail.com</span> with the subject “Interest in the Freelancer Invoice Review Kit [PK-018]”. Please keep the article reference so we can identify your inquiry.</p>
         <p>Your email is used to respond to this inquiry. This does not subscribe you to a mailing list. No file upload or checkout is provided.</p>
       </section>
+      )}
       <p class="disclosure">General organizational guidance, not professional accounting, tax, legal or financial advice. You remain responsible for the agreement, arithmetic and final invoice. No savings, income, payment speed or other result is guaranteed.</p>
     </article>
   </main>
   <Footer />
 </Layout>
+<script>
+  // Acknowledgement gate for the PK-018 checkout link. Nothing is stored or sent anywhere.
+  const ack = document.getElementById("pk018-ack");
+  const buy = document.getElementById("pk018-buy");
+  const hint = document.getElementById("ack-hint");
+  if (ack instanceof HTMLInputElement && buy && hint) {
+    const sync = () => { buy.setAttribute("aria-disabled", String(!ack.checked)); buy.classList.toggle("is-disabled", !ack.checked); if (ack.checked) hint.hidden = true; };
+    buy.addEventListener("click", (event) => { if (!ack.checked) { event.preventDefault(); hint.hidden = false; ack.focus(); } });
+    ack.addEventListener("change", sync);
+    sync();
+  }
+</script>
 <style>
-.pk018-article{width:calc(100% - 40px);margin-inline:auto;max-width:820px;padding-top:32px;padding-bottom:64px}.pk018-article header{margin:32px 0}.pk018-article h1{font-size:clamp(2rem,5vw,3.25rem);line-height:1.15;margin:16px 0}.article-body{font-size:1.075rem;line-height:1.8}.article-body h2{margin-top:36px;font-size:1.5rem;line-height:1.3}.article-body p{margin:18px 0}.interest{margin:40px 0;padding:clamp(20px,4vw,32px);border:1px solid var(--border-bright);border-radius:12px;background:rgba(56,189,248,.05)}.interest h2{line-height:1.25}.interest p{line-height:1.7;margin:16px 0}.interest-button{display:inline-block;padding:14px 20px;background:#67e8f9;color:#083344;border-radius:8px;font-weight:800;text-decoration:none;line-height:1.4}.interest-button:focus-visible{outline:3px solid white;outline-offset:4px}.email-address{overflow-wrap:anywhere}.disclosure,#email-help{font-size:.9rem;line-height:1.7;color:var(--text-muted)}
+.pk018-article{width:calc(100% - 40px);margin-inline:auto;max-width:820px;padding-top:32px;padding-bottom:64px}.pk018-article header{margin:32px 0}.pk018-article h1{font-size:clamp(2rem,5vw,3.25rem);line-height:1.15;margin:16px 0}.article-body{font-size:1.075rem;line-height:1.8}.article-body h2{margin-top:36px;font-size:1.5rem;line-height:1.3}.article-body p{margin:18px 0}.interest{margin:40px 0;padding:clamp(20px,4vw,32px);border:1px solid var(--border-bright);border-radius:12px;background:rgba(56,189,248,.05)}.interest h2{line-height:1.25}.interest p{line-height:1.7;margin:16px 0}.interest ul{line-height:1.7;padding-left:1.25rem}.interest p a,.interest li a{color:#67e8f9;text-decoration:underline;text-underline-offset:3px}.buy-steps{line-height:1.7;padding-left:1.4rem}.buy-steps li{margin:6px 0}.ack label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}.ack input{width:20px;height:20px;margin-top:4px;flex:none}.interest-button.is-disabled{opacity:.55}.ack-hint{color:#fca5a5;font-weight:700}.interest-button{display:inline-block;padding:14px 20px;background:#67e8f9;color:#083344;border-radius:8px;font-weight:800;text-decoration:none;line-height:1.4}.interest-button:focus-visible{outline:3px solid white;outline-offset:4px}.email-address{overflow-wrap:anywhere}.disclosure,#email-help,#buy-help{font-size:.9rem;line-height:1.7;color:var(--text-muted)}
 </style>

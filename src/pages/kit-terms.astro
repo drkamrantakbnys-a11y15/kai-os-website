@@ -1,0 +1,68 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+// Mirrors TERMS.txt shipped in PK018-Freelancer-Invoice-Review-Kit-v1.1.zip.
+// Keep both in sync; a change to either requires a new kit build and owner approval.
+---
+
+<Layout
+  title="Kit Terms | Project KAI"
+  description="Licence, delivery, refund, support and privacy terms for the Freelancer Invoice Review Kit."
+  canonicalPath="/kit-terms"
+>
+  <Header />
+
+  <main id="main-content" class="page-main">
+    <section class="page-hero">
+      <div class="container">
+        <p class="page-kicker">Kit terms</p>
+        <h1 class="page-title">Freelancer Invoice Review Kit — customer terms</h1>
+        <p class="page-lede">Version 1.1 (product reference PK018-KIT-V1.1). Last updated 2 October 2026.</p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container kit-terms">
+        <p><strong>Seller:</strong> Kamran Tak, operating under the Project KAI brand, India. <strong>Contact:</strong> <span class="email-address">drkamrantakbnys@gmail.com</span></p>
+
+        <h2>1. The product</h2>
+        <p>The Freelancer Invoice Review Kit is a digital product: six files delivered by email as one ZIP file. It is a manual workflow aid. It does not track time, create or send invoices, process payments or calculate tax. Nothing physical is shipped.</p>
+
+        <h2>2. Your licence</h2>
+        <p>This is a personal-use licence. You may copy, adapt and use the kit for your own work, including your own freelance or business work, and you may share the completed worksheets and billing summaries you create with your own clients. The licence is personal to you, the purchaser, and is not transferable.</p>
+        <p>You may not resell the kit or any part of it; redistribute, share, upload or publicly post the kit files, whether original or modified; or repackage the kit, or include it in another product, template pack, course or free download, as your own or anyone else's product. The kit remains the copyright work of the seller.</p>
+
+        <h2>3. Delivery</h2>
+        <p>We send the kit manually by email, within 24 hours after your payment has been verified as successful with our payment provider. After paying, email us from the address where you want the kit, with your payment reference; we send the kit to that address. If it has not arrived within 24 hours of verification, check your spam folder, then email us with your payment reference.</p>
+
+        <h2>4. Refunds</h2>
+        <p>Before delivery: if you were charged twice or paid in error, email us with your payment reference. Once we verify the duplicate or erroneous payment, we will refund it where appropriate.</p>
+        <p>After delivery: if you cannot reasonably open or access the kit, or it materially differs from its description, email us with your payment reference, ideally within 7 days of delivery. We will first try to fix the problem, for example by re-sending the files. If we cannot, we will consider your refund request.</p>
+        <p>Approved refunds are made to your original payment method through our payment provider; the time for the money to reach you depends on your bank or card issuer. After a refund, please delete your copies of the kit. Nothing in these terms excludes or limits any rights you have under applicable consumer law.</p>
+
+        <h2>5. Support</h2>
+        <p>Email support is available for 14 days after delivery. It covers access to the files and questions about how to use the included instructions. It does not include reviewing your invoices or records, custom templates, or tax, accounting, legal or financial questions. We aim to reply within 2 business days.</p>
+
+        <h2>6. Privacy</h2>
+        <p>Payments are processed by Razorpay under its own terms and privacy policy. We never receive your full card number, CVV, UPI PIN or bank login. We keep only your email address, payment reference, amount, product version and delivery/refund records, to deliver the kit, provide support and keep financial records. See also our <a href="/privacy">privacy policy</a>.</p>
+        <p>Do not send us full invoices. If an example is truly necessary for support, send a short extract with names, addresses, client personal data, bank and account numbers, tax IDs, payment credentials, signatures and confidential business information removed. <strong>We will never ask for your passwords, OTP codes, bank credentials or card credentials.</strong></p>
+
+        <h2>7. Information only — not professional advice</h2>
+        <p>The kit is general organizational information, prepared with AI assistance and reviewed by a person. It is not legal, tax, accounting or financial advice. All examples are fictional. No result is promised, including time saved, faster payment or income. You remain responsible for your agreements, calculations, invoices and tax obligations; consult a qualified professional where needed.</p>
+
+        <h2>8. Liability</h2>
+        <p>We take reasonable care in preparing the kit, but it is provided for general information. To the extent permitted by law, our total liability in connection with the kit is limited to the amount you paid for it. Nothing in these terms excludes or limits liability that cannot be excluded or limited by law.</p>
+
+        <h2>9. Contact</h2>
+        <p>Questions about these terms: <span class="email-address">drkamrantakbnys@gmail.com</span></p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+.kit-terms{max-width:820px;line-height:1.75}.kit-terms h2{margin-top:32px;font-size:1.35rem}.kit-terms p{margin:14px 0}.email-address{overflow-wrap:anywhere}
+</style>
